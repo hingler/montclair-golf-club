@@ -1,5 +1,7 @@
-#ifndef COURSE_SCHEMA_H_
-#define COURSE_SCHEMA_H_
+#ifndef terrain_data_H_
+#define terrain_data_H_
+
+#include "course/terrain_type.hpp"
 
 // - create simple terrain printer
 // - how do we want to do it?
@@ -17,26 +19,14 @@
  */
 
 namespace course {
-  enum terrain_type {
-    Fairway,
-    Green,
-    Rough,
-    Sand,
-    Path,
-    HeavyRough,
-    OutOfBounds,
-    // used by iterators
-    NUM_ELEMENTS
-  };
-
-  struct course_schema {
+  struct terrain_data {
     float terrain[NUM_ELEMENTS];
     /**
      * @brief normalizes this course schema.
      * 
      * @return reference to self
      */
-    course_schema& normalize();
+    terrain_data& normalize();
 
     /**
      * @brief raises this course schema to a given power
@@ -44,7 +34,7 @@ namespace course {
      * @param exp - exponent
      * @return reference to self
      */
-    course_schema& power(float exp);
+    terrain_data& power(float exp);
 
     /**
      * @brief Sets a given terrain field to a particular value.

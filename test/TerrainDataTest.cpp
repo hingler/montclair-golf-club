@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
-#include "course/course_schema.hpp"
+#include "course/terrain_data.hpp"
 
 using namespace course;
 
 TEST(CourseSchemaTest, TestNormalizeFunc) {
-  course_schema s;
-  memset(&s, 0, sizeof(course_schema));
+  terrain_data s;
+  memset(&s, 0, sizeof(terrain_data));
   s.terrain[terrain_type::Fairway] = 2.5;
   s.terrain[terrain_type::Green] = 2.5;
   s.terrain[terrain_type::Rough] = 2.5;
@@ -21,7 +21,8 @@ TEST(CourseSchemaTest, TestNormalizeFunc) {
 }
 
 TEST(CourseSchemaTest, TestPowerFunc) {
-  course_schema s;
+  terrain_data s;
+  memset(&s, 0, sizeof(terrain_data));
   s.terrain[terrain_type::Fairway] = 2.0;
   s.terrain[terrain_type::Green] = 4.0;
   s.terrain[terrain_type::Sand] = 8.0;

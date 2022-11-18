@@ -1,9 +1,9 @@
-#include "course/course_schema.hpp"
+#include "course/terrain_data.hpp"
 
 #include <cmath>
 
 namespace course {
-  course_schema& course_schema::normalize() {
+  terrain_data& terrain_data::normalize() {
     float factor = 0;
     float cur;
     for (int i = 0; i < NUM_ELEMENTS; i++) {
@@ -25,7 +25,7 @@ namespace course {
     return *this;
   }
 
-  course_schema& course_schema::power(float exp) {
+  terrain_data& terrain_data::power(float exp) {
     float cur;
     for (int i = 0; i < NUM_ELEMENTS; i++) {
       terrain[i] = pow(terrain[i], exp);
@@ -34,9 +34,7 @@ namespace course {
     return *this;
   }
 
-  float course_schema::get(int index) {
+  float terrain_data::get(int index) {
     return (index >= 0 && index < NUM_ELEMENTS ? terrain[index] : -1.0f);
   }
-
-
 }

@@ -20,10 +20,12 @@ add_library(montclair-golf-club main.cpp
                                 src/course/terrain_data.cpp
                                 src/image/rgba_color.cpp
                                 src/image/TerrainToColorMap.cpp
+                                src/image/TerrainImageConverter.cpp
+                                src/image/ImageWriter.cpp
                                 src/support/prepare_stb.cpp)
 
-target_include_directories(montclair-golf-club PUBLIC ${STB_INCLUDES})
-target_include_directories(montclair-golf-club PUBLIC ${INC_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${STB_INCLUDES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${INC_DIR})
 
 set(TEST_DIR ${CMAKE_SOURCE_DIR}/test)
 
@@ -40,6 +42,10 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     add_test(NAME ${test_name} COMMAND ${test_name})
   endforeach()
 endif()
+
+# demos
+add_executable(terrain-convert-demo demo/terrain_convert_demo.cpp)
+target_link_libraries(terrain-convert-demo PUBLIC ${PROJECT_NAME})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

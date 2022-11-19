@@ -2,7 +2,7 @@
 #define TERRAIN_TYPE_H_
 
 namespace course {
-  // reorder
+  // ordered by priority (lower = importance)
   enum terrain_type {
     Sand,
     Green,

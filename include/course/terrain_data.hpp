@@ -37,6 +37,14 @@ namespace course {
     terrain_data& power(float exp);
 
     /**
+     * @brief scales terrain_data by a scalar value
+     * 
+     * @param mag - magnitude to scale by
+     * @return reference to self
+     */
+    terrain_data& scale(float mag);
+
+    /**
      * @brief Sets a given terrain field to a particular value.
      * 
      * @param index 

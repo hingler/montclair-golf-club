@@ -33,6 +33,14 @@ namespace course {
     return *this;
   }
 
+  terrain_data& terrain_data::scale(float mag) {
+    for (int i = 0; i < NUM_ELEMENTS; i++) {
+      terrain[i] *= mag;
+    }
+
+    return *this;
+  }
+
   float terrain_data::get(int index) {
     return (index >= 0 && index < NUM_ELEMENTS ? terrain[index] : -1.0f);
   }

@@ -15,19 +15,21 @@ set(SRC_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(LIB_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 set(STB_INCLUDES ${LIB_DIR}/stb)
+set(GLM_INCLUDES ${LIB_DIR}/glm)
 
 find_package(gtest REQUIRED)
 
 add_library(montclair-golf-club main.cpp
                                 src/course/terrain_data.cpp
                                 src/course/sampler/MetaballSampler.cpp
+                                src/course/CourseWriter.cpp
                                 src/image/rgba_color.cpp
                                 src/image/TerrainToColorMap.cpp
                                 src/image/TerrainImageConverter.cpp
                                 src/image/ImageWriter.cpp
                                 src/support/prepare_stb.cpp)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${STB_INCLUDES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${STB_INCLUDES} ${GLM_INCLUDES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INC_DIR})
 
 set(TEST_DIR ${CMAKE_SOURCE_DIR}/test)
@@ -52,6 +54,9 @@ endif()
 # demos
 add_executable(terrain-convert-demo demo/terrain_convert_demo.cpp)
 target_link_libraries(terrain-convert-demo PUBLIC ${PROJECT_NAME})
+
+add_executable(sampler-write-demo demo/sampler_write_demo.cpp)
+target_link_libraries(sampler-write-demo PUBLIC ${PROJECT_NAME})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

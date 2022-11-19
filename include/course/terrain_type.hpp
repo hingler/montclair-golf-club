@@ -2,12 +2,13 @@
 #define TERRAIN_TYPE_H_
 
 namespace course {
+  // reorder
   enum terrain_type {
-    Fairway,
-    Green,
-    Rough,
     Sand,
+    Green,
     Path,
+    Fairway,
+    Rough,
     HeavyRough,
     OutOfBounds,
     // used by iterators

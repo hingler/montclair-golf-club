@@ -8,16 +8,16 @@ using namespace course;
 TEST(CourseSchemaTest, TestNormalizeFunc) {
   terrain_data s;
   memset(&s, 0, sizeof(terrain_data));
-  s.terrain[terrain_type::Fairway] = 2.5;
-  s.terrain[terrain_type::Green] = 2.5;
-  s.terrain[terrain_type::Rough] = 2.5;
+  s.terrain[0] = 2.5;
+  s.terrain[1] = 2.5;
+  s.terrain[2] = 2.5;
 
   s.normalize();
 
-  float expected_value = sqrt(1.0f / 3.0f);
-  EXPECT_NEAR(s.terrain[terrain_type::Fairway], expected_value, 0.001);
-  EXPECT_NEAR(s.terrain[terrain_type::Green], expected_value, 0.001);
-  EXPECT_NEAR(s.terrain[terrain_type::Rough], expected_value, 0.001);
+  float expected_value = 1.0f / 3.0f;
+  EXPECT_NEAR(s.terrain[0], expected_value, 0.001);
+  EXPECT_NEAR(s.terrain[1], expected_value, 0.001);
+  EXPECT_NEAR(s.terrain[2], expected_value, 0.001);
 }
 
 TEST(CourseSchemaTest, TestPowerFunc) {

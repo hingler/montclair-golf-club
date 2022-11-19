@@ -5,17 +5,16 @@
 namespace course {
   terrain_data& terrain_data::normalize() {
     float factor = 0;
-    float cur;
     for (int i = 0; i < NUM_ELEMENTS; i++) {
-      cur = terrain[i];
-      factor += cur * cur;
+      // l1 norm
+      factor += abs(terrain[i]);
     }
 
 
     if (abs(factor) <= 0.000001) {
       factor = 0.0;
     } else {
-      factor = 1.0f / sqrt(factor);
+      factor = 1.0f / factor;
     }
 
     for (int i = 0; i < NUM_ELEMENTS; i++) {

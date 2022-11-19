@@ -44,11 +44,6 @@ namespace course {
      */
     float get(int index);
   };
-
-  // redesign
-  // we'll probably expand this later
-  // use an enum to map to array elements
-  // perform operations based on that
 }
 
 #endif

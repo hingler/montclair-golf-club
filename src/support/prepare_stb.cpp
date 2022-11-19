@@ -6,6 +6,8 @@
 #include "image/ImageWriter.hpp"
 #include "image/TerrainImageConverter.hpp"
 
+#include "course/sampler/MetaballSampler.hpp"
+
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 

@@ -3,6 +3,8 @@
 // temp, for intellisense
 #include "image/GenericImage.hpp"
 #include "image/ColorUtils.hpp"
+#include "image/ImageWriter.hpp"
+#include "image/TerrainImageConverter.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION

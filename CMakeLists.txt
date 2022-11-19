@@ -19,6 +19,7 @@ find_package(gtest REQUIRED)
 add_library(montclair-golf-club main.cpp
                                 src/course/terrain_data.cpp
                                 src/image/rgba_color.cpp
+                                src/image/TerrainToColorMap.cpp
                                 src/support/prepare_stb.cpp)
 
 target_include_directories(montclair-golf-club PUBLIC ${STB_INCLUDES})

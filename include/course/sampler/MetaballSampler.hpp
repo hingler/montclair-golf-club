@@ -11,7 +11,7 @@ namespace course {
     /**
      * @brief Sampler which uses metaballs to represent swatches of terrain
      */
-    class MetaballSampler : public ISampler {
+    class MetaballSampler : public ISampler<float> {
     public:
       float Sample(float x, float y) const override;
 

@@ -37,9 +37,11 @@ set(TEST_DIR ${CMAKE_SOURCE_DIR}/test)
 set(TEST_PATHS ${TEST_DIR}/TerrainDataTest.cpp 
                ${TEST_DIR}/RGBAColorTest.cpp
                ${TEST_DIR}/GenericImageTest.cpp
-               ${TEST_DIR}/MetaballSamplerTest.cpp)
+               ${TEST_DIR}/MetaballSamplerTest.cpp
+               ${TEST_DIR}/InterpolatingImageSamplerTest.cpp)
 
-set(TEST_NAMES TerrainDataTest RGBAColorTest GenericImageTest MetaballSamplerTest)
+set(TEST_NAMES TerrainDataTest RGBAColorTest GenericImageTest MetaballSamplerTest
+               InterpolatingImageSamplerTest)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   foreach(test_path test_name IN ZIP_LISTS TEST_PATHS TEST_NAMES)

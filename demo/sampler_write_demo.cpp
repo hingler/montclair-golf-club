@@ -24,13 +24,13 @@ int main(int argc, char** argv) {
   std::shared_ptr<sampler::MetaballSampler> sampler = std::make_shared<sampler::MetaballSampler>();
   // add a few metaballs to it
   sampler->threshold = 0.22;
-  sampler->AddMetaball(-6.0, -6.0, 1.0);
-  sampler->AddMetaball(6.0, 6.0, 1.0);
+  sampler->AddMetaball(26.0, 26.0, 1.0);
+  sampler->AddMetaball(16.0, 16.0, 1.0);
   // course center origin, size 128 (image 128)
   std::unordered_map<terrain_type, std::shared_ptr<sampler::ISampler<float>>> samplers;
   samplers.insert(std::make_pair(terrain_type::Fairway, std::dynamic_pointer_cast<sampler::ISampler<float>>(sampler)));
   // pass thru course writer to get terrain data
-  auto image = writer::GetCourseTerrainFromSamplers(samplers, glm::ivec2(256, 256), glm::vec2(64.0, 64.0), glm::vec2(0.0, 0.0));
+  auto image = writer::GetCourseTerrainFromSamplers(samplers, glm::ivec2(256, 256), glm::vec2(64.0, 64.0));
   // convert to RGBA
   image::TerrainToColorMap map;
 

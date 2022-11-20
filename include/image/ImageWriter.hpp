@@ -36,7 +36,7 @@ namespace image {
         }
       }
 
-      stbi_write_jpg(filename.c_str(), dims.width, dims.height, 4, result_image.Data(), 8);
+      stbi_write_jpg(filename.c_str(), dims.width, dims.height, 4, result_image.Data(), 95);
     }
   
   }

@@ -2,18 +2,18 @@
 
 namespace course {
   namespace writer {
+    // to sync up everywhere: assume bottom left is (0, 0)
     image::GenericImage<terrain_data> GetCourseTerrainFromSamplers(
       const std::unordered_map<terrain_type, std::shared_ptr<sampler::ISampler<float>>>& samplers,
       const glm::ivec2& image_dims,
-      const glm::vec2& terrain_dims,
-      const glm::vec2& terrain_center
+      const glm::vec2& terrain_dims
     ) {
       image::GenericImage<terrain_data> output(image_dims.x, image_dims.y);
       float x_s = (image_dims.x > 1 ? terrain_dims.x / (image_dims.x - 1) : 0.0f);
-      float x_i = terrain_center.x - (terrain_dims.x / 2) + x_s * 0.5;
+      float x_i = x_s * 0.5;
 
       float y_s = (image_dims.y > 1 ? terrain_dims.y / (image_dims.y - 1) : 0.0f);
-      float y_i = terrain_center.y - (terrain_dims.y / 2) + y_s * 0.5;
+      float y_i = y_s * 0.5;
 
       glm::vec2 cur;
       terrain_data data;

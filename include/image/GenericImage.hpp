@@ -24,8 +24,8 @@ namespace image {
     /**
      * @brief returns a non writable pointer to a terrain record, if it exists
      * 
-     * @param x - x coordinate
-     * @param y - y coordinate 
+     * @param x - x coordinate, left is 0
+     * @param y - y coordinate, bottom is 0
      * @return const DataType* 
      */
     const DataType* Get(uint32_t x, uint32_t y) const;
@@ -33,8 +33,8 @@ namespace image {
     /**
      * @brief assigns data to a given x/y coordinate, if in bounds
      * 
-     * @param x - x coordinate
-     * @param y - y coordinate
+     * @param x - x coordinate, left is 0
+     * @param y - y coordinate, bottom is 0
      * @param data - data to be written
      */
     void Set(uint32_t x, uint32_t y, const DataType& input);
@@ -103,7 +103,7 @@ namespace image {
   template <typename DataType>
   const DataType* GenericImage<DataType>::Get(uint32_t x, uint32_t y) const {
     if (x < dims_.width && y < dims_.height) {
-      return const_cast<const DataType*>(data + (y * dims_.width + x));
+      return const_cast<const DataType*>(data + ((dims_.height - y - 1) * dims_.width + x));
     }
 
     return nullptr;
@@ -112,7 +112,7 @@ namespace image {
   template <typename DataType>
   void GenericImage<DataType>::Set(uint32_t x, uint32_t y, const DataType& input) {
     if (x < dims_.width && y < dims_.height) {
-      memcpy((data + (y * dims_.width + x)), &input, sizeof(DataType));
+      memcpy((data + ((dims_.height - y - 1) * dims_.width + x)), &input, sizeof(DataType));
     }
   }
 

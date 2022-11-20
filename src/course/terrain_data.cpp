@@ -44,4 +44,20 @@ namespace course {
   float terrain_data::get(int index) {
     return (index >= 0 && index < NUM_ELEMENTS ? terrain[index] : -1.0f);
   }
+
+  terrain_data& terrain_data::operator+=(const terrain_data& rhs) {
+    for (int i = 0; i < NUM_ELEMENTS; i++) {
+      terrain[i] += rhs.terrain[i];
+    }
+
+    return *this;
+  }
+
+  terrain_data& terrain_data::operator*=(float rhs) {
+    for (int i = 0; i < NUM_ELEMENTS; i++) {
+      terrain[i] *= rhs;
+    }
+
+    return *this;
+  }
 }

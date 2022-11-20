@@ -51,7 +51,20 @@ namespace course {
      * @return float 
      */
     float get(int index);
+
+    terrain_data& operator+=(const terrain_data& rhs);
+    terrain_data& operator*=(float rhs);
   };
+
+  // note because ive never used this :)
+  // constexpr is implicitly inline
+  constexpr terrain_data operator*(terrain_data lhs, float rhs) {
+    return lhs *= rhs;
+  }
+
+  constexpr terrain_data operator+(terrain_data lhs, const terrain_data& rhs) {
+    return lhs += rhs;
+  }
 }
 
 #endif

@@ -1,5 +1,4 @@
 // simplex noise is public baby lets go
-// simple implementation for a quick benchmark
 
 #ifndef SIMPLEX_NOISE_H_
 #define SIMPLEX_NOISE_H_
@@ -49,7 +48,7 @@ namespace noise {
 
   // distribution used in shadertoy is [-0.5, 0.5]
 
-  static double simplex_3d(glm::dvec3 input) {
+  static inline double simplex_3d(glm::dvec3 input) {
     glm::dvec3 skew = input;
     double coordinate_sum = glm::dot(input, SIMPLEX_F3);
     skew.x += coordinate_sum;

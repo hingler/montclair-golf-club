@@ -22,6 +22,7 @@ find_package(gtest REQUIRED)
 add_library(montclair-golf-club main.cpp
                                 src/course/terrain_data.cpp
                                 src/course/sampler/MetaballSampler.cpp
+                                src/course/sampler/SimplexNoiseSampler.cpp
                                 src/course/CourseWriter.cpp
                                 src/image/rgba_color.cpp
                                 src/image/TerrainToColorMap.cpp

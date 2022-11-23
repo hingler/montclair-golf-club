@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_CXX_FLAGS "-g -O2")
+set(CMAKE_CXX_FLAGS "-g -O3")
 
 set(INC_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -39,10 +39,12 @@ set(TEST_PATHS ${TEST_DIR}/TerrainDataTest.cpp
                ${TEST_DIR}/RGBAColorTest.cpp
                ${TEST_DIR}/GenericImageTest.cpp
                ${TEST_DIR}/MetaballSamplerTest.cpp
-               ${TEST_DIR}/InterpolatingImageSamplerTest.cpp)
+               ${TEST_DIR}/InterpolatingImageSamplerTest.cpp
+               ${TEST_DIR}/SimplexNoiseSamplerTest.cpp)
 
 set(TEST_NAMES TerrainDataTest RGBAColorTest GenericImageTest MetaballSamplerTest
-               InterpolatingImageSamplerTest)
+               InterpolatingImageSamplerTest
+               SimplexNoiseSamplerTest)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   foreach(test_path test_name IN ZIP_LISTS TEST_PATHS TEST_NAMES)

@@ -1,6 +1,7 @@
 // prepares necessary STB implementation
 
 // temp, for intellisense
+#include "course/sampler/TurbulentDisplaceSampler.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION

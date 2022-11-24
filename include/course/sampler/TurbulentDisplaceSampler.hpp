@@ -19,7 +19,8 @@ namespace course {
         const glm::vec3& scale,
         int octaves
       ) : noise_(std::make_shared<SimplexNoiseSampler>(scale, octaves)),
-          image_(input) {}
+          image_(input),
+          displacement_factor(0.5f) {}
 
       void SetScale(const glm::vec3& scale) {
         noise_->scale = scale;

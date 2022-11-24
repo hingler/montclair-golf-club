@@ -7,7 +7,8 @@
 #include <glm/glm.hpp>
 
 #include <memory>
-#include <type_traits>
+
+#include "traits/Interpolatable.hpp"
 
 namespace course {
   namespace sampler {
@@ -15,26 +16,10 @@ namespace course {
      * @brief Samples height data from an image, with interpolation
      */
 
-    namespace _traits {
-      struct interpolatable_impl {
-        template <typename DataType,
-        typename AddOp = decltype(std::declval<DataType&>() + std::declval<DataType&>()),
-        typename ScaleOp = decltype(std::declval<DataType&>() * 5.0f),
-        typename DefaultOp = std::is_default_constructible<DataType>>
-        static std::true_type test(int);
-
-        template <typename DataType, typename...>
-        static std::false_type test(...);
-      };
-
-      template <typename T>
-      struct interpolatable : decltype(interpolatable_impl::test<T>(0)) {};
-    }
-
     template <typename DataType>
     class InterpolatingImageSampler : public ISampler<DataType> {
       // ensure we can add, scale, etc...
-      static_assert(_traits::interpolatable<DataType>::value);
+      static_assert(traits::interpolatable<DataType>::value);
 
     public:
       InterpolatingImageSampler(

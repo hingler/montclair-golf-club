@@ -28,6 +28,7 @@ add_library(montclair-golf-club main.cpp
                                 src/image/TerrainToColorMap.cpp
                                 src/image/TerrainImageConverter.cpp
                                 src/image/ImageWriter.cpp
+                                src/image/filter/GaussianBlur.cpp
                                 src/support/prepare_stb.cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${STB_INCLUDES} ${GLM_INCLUDES})

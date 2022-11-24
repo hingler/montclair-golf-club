@@ -2,6 +2,9 @@
 
 // temp, for intellisense
 #include "course/sampler/TurbulentDisplaceSampler.hpp"
+#include "course/generator/ICourseGenerator.hpp"
+#include "course/generator/BruteForceCourseGenerator.hpp"
+#include "image/filter/BlurImage.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION

@@ -4,17 +4,52 @@
 #include <cinttypes>
 #include <type_traits>
 
+#include <cstring>
+
 namespace image {
 
   template <typename ColorFormat>
   struct RGBA {
     static_assert(std::is_scalar_v<ColorFormat>);
+    
+    RGBA() {
+      memset(this, 0, sizeof(RGBA<ColorFormat>));
+    }
+
+    RGBA(ColorFormat r_in, ColorFormat g_in, ColorFormat b_in, ColorFormat a_in) {
+      r = r_in;
+      g = g_in;
+      b = b_in;
+      a = a_in;
+    }
 
     ColorFormat r;
     ColorFormat g;
     ColorFormat b;
     ColorFormat a;
   };
+
+  template <typename ColorFormat>
+  RGBA<ColorFormat> operator+(const RGBA<ColorFormat>& lhs, const RGBA<ColorFormat>& rhs) {
+    RGBA<ColorFormat> res;
+    res.r = lhs.r + rhs.r;
+    res.g = lhs.g + rhs.g;
+    res.b = lhs.b + rhs.b;
+    res.a = lhs.a + rhs.a;
+
+    return res;
+  }
+
+  template <typename ColorFormat>
+  RGBA<ColorFormat> operator*(const RGBA<ColorFormat>& lhs, float rhs) {
+    RGBA<ColorFormat> res;
+    res.r = lhs.r * rhs;
+    res.g = lhs.g * rhs;
+    res.b = lhs.b * rhs;
+    res.a = lhs.a * rhs;
+
+    return res;
+  }
 
   struct rgba_color {
     uint8_t r;

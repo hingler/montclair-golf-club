@@ -11,7 +11,7 @@ namespace course {
       public:
         PositionTracker();
         void PushPosition(const glm::vec2& pos);
-        void PopPosition();
+        glm::vec2 PopPosition();
 
         glm::vec2 positions[6];
         int shots;

@@ -11,9 +11,11 @@ namespace course {
         }
       }
 
-      void PositionTracker::PopPosition() {
+      glm::vec2 PositionTracker::PopPosition() {
         shots--;
         if (shots < 0) shots = 0;
+
+        return positions[shots];
       }
     }
   }

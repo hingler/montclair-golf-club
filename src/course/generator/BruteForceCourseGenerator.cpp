@@ -3,6 +3,7 @@
 
 
 #include <algorithm>
+#include <iostream>
 
 namespace course {
 
@@ -14,56 +15,22 @@ namespace course {
     BruteForceCourseGenerator::BruteForceCourseGenerator() : simple_dist(0.0, 1.0), binary_dist(0, 1) { }
 
     impl::PositionTracker BruteForceCourseGenerator::GenerateCourse(std::shared_ptr<ISampler<float>> terrain_in, const glm::vec2& terrain_size_in) {
-      // pick a tee location
-
-      // from that tee location:
-      // in each direction, generate a few random drives (on a par 3, it'll just be the one shot)
-      // pass that point to `GenerateFromPoint`
-      // it will handle the next shot
-
-      // generate from point:
-      // we generally want to favor straighter courses
-      // concentrate samples down the middle, with fewer at increasing angles (we can control this probably)
-      // fix distance around "average" shots with some deviation
-      // deviation needs to be deterministic, so we can reconstruct these
-
-      // i figure we split our bit depth 70/30
-      // distance can be lower fidelity than angle
-      // i think we should take a lot of "samples ahead" but only visit a few of them
-      // "visit" (depth) samples
-      // pick a smaller number which are "good" (16 max, lets say)
-      // those we'll feel out
-
-      // how do we pick a high deviation sequence?
-      // just select randomly from our qualifying points and itll take care of itself :3
-      // (how do we select randomly?)
-      // presumably: we'll have some seedable random component that we can use
-      // (q: thread safety???)
-      // a: let's limit how often we fetch our seed i guess
-      // sticking to the deterministic approach should limit how often we need to fetch the seed itself
-      // note2: threading could ruin generation
-      // it seeds go out of order, we're fucked!
-      // don't worry about threading for now, we'll just trust the system :3
-
-      // possibility: give each thread an "initial seed" (ie we split tee generation only based on core count
-      // and give each thread its own seed)
-
-      // pruning
-      // - if we're too close to the hole with strokes remaining, wipe
-      // - (if we're too close with no strokes remaining we might wipe too)
-      // - if we're too far oob, wipe
-      // - if we're smack on a hazard (TBA), wipe
-
+      // prepare instance vars
       terrain = terrain_in;
       terrain_size = terrain_size_in;
       engine.seed(this->seed);
 
       // pick some tee location
-      tee_point = GenerateTeeLocation(terrain, terrain_size);
+      for (int i = 0; i < 64; i++) {
+        tee_point = GenerateTeeLocation(terrain, terrain_size);
 
-      // we receive yardage from on high :D
-      auto course = GenerateFromTee();
-      return course;
+        // generate from tee location
+        auto course = GenerateFromTee();
+        if (course.shots > 0) {
+          return course;
+        }
+      }
+      return impl::PositionTracker();
     }
 
     impl::PositionTracker BruteForceCourseGenerator::GenerateFromTee() {
@@ -72,6 +39,7 @@ namespace course {
       std::uniform_real_distribution<float>par_nudge(-10.0f, 10.0f);
       float calculation_yardage = yardage + par_nudge(engine);
 
+      // determine how many shots we have to take
       if (calculation_yardage > 225) {
         shots_to_green++;
       }
@@ -82,8 +50,12 @@ namespace course {
 
       // to reuse point code:
       // generate a dummy "previous point" away from our center
-      glm::vec2 dummy_prev = tee_point - (terrain_size / 2.0f);
+      glm::vec2 dummy_prev = tee_point - (terrain_size / 2.0f - tee_point);
+
+      auto dir = glm::normalize(tee_point - dummy_prev);
+      std::cout << "dir: " << dir.x << ", " << dir.y;
       impl::PositionTracker seed_final;
+      seed_final.PushPosition(tee_point);
       float res = GenerateFromPoint(
         tee_point,
         dummy_prev,
@@ -91,6 +63,9 @@ namespace course {
         7,
         seed_final);
 
+      if (res < 0.5f) {
+        seed_final.PopPosition();
+      }
       // it'll be empty if we failed :(
       return seed_final;
     }
@@ -103,23 +78,14 @@ namespace course {
       impl::PositionTracker& output
     ) {
       float distance_remaining = yardage - glm::length(current_point - tee_point);
-      if (shots_remaining <= 0) {
-        // return 1 if we're pretty much "there" else 0
+      if (shots_remaining <= 0 || (distance_remaining < 0.5f && distance_remaining > -0.5f)) {
+        // return 1 if we're pretty much there else 0
         return (distance_remaining < 0.5f ? 1.0f : 0.0f);
       }
-      // nvm im just going to store the points >:)
-      // single threaded, we use the seed anyway so just pass it in again idgnf
-      // if final shot: let's bounce the logic to something else
-      // (or: what if we specify a starting point, a tee point, and a yardage and let generation handle it)
-      // (and then on the last shot we'll call a special method which targets a particular dist)
-
-      // fuck it, let's just be greedy
-      // keep the distro of points random
-      // if the first point we test passes, use it
-      // if we pass sample depth, return negative (to indicate that generation from this point failed)
       
-      // some invalid conditions at which we can terminate right away
-      if ((shots_remaining <= 1 && distance_remaining > 255) || (shots_remaining > 1 && distance_remaining <= 5)) {
+      // above catches tee case
+      // we're either too far, or we overshot
+      if ((shots_remaining <= 1 && distance_remaining > 270.0f) || (shots_remaining > 1 && distance_remaining <= -0.5f)) {
         return 0.0f;
       }
 
@@ -127,7 +93,8 @@ namespace course {
       for (int i = 0; i < sample_count; i++) {
         // square sample, to prefer down the middle
         double theta = simple_dist(engine);
-        theta *= theta;
+        // bias towards the middle
+        theta = pow(theta, 1.4);
         // flip along main axis
         theta *= (binary_dist(engine) == 1 ? 1 : -1) * M_PI_2;
         glm::vec2 main_axis = glm::normalize(current_point - previous_point);
@@ -135,19 +102,26 @@ namespace course {
         // figure out which direction our shot is going in
         glm::vec2 travel_direction = glm::normalize(main_axis * static_cast<float>(cos(theta)) + cross_axis * static_cast<float>(sin(theta)));
         float shot_distance;
-        if (shots_remaining > 1 && distance_remaining > 250.0f) {
+        if (shots_remaining > 1 && distance_remaining > 280.0f) {
           // take a shot!
           shot_distance = simple_dist(engine) * 35.0f + 220.0f;
         } else {
+          // we're pretty much at the hole
           shot_distance = impl::GetDistanceToCircle(current_point, travel_direction, tee_point, yardage);
-          if (shot_distance > 265.0f) {
-            // too long, see if we have better luck along a different path
+          if (shot_distance > 280.0f) {
+            // one shot left, too long
             continue;
           }
         }
 
         glm::vec2 next_point = current_point + travel_direction * shot_distance;
+        // if next point is too far off the map, skip
+        if (next_point.x < terrain_size.x * 0.1 || next_point.x > terrain_size.x * 0.9 || next_point.y < terrain_size.y * 0.1 || next_point.y > terrain_size.y * 0.9) {
+          // too close to map border
+          continue;
+        }
         // we've found a candidate point
+        // we push children
         output.PushPosition(next_point);
 
         // step down the chain from there, taking one shot
@@ -177,16 +151,18 @@ namespace course {
       std::uniform_real_distribution<double> angle_dist(0.0, 2 * M_PI);
 
       for (int i = 0; i < 512; i++) {
-        double theta = radius_dist(engine);
-        double r = angle_dist(engine);
+        double theta = angle_dist(engine);
+        double r = radius_dist(engine);
 
         // normally we'd prune here or something
         glm::vec2 center(terrain_size.x / 2, terrain_size.y / 2);
-        float max_radius = std::min(center.x, center.y);
+        float max_radius = std::min(center.x, center.y) * 0.8;
         r = sqrt(r);
         
         return glm::vec2(center.x + cos(theta) * r * max_radius, center.y + sin(theta) * r * max_radius);
       }
+
+      return glm::vec2(0, 0);
     }
   }
 }

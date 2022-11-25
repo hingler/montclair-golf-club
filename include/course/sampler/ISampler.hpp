@@ -19,6 +19,8 @@ namespace course {
        * @return float intensity of this sampler at the specified space.
        */
       virtual DataType Sample(float x, float y) const = 0;
+
+      virtual ~ISampler() {}
     };
   }
 }

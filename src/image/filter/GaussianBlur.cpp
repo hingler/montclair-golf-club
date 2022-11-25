@@ -1,6 +1,7 @@
 #include "image/filter/GaussianBlur.hpp"
 
 #include <cmath>
+#include "math_util.hpp"
 
 namespace image {
   namespace filter {

@@ -7,6 +7,8 @@
 #include "course/sampler/MetaballSampler.hpp"
 #include "course/sampler/TurbulentDisplaceSampler.hpp"
 
+#include "course/generator/BruteForceCourseGenerator.hpp"
+
 #include "course/CourseWriter.hpp"
 #include "image/TerrainToColorMap.hpp"
 #include "image/TerrainImageConverter.hpp"
@@ -26,28 +28,40 @@ int main(int argc, char** argv) {
   // create a single metaball sampler (fairway)
   std::shared_ptr<sampler::MetaballSampler> sampler = std::make_shared<sampler::MetaballSampler>();
   // add a few metaballs to it
-  sampler->threshold = 0.22;
-  sampler->AddMetaball(26.0, 26.0, 1.0);
-  sampler->AddMetaball(16.0, 16.0, 1.0);
+  sampler->threshold = 1.0;
 
   std::shared_ptr<sampler::TurbulentDisplaceSampler<float>> displacer = std::make_shared<sampler::TurbulentDisplaceSampler<float>>(sampler, glm::vec3(13.5), 4);
-  displacer->displacement_factor = 5.5f;
+  displacer->SetScale(glm::vec3(75.5));
+  displacer->SetOctaves(5);
+  displacer->displacement_factor = 7.5f;
   // course center origin, size 128 (image 128)
   std::unordered_map<terrain_type, std::shared_ptr<sampler::ISampler<float>>> samplers;
   samplers.insert(std::make_pair(terrain_type::Fairway, std::dynamic_pointer_cast<sampler::ISampler<float>>(displacer)));
   // pass thru course writer to get terrain data
-  auto image = writer::GetCourseTerrainFromSamplers(samplers, glm::ivec2(256, 256), glm::vec2(64.0, 64.0));
   // convert to RGBA
   image::TerrainToColorMap map;
 
   map.AssignColor(terrain_type::Fairway, {0.0, 1.0, 0.0, 1.0});
   map.AssignColor(terrain_type::OutOfBounds, {1.0, 1.0, 1.0, 1.0});
 
+  generator::BruteForceCourseGenerator gen;
+  gen.seed = arc4random();
+  gen.yardage = 575.0f;
+  auto positions = gen.GenerateCourse(sampler, glm::vec2(1024, 1024));
+  std::cout << positions.course_path.size() + 2 << std::endl;
+  sampler->AddMetaball(positions.tee.x, positions.tee.y, 48.0f);
+  for (auto& shot : positions.course_path) {
+    sampler->AddMetaball(shot.x, shot.y, 32.0f);
+  }
+
+  auto image = writer::GetCourseTerrainFromSamplers(samplers, glm::ivec2(512, 512), glm::vec2(1024.0, 1024.0));
+
+
   auto image_rgba = image::converter::TerrainToRGBA(image, map);
   image::GenericImage<image::RGBA<float>> output(image_rgba.Dimensions().width, image_rgba.Dimensions().height);
-  if (!image::filter::BlurImage(image_rgba, output, 2.5)) {
-    std::cout << "hell" << std::endl;
-  }
-  image::imagewriter::WriteImageToFile(output, "testfile.jpg");
+  // if (!image::filter::BlurImage(image_rgba, output, 2.5)) {
+  //   std::cout << "hell" << std::endl;
+  // }
+  image::imagewriter::WriteImageToFile(image_rgba, "testfile.jpg");
   // write
 }

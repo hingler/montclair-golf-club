@@ -5,16 +5,17 @@
 
 #include "course/generator/impl/seed_tracker_impl.hpp"
 #include "course/generator/impl/PositionTracker.hpp"
+#include "course/path/CoursePath.hpp"
 
 #include <memory>
 #include <random>
 
 namespace course {
   namespace generator {
-    class BruteForceCourseGenerator {
+    class BruteForceCourseGenerator : public ICourseGenerator {
     public:
       BruteForceCourseGenerator();
-      impl::PositionTracker GenerateCourse(std::shared_ptr<sampler::ISampler<float>> terrain_in, const glm::vec2& terrain_size_in);
+      path::CoursePath GenerateCourse(std::shared_ptr<sampler::ISampler<float>> terrain_in, const glm::vec2& terrain_size_in);
       
       // input seed
       uint64_t seed;

@@ -48,11 +48,10 @@ int main(int argc, char** argv) {
   gen.seed = arc4random();
   gen.yardage = 575.0f;
   auto positions = gen.GenerateCourse(sampler, glm::vec2(1024, 1024));
-  std::cout << positions.shots << std::endl;
-  while (positions.shots > 0) {
-    auto pos = positions.PopPosition();
-    std::cout << pos.x << ", " << pos.y << std::endl;
-    sampler->AddMetaball(pos.x, pos.y, 48.0f);
+  std::cout << positions.course_path.size() + 2 << std::endl;
+  sampler->AddMetaball(positions.tee.x, positions.tee.y, 48.0f);
+  for (auto& shot : positions.course_path) {
+    sampler->AddMetaball(shot.x, shot.y, 32.0f);
   }
 
   auto image = writer::GetCourseTerrainFromSamplers(samplers, glm::ivec2(512, 512), glm::vec2(1024.0, 1024.0));

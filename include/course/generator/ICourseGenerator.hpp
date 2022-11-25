@@ -2,7 +2,7 @@
 #define I_COURSE_GENERATOR_H_
 
 #include "course/sampler/ISampler.hpp"
-#include "course/path/fairway_point.hpp"
+#include "course/path/CoursePath.hpp"
 
 #include <memory>
 
@@ -14,14 +14,14 @@ namespace course {
       // we probably want to separate terrain scoring and heights
 
       // lets call it a todo
-      virtual path::fairway_point GenerateCourse(
+      virtual path::CoursePath GenerateCourse(
         std::shared_ptr<sampler::ISampler<float>> terrain_in,
         const glm::vec2& terrain_size_in
         // sample accuracy im not going to worry about yet
       ) = 0;
 
 
-      virtual void AssignSeed(uint64_t seed) = 0;
+      // virtual void AssignSeed(uint64_t seed) = 0;
 
       virtual ~ICourseGenerator() {}
       

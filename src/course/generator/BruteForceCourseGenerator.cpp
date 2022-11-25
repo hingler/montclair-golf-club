@@ -14,11 +14,14 @@ namespace course {
 
     BruteForceCourseGenerator::BruteForceCourseGenerator() : simple_dist(0.0, 1.0), binary_dist(0, 1) { }
 
-    impl::PositionTracker BruteForceCourseGenerator::GenerateCourse(std::shared_ptr<ISampler<float>> terrain_in, const glm::vec2& terrain_size_in) {
+    CoursePath BruteForceCourseGenerator::GenerateCourse(std::shared_ptr<ISampler<float>> terrain_in, const glm::vec2& terrain_size_in) {
       // prepare instance vars
       terrain = terrain_in;
       terrain_size = terrain_size_in;
       engine.seed(this->seed);
+
+      CoursePath res;
+      res.course_path.clear();
 
       // pick some tee location
       for (int i = 0; i < 64; i++) {
@@ -26,11 +29,21 @@ namespace course {
 
         // generate from tee location
         auto course = GenerateFromTee();
+        std::cout << course.shots << std::endl;
         if (course.shots > 0) {
-          return course;
+          res.course_path.resize(course.shots - 1);
+          while (course.shots > 1) {
+            int shots = course.shots;
+            res.course_path[shots - 2] = course.PopPosition();
+            std::cout << res.course_path[shots - 2].x << ", " << res.course_path[shots - 2].y << std::endl;
+          }
+
+          res.tee = course.PopPosition();
+          std::cout << res.tee.x << ", " << res.tee.y << std::endl;
+          return res;
         }
       }
-      return impl::PositionTracker();
+      return CoursePath();
     }
 
     impl::PositionTracker BruteForceCourseGenerator::GenerateFromTee() {
@@ -53,7 +66,6 @@ namespace course {
       glm::vec2 dummy_prev = tee_point - (terrain_size / 2.0f - tee_point);
 
       auto dir = glm::normalize(tee_point - dummy_prev);
-      std::cout << "dir: " << dir.x << ", " << dir.y;
       impl::PositionTracker seed_final;
       seed_final.PushPosition(tee_point);
       float res = GenerateFromPoint(

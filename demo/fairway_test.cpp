@@ -34,8 +34,8 @@ int main(int argc, char** argv) {
 
   generator::BruteForceCourseGenerator gen;
   gen.seed = arc4random();
-  gen.yardage = 375.0f;
-  
+  gen.yardage = 575.0f;
+
   auto positions = gen.GenerateCourse(sampler, glm::vec2(1024, 1024));
   std::cout << positions.course_path.size() + 1 << std::endl;
   auto curve = path::CoursePathToCurve(positions, 0.5);
@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
   std::shared_ptr<MaxFloatSampler> join_sampler = std::make_shared<MaxFloatSampler>();
 
   std::shared_ptr<TeeSampler> tee_sampler = std::make_shared<TeeSampler>(positions);
-  tee_sampler->length = 10.0f;
+  tee_sampler->length = 14.0f;
   tee_sampler->width = 24.0f;
 
   join_sampler->AddSampler(fairway_sampler);
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
   std::unordered_map<terrain_type, std::shared_ptr<sampler::ISampler<float>>> samplers;
   samplers.insert(std::make_pair(terrain_type::Fairway, std::dynamic_pointer_cast<sampler::ISampler<float>>(join_sampler)));
 
-  auto image = writer::GetCourseTerrainFromSamplers(samplers, glm::ivec2(1024, 1024), glm::vec2(1024.0, 1024.0));
+  auto image = writer::GetCourseTerrainFromSamplers(samplers, glm::ivec2(2048, 2048), glm::vec2(1024.0, 1024.0));
   auto image_rgba = image::converter::TerrainToRGBA(image, map);
 
   image::imagewriter::WriteImageToFile(image_rgba, "testfile.jpg");

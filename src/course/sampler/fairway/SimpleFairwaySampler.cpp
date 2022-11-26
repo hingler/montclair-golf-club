@@ -44,13 +44,13 @@ namespace course {
         // this method should fill in the bits in the middle
         std::uniform_real_distribution<double> f_dist(0.0, 1.0);
         double first_t = bezier_curve.GetTimeForEndOfSpecifiedSegment(0);
-        double start_t = first_t * (0.4 + 0.3 * f_dist(engine));
+        double start_t = first_t * (0.5 + 0.35 * f_dist(engine));
 
         auto& path = course_path.course_path;
         FillRange_(bezier_curve, start_t, first_t, 4);
         for (int i = 2; i < path.size(); i++) {
           // possibly fill this in
-          if (f_dist(engine) > 0.1) {
+          if (f_dist(engine) > 0.18) {
             double t_0 = bezier_curve.GetTimeForEndOfSpecifiedSegment(i - 2);
             double t_e = bezier_curve.GetTimeForEndOfSpecifiedSegment(i - 1);
 

@@ -16,6 +16,12 @@ namespace course {
       double Length() const override;
 
       void AddSegment(std::shared_ptr<BezierCurve> segment);
+
+      /**
+       * @param segment the segment whose end time we want
+       * @return double - t where sample(t) = endpoint of specified segment or 0.0/1.0 if oob
+       */
+      double GetTimeForEndOfSpecifiedSegment(int segment) const;
     private:
       std::vector<std::shared_ptr<BezierCurve>> segments;
     };

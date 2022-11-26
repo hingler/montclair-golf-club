@@ -46,5 +46,19 @@ namespace course {
     void CompoundCurve::AddSegment(std::shared_ptr<BezierCurve> segment) {
       segments.push_back(segment);
     }
+
+    double CompoundCurve::GetTimeForEndOfSpecifiedSegment(int segment) const {
+      if (segment < 0) { return 0.0; }
+      if (segment >= (segments.size() - 1)) { return 1.0; }
+      float length = Length();
+      float length_acc = 0.0;
+
+      for (int i = 0; i <= segment; i++) {
+        length_acc += segments[i]->Length();
+      }
+
+      return length_acc / length;
+      
+    }
   }
 }

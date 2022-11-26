@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
   // create a single metaball sampler (fairway)
   std::shared_ptr<sampler::MetaballSampler> sampler = std::make_shared<sampler::MetaballSampler>();
   // add a few metaballs to it
-  sampler->threshold = 1.0;
+  sampler->threshold = 0.5;
 
   std::shared_ptr<sampler::TurbulentDisplaceSampler<float>> displacer = std::make_shared<sampler::TurbulentDisplaceSampler<float>>(sampler, glm::vec3(13.5), 4);
   displacer->SetScale(glm::vec3(75.5));
@@ -56,9 +56,9 @@ int main(int argc, char** argv) {
   // todo: recenter course wrt terrain
   // we'll add a nudge factor to our samplers so that the course is centered...
   // and then we'll write it to geometry :3:3:3
-  for (float t = 0; t < 1.0; t += 0.01) {
+  for (float t = 0; t < 1.0; t += 0.04) {
     auto coord = curve.Sample(t);
-    sampler->AddMetaball(coord.x, coord.y, 1.5f);
+    sampler->AddMetaball(coord.x, coord.y, 2.5f);
   }
 
   auto image = writer::GetCourseTerrainFromSamplers(samplers, glm::ivec2(512, 512), glm::vec2(1024.0, 1024.0));

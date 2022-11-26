@@ -1,7 +1,7 @@
 // prepares necessary STB implementation
 
 // temp, for intellisense
-#include "course/path/CoursePathToSpline.hpp"
+#include "course/path/CoursePathToCurve.hpp"
 #include "course/path/CompoundCurve.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION

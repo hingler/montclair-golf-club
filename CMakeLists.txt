@@ -31,6 +31,7 @@ add_library(montclair-golf-club main.cpp
                                 src/course/path/fairway_point.cpp
                                 src/course/path/BezierCurve.cpp
                                 src/course/path/CompoundCurve.cpp
+                                src/course/path/CoursePathToCurve.cpp
 
                                 src/image/rgba_color.cpp
                                 src/image/TerrainToColorMap.cpp

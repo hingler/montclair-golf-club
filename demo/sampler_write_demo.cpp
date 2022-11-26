@@ -9,6 +9,8 @@
 
 #include "course/generator/BruteForceCourseGenerator.hpp"
 
+#include "course/path/CoursePathToCurve.hpp"
+
 #include "course/CourseWriter.hpp"
 #include "image/TerrainToColorMap.hpp"
 #include "image/TerrainImageConverter.hpp"
@@ -48,13 +50,15 @@ int main(int argc, char** argv) {
   gen.seed = arc4random();
   gen.yardage = 575.0f;
   auto positions = gen.GenerateCourse(sampler, glm::vec2(1024, 1024));
-  std::cout << positions.course_path.size() + 2 << std::endl;
+  std::cout << positions.course_path.size() + 1 << std::endl;
+
+  auto curve = path::CoursePathToCurve(positions, 0.5);
   // todo: recenter course wrt terrain
   // we'll add a nudge factor to our samplers so that the course is centered...
   // and then we'll write it to geometry :3:3:3
-  sampler->AddMetaball(positions.tee.x, positions.tee.y, 48.0f);
-  for (auto& shot : positions.course_path) {
-    sampler->AddMetaball(shot.x, shot.y, 32.0f);
+  for (float t = 0; t < 1.0; t += 0.01) {
+    auto coord = curve.Sample(t);
+    sampler->AddMetaball(coord.x, coord.y, 1.5f);
   }
 
   auto image = writer::GetCourseTerrainFromSamplers(samplers, glm::ivec2(512, 512), glm::vec2(1024.0, 1024.0));

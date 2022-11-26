@@ -31,15 +31,13 @@ namespace course {
         auto course = GenerateFromTee();
         std::cout << course.shots << std::endl;
         if (course.shots > 0) {
-          res.course_path.resize(course.shots - 1);
-          while (course.shots > 1) {
+          res.course_path.resize(course.shots);
+          while (course.shots > 0) {
             int shots = course.shots;
-            res.course_path[shots - 2] = course.PopPosition();
-            std::cout << res.course_path[shots - 2].x << ", " << res.course_path[shots - 2].y << std::endl;
+            res.course_path[shots - 1] = course.PopPosition();
+            std::cout << res.course_path[shots - 1].x << ", " << res.course_path[shots - 1].y << std::endl;
           }
 
-          res.tee = course.PopPosition();
-          std::cout << res.tee.x << ", " << res.tee.y << std::endl;
           return res;
         }
       }

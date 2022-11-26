@@ -49,6 +49,9 @@ int main(int argc, char** argv) {
   gen.yardage = 575.0f;
   auto positions = gen.GenerateCourse(sampler, glm::vec2(1024, 1024));
   std::cout << positions.course_path.size() + 2 << std::endl;
+  // todo: recenter course wrt terrain
+  // we'll add a nudge factor to our samplers so that the course is centered...
+  // and then we'll write it to geometry :3:3:3
   sampler->AddMetaball(positions.tee.x, positions.tee.y, 48.0f);
   for (auto& shot : positions.course_path) {
     sampler->AddMetaball(shot.x, shot.y, 32.0f);

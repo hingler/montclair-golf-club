@@ -15,11 +15,8 @@ namespace course {
        * @brief Construct a new Bezier Curve object
        */
       BezierCurve(const glm::vec2& p0, const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3);
-
-      int GetControlPointCount() override;
-      glm::vec2 GetControlPoint(int index) override;
-      glm::vec2 Sample(double time) override;
-      double Length() override;
+      glm::vec2 Sample(double time) const override;
+      double Length() const override;
     private:
       glm::vec2 p0;
       glm::vec2 p1;
@@ -27,9 +24,9 @@ namespace course {
       glm::vec2 p3;
 
       // samples underlying bezier curve
-      glm::vec2 SampleBezier_(double t);
+      glm::vec2 SampleBezier_(double t) const;
       void ArcLengthParameterize_(int num_samples);
-      double GetParameterizedTime_(double t_absolute);
+      double GetParameterizedTime_(double t_absolute) const;
       // i believe we calculate how far we travel on each go
       // and then the last point is our dist
 

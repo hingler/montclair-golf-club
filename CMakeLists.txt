@@ -29,6 +29,7 @@ add_library(montclair-golf-club main.cpp
                                 src/course/generator/impl/PositionTracker.cpp
                                 src/course/generator/impl/GetDistanceToCircle.cpp
                                 src/course/path/fairway_point.cpp
+                                src/course/path/BezierCurve.cpp
 
                                 src/image/rgba_color.cpp
                                 src/image/TerrainToColorMap.cpp
@@ -48,12 +49,14 @@ set(TEST_PATHS ${TEST_DIR}/TerrainDataTest.cpp
                ${TEST_DIR}/MetaballSamplerTest.cpp
                ${TEST_DIR}/InterpolatingImageSamplerTest.cpp
                ${TEST_DIR}/SimplexNoiseSamplerTest.cpp
-               ${TEST_DIR}/GetDistanceToCircleTest.cpp)
+               ${TEST_DIR}/GetDistanceToCircleTest.cpp
+               ${TEST_DIR}/BezierCurveTest.cpp)
 
 set(TEST_NAMES TerrainDataTest RGBAColorTest GenericImageTest MetaballSamplerTest
                InterpolatingImageSamplerTest
                SimplexNoiseSamplerTest
-               GetDistanceToCircleTest)
+               GetDistanceToCircleTest
+               BezierCurveTest)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   foreach(test_path test_name IN ZIP_LISTS TEST_PATHS TEST_NAMES)

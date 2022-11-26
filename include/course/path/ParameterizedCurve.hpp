@@ -11,30 +11,17 @@ namespace course {
     class ParameterizedCurve {
     public:
       /**
-       * @return the number of points tracked by this curve
-       */
-      virtual int GetControlPointCount() = 0;
-
-      /**
-       * @brief Gets a desired control point if it exists
-       * 
-       * @param index 
-       * @return glm::vec2 
-       */
-      virtual glm::vec2 GetControlPoint(int index) = 0;
-
-      /**
        * @brief Samples this curve at some time t
        * 
        * @param time - [0, 1] - point along curve
        * @return glm::vec2 - outputted position
        */
-      virtual glm::vec2 Sample(double time) = 0;
+      virtual glm::vec2 Sample(double time) const = 0;
 
       /**
        * @return length of this curve
        */
-      virtual double Length() = 0;
+      virtual double Length() const = 0;
 
       virtual ~ParameterizedCurve() {};
     };

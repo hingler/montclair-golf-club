@@ -15,26 +15,12 @@ namespace course {
       ArcLengthParameterize_(samples_count);
     }
 
-    int BezierCurve::GetControlPointCount() {
-      return 3;
-    }
-
-    glm::vec2 BezierCurve::GetControlPoint(int index) {
-      switch (index) {
-        case 0: return p0;
-        case 1: return p1;
-        case 2: return p2;
-        case 3: return p3;
-        default: return glm::vec2(0, 0);
-      }
-    }
-
-    glm::vec2 BezierCurve::Sample(double time) {
+    glm::vec2 BezierCurve::Sample(double time) const {
       double time_absolute = GetParameterizedTime_(time);
       return SampleBezier_(time_absolute);
     }
 
-    double BezierCurve::Length() {
+    double BezierCurve::Length() const {
       if (distance_points.size() > 0) {
         return distance_points[distance_points.size() - 1];
       }
@@ -42,7 +28,7 @@ namespace course {
       return 0.0;
     }
 
-    glm::vec2 BezierCurve::SampleBezier_(double t) {
+    glm::vec2 BezierCurve::SampleBezier_(double t) const {
       float t0 = (1 - t);
 
       return p0 *        static_cast<float>(t0 * t0 * t0) +
@@ -75,7 +61,7 @@ namespace course {
       }
     }
 
-    double BezierCurve::GetParameterizedTime_(double t_absolute) {
+    double BezierCurve::GetParameterizedTime_(double t_absolute) const {
       if (t_absolute <= 0.0) {
         return 0.0;
       } else if (t_absolute >= 1.0) {

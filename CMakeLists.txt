@@ -23,6 +23,11 @@ add_library(montclair-golf-club main.cpp
                                 src/course/terrain_data.cpp
                                 src/course/sampler/MetaballSampler.cpp
                                 src/course/sampler/SimplexNoiseSampler.cpp
+                                src/course/sampler/MaxFloatSampler.cpp
+
+                                src/course/sampler/fairway/SimpleFairwaySampler.cpp
+                                src/course/sampler/fairway/TeeSampler.cpp
+
                                 src/course/CourseWriter.cpp
                                 src/course/generator/BruteForceCourseGenerator.cpp
                                 src/course/generator/impl/seed_tracker_impl.cpp
@@ -78,6 +83,9 @@ target_link_libraries(terrain-convert-demo PUBLIC ${PROJECT_NAME})
 
 add_executable(sampler-write-demo demo/sampler_write_demo.cpp)
 target_link_libraries(sampler-write-demo PUBLIC ${PROJECT_NAME})
+
+add_executable(fairway-test demo/fairway_test.cpp)
+target_link_libraries(fairway-test PUBLIC ${PROJECT_NAME})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

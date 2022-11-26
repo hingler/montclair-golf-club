@@ -11,7 +11,7 @@ namespace course {
       for (const impl::Metaball& metaball : metaballs_) {
         dist_x = x - metaball.position_x;
         dist_y = y - metaball.position_y;
-        accolator += 1.0f / (sqrt(dist_x * dist_x + dist_y * dist_y) * metaball.radius_factor);
+        accolator += (1.0f / (sqrt(dist_x * dist_x + dist_y * dist_y) * metaball.radius_factor));
       }
 
       return (accolator > threshold ? 1.0f : 0.0f);

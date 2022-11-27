@@ -17,6 +17,10 @@ static double get_octave_scale(int octave_num) {
   return pow(2.0, octave_num);
 }
 
+static double get_octave_mag(int octave_num) {
+  return pow(0.5, octave_num + 1);
+}
+
 namespace course {
   namespace sampler {
     SimplexNoiseSampler::SimplexNoiseSampler(const glm::vec3& scale_in, int octaves_in)
@@ -26,17 +30,20 @@ namespace course {
       glm::dvec3 sample_point(static_cast<double>(x), static_cast<double>(y), time);
       sample_point /= scale;
       
-      float acc = 0.0;
+      double acc = 0.0;
+      double mag = 0.0;
       glm::dvec3 temp;
 
       for (int i = 0; i < octaves; i++) {
         temp = sample_point;
         temp += get_octave_offset(i);
         temp *= get_octave_scale(i);
-        acc += simplex_3d(sample_point);
+        double octave_mag = get_octave_mag(i);
+        mag += octave_mag;
+        acc += (octave_mag * simplex_3d(temp));
       }
 
-      acc /= octaves;
+      acc /= mag;
       return acc;
     }
   }

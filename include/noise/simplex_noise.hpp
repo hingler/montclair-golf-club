@@ -39,9 +39,21 @@ namespace noise {
   }
 
   static inline glm::dvec3 calculate_grad(const glm::ivec3& input) {
-    glm::u32vec3 hash_vec(int_hasher(input.x), int_hasher(input.y), int_hasher(input.z));
+    // coords remain the same along an axis
+    // introduce a coord local perturbation
+    uint32_t x_hash = int_hasher(input.x);
+    uint32_t y_hash = int_hasher(input.y);
+    uint32_t z_hash = int_hasher(input.z);
+
+    uint32_t net_hash = x_hash ^ y_hash ^ z_hash;
+    x_hash ^= net_hash;
+    y_hash ^= net_hash;
+    z_hash ^= net_hash;
+    glm::u32vec3 hash_vec(x_hash, y_hash, z_hash);
     // need to mix up well :(
-    glm::dvec3 res(static_cast<double>(hash_vec.x) / 1024.0, static_cast<double>(hash_vec.y) / 1024.0, static_cast<double>(hash_vec.z) / 1024.0);
+    // 32 bit -> uint - here we're shifting off 20 lower bits and leaving 12 upper bits
+    glm::dvec3 res(static_cast<double>(hash_vec.x) / 1048576.0, static_cast<double>(hash_vec.y) / 1048576.0, static_cast<double>(hash_vec.z) / 1048576.0);
+    // fract and make symmetrical
     res = glm::fract(res) - glm::dvec3(0.5);
     return res;
   }
@@ -92,7 +104,8 @@ namespace noise {
 
     // compute 
     glm::dvec4 res(glm::dot(x, x), glm::dot(x1, x1), glm::dot(x2, x2), glm::dot(x3, x3));
-    res = glm::max(glm::dvec4(0.6) - res, glm::dvec4(0.0));
+    res = glm::max(glm::dvec4(0.5) - res, glm::dvec4(0.0));
+
 
     glm::dvec4 grad;
     grad.x = glm::dot(x, calculate_grad(simplex_i0));
@@ -105,7 +118,8 @@ namespace noise {
     res *= res;
     res *= grad;
 
-    return glm::dot(res, glm::dvec4(52.0));
+    double out = glm::dot(res, glm::dvec4(52.0));
+    return out;
   }
 } // namespace noise
 

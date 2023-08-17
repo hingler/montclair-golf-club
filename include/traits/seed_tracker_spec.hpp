@@ -15,7 +15,7 @@ namespace traits {
       typename CopySeed = std::is_same<void, decltype(std::declval<SeedType&>().CopySeed(std::declval<const SeedType&>()))>>
     static std::true_type test(int);
 
-    template <typename SeedType>
+    template <typename SeedType, typename...>
     static std::false_type test(...);
   };
 

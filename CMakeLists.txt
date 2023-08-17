@@ -28,6 +28,8 @@ add_library(montclair-golf-club main.cpp
                                 src/course/sampler/fairway/SimpleFairwaySampler.cpp
                                 src/course/sampler/fairway/TeeSampler.cpp
 
+                                src/course/sampler/terrain/SimpleCourseTerrainSampler.cpp
+
                                 src/course/CourseWriter.cpp
                                 src/course/generator/BruteForceCourseGenerator.cpp
                                 src/course/generator/impl/seed_tracker_impl.cpp

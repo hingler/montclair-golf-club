@@ -119,7 +119,7 @@ namespace noise {
     res *= grad;
 
     double out = glm::dot(res, glm::dvec4(52.0));
-    return out;
+    return out + 0.5;
   }
 } // namespace noise
 

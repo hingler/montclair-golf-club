@@ -1,2 +1,5 @@
 build
 .vscode
+*.os
+*.o
+*.dblite

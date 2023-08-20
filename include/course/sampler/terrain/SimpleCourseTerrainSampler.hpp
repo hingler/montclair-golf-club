@@ -12,6 +12,7 @@ namespace course {
     namespace terrain {
       class SimpleCourseTerrainSampler : public ISampler<float> {
       public:
+        SimpleCourseTerrainSampler();
         SimpleCourseTerrainSampler(const glm::dvec2& origin);
         float Sample(float x, float y) const override;
       private:

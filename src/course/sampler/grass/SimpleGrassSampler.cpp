@@ -1,13 +1,12 @@
-#include "course/sampler/fairway/SimpleFairwaySampler.hpp"
+#include "course/sampler/grass/SimpleGrassSampler.hpp"
 
 namespace course {
   
   using namespace path;
 
   namespace sampler {
-    namespace fairway {
-      SimpleFairwaySampler::SimpleFairwaySampler(const CoursePath& course_path, const CompoundCurve& bezier_curve, uint64_t seed) {
-        threshold_modifier = 1.0f;
+    namespace grass {
+      SimpleGrassSampler::SimpleGrassSampler(const CoursePath& course_path, const CompoundCurve& bezier_curve, uint64_t seed) {
         engine.seed(seed);
 
         underlying_sampler.threshold = 1.1f;
@@ -16,7 +15,7 @@ namespace course {
         FillPath_(course_path, bezier_curve);
       }
 
-      void SimpleFairwaySampler::CreatePatches_(const CoursePath& course_path, const CompoundCurve& bezier_curve, int density) {
+      void SimpleGrassSampler::CreatePatches_(const CoursePath& course_path, const CompoundCurve& bezier_curve, int density) {
         // visit points past 0
         // fill in a little bit of green around them
         // - establish a tangent line
@@ -39,7 +38,7 @@ namespace course {
         }
       }
 
-      void SimpleFairwaySampler::FillPath_(const CoursePath& course_path, const CompoundCurve& bezier_curve) {
+      void SimpleGrassSampler::FillPath_(const CoursePath& course_path, const CompoundCurve& bezier_curve) {
         // create patches should ensure that our course is navigable
         // this method should fill in the bits in the middle
         std::uniform_real_distribution<double> f_dist(0.0, 1.0);
@@ -62,11 +61,19 @@ namespace course {
         }
       }
 
-      float SimpleFairwaySampler::Sample(float x, float y) const {
+      float SimpleGrassSampler::Sample(float x, float y) const {
         return underlying_sampler.Sample(x, y);
       }
 
-      void SimpleFairwaySampler::FillRange_(const path::CompoundCurve& bezier_curve, double min_t, double max_t, int density) {
+      void SimpleGrassSampler::SetThresholdModifier(float threshold) {
+        underlying_sampler.threshold = threshold;
+      }
+
+      float SimpleGrassSampler::GetThresholdModifier() {
+        return underlying_sampler.threshold;
+      }
+
+      void SimpleGrassSampler::FillRange_(const path::CompoundCurve& bezier_curve, double min_t, double max_t, int density) {
         double dist_covered = bezier_curve.Length() * (max_t - min_t);
         // let's do density as "1.0radius metaballs per 25"
         std::uniform_real_distribution<double> dist(0.0, 1.0);

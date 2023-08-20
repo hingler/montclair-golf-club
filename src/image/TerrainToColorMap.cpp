@@ -22,8 +22,12 @@ namespace image {
     output.b = 0.0f;
     output.a = 0.0f;
 
+    float mag = 0.0;
     for (int i = 0; i < terrain_type::NUM_ELEMENTS; i++) {
-      colorutil::ScaleAndAdd(colors[i], terrain.terrain[i], output);
+      // current behavior: earlier terrain types take priority over later ones
+      float intensity = (1.0 - mag) * terrain.terrain[i];
+      colorutil::ScaleAndAdd(colors[i], intensity, output);
+      mag += intensity;
     }
   }
 }

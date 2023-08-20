@@ -14,6 +14,8 @@ namespace course {
       CompoundCurve();
       glm::vec2 Sample(double time) const override;
       double Length() const override;
+      void Translate(const glm::vec2& offset) override;
+      Rect GetBoundingBox() const override;
 
       void AddSegment(std::shared_ptr<BezierCurve> segment);
 

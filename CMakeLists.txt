@@ -25,8 +25,8 @@ add_library(montclair-golf-club main.cpp
                                 src/course/sampler/SimplexNoiseSampler.cpp
                                 src/course/sampler/MaxFloatSampler.cpp
 
-                                src/course/sampler/fairway/SimpleFairwaySampler.cpp
-                                src/course/sampler/fairway/TeeSampler.cpp
+                                src/course/sampler/grass/SimpleGrassSampler.cpp
+                                src/course/sampler/grass/TeeSampler.cpp
 
                                 src/course/sampler/terrain/SimpleCourseTerrainSampler.cpp
 

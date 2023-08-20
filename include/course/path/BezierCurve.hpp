@@ -17,6 +17,8 @@ namespace course {
       BezierCurve(const glm::vec2& p0, const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3);
       glm::vec2 Sample(double time) const override;
       double Length() const override;
+      void Translate(const glm::vec2& offset) override;
+      Rect GetBoundingBox() const override;
     private:
       glm::vec2 p0;
       glm::vec2 p1;
@@ -25,6 +27,8 @@ namespace course {
 
       // samples underlying bezier curve
       glm::vec2 SampleBezier_(double t) const;
+      // gets extrema of curve along inputted axis, or -1 if dne
+      glm::vec2 GetExtrema(int axis) const;
       void ArcLengthParameterize_(int num_samples);
       double GetParameterizedTime_(double t_absolute) const;
       // i believe we calculate how far we travel on each go

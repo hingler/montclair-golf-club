@@ -24,3 +24,7 @@ TEST(BezierCurveTest, EnsureSamplesRemainConsistent) {
     last_point = current_point;
   }
 }
+
+TEST(BezierCurveTest, VerifyBoundingBoxIsAccurate) {
+  // TODO: :3
+}

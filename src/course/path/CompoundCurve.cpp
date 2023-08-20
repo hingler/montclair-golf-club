@@ -1,5 +1,7 @@
 #include "course/path/CompoundCurve.hpp"
 
+#include <algorithm>
+
 namespace course {
   namespace path {
     CompoundCurve::CompoundCurve() {}
@@ -41,6 +43,32 @@ namespace course {
       }
 
       return length;
+    }
+
+    void CompoundCurve::Translate(const glm::vec2& offset) {
+      for (auto& segment : segments) {
+        segment->Translate(offset);
+      }
+    }
+
+    Rect CompoundCurve::GetBoundingBox() const {
+      Rect result;
+
+      if (segments.size() <= 0) {
+        result.start = glm::vec2(0, 0);
+        result.end = glm::vec2(0, 0);
+      } else {
+        result = segments[0]->GetBoundingBox();
+        for (auto segment : segments) {
+          Rect bounding_box_segment = segment->GetBoundingBox();
+          result.start.x  = std::min(result.start.x,  bounding_box_segment.start.x);
+          result.start.y  = std::min(result.start.y,  bounding_box_segment.start.y);
+          result.end.x    = std::max(result.end.x,    bounding_box_segment.end.x);
+          result.end.y    = std::max(result.end.y,    bounding_box_segment.end.y);
+        }
+      }
+
+      return result;
     }
 
     void CompoundCurve::AddSegment(std::shared_ptr<BezierCurve> segment) {

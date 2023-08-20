@@ -1,10 +1,10 @@
-#include "course/sampler/fairway/TeeSampler.hpp"
+#include "course/sampler/grass/TeeSampler.hpp"
 
 
 namespace course {
   using namespace path;
   namespace sampler {
-    namespace fairway {
+    namespace grass {
       TeeSampler::TeeSampler(const CoursePath& course_path) {
         if (course_path.course_path.size() > 0) {
           auto& path = course_path.course_path;

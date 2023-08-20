@@ -17,7 +17,7 @@ set(LIB_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(STB_INCLUDES ${LIB_DIR}/stb)
 set(GLM_INCLUDES ${LIB_DIR}/glm)
 
-find_package(gtest REQUIRED)
+add_subdirectory(${LIB_DIR}/googletest)
 
 add_library(montclair-golf-club main.cpp
                                 src/course/terrain_data.cpp

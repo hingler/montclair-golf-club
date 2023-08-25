@@ -6,8 +6,16 @@ namespace course {
 
   namespace sampler {
     namespace grass {
-      SimpleGrassSampler::SimpleGrassSampler(const CoursePath& course_path, const CompoundCurve& bezier_curve, uint64_t seed) {
+      SimpleGrassSampler::SimpleGrassSampler(
+          const CoursePath& course_path,
+          const CompoundCurve& bezier_curve,
+          uint64_t seed,
+          double join_probability,
+          double join_probability_tee
+        ) : join_probability_(join_probability) {
         engine.seed(seed);
+        auto join_prob = std::uniform_real_distribution<double>(0.0, 1.0);
+        join_tee_ = (join_prob(engine) < join_probability_tee);
 
         underlying_sampler.threshold = 1.1f;
 
@@ -25,7 +33,7 @@ namespace course {
         glm::vec2 normal;
         glm::vec2 cross;
         auto& path = course_path.course_path;
-        for (int i = 1; i < path.size(); i++) {
+        for (int i = join_tee_ ? 0 : 1; i < path.size(); i++) {
           normal = glm::normalize((i < path.size() - 1 ? path[i + 1] : path[i]) -  path[i - 1]);
           cross = glm::vec2(normal.y, -normal.x);
 
@@ -47,13 +55,14 @@ namespace course {
 
         auto& path = course_path.course_path;
         FillRange_(bezier_curve, start_t, first_t, 4);
-        for (int i = 2; i < path.size(); i++) {
+        for (int i = 1; i < path.size(); i++) {
           // possibly fill this in
-          if (f_dist(engine) > 0.18) {
+          if (f_dist(engine) < (i == 1 ? (join_tee_ ? 1.1 : -0.1) : join_probability_)) {
             double t_0 = bezier_curve.GetTimeForEndOfSpecifiedSegment(i - 2);
             double t_e = bezier_curve.GetTimeForEndOfSpecifiedSegment(i - 1);
 
             double t_range = t_e - t_0;
+            // stretch out fill a little bit
             t_0 += t_range * 0.18;
             t_e -= t_range * 0.18;
             FillRange_(bezier_curve, t_0, t_e, 3);

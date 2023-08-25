@@ -36,6 +36,15 @@ namespace course {
       return segments[segments.size() - 1]->Sample(1.0);
     }
 
+    glm::vec2 CompoundCurve::Tangent(double time) const {
+      double time_clamp = glm::clamp(time, 0.0, 1.0);
+      if (time_clamp < 0.999) {
+        return glm::normalize(Sample(time_clamp + 0.001) - Sample(time_clamp));
+      } else {
+        return glm::normalize(Sample(time_clamp) - Sample(time_clamp - 0.001));
+      }
+    }
+
     double CompoundCurve::Length() const {
       double length = 0.0;
       for (auto& segment : segments) {
@@ -73,6 +82,10 @@ namespace course {
 
     void CompoundCurve::AddSegment(std::shared_ptr<BezierCurve> segment) {
       segments.push_back(segment);
+    }
+
+    void CompoundCurve::RemoveSegment(size_t index) {
+      segments.erase(segments.begin() + index);
     }
 
     double CompoundCurve::GetTimeForEndOfSpecifiedSegment(int segment) const {

@@ -52,6 +52,7 @@ namespace noise {
     glm::u32vec3 hash_vec(x_hash, y_hash, z_hash);
     // need to mix up well :(
     // 32 bit -> uint - here we're shifting off 20 lower bits and leaving 12 upper bits
+    // (wasteful lol)
     glm::dvec3 res(static_cast<double>(hash_vec.x) / 1048576.0, static_cast<double>(hash_vec.y) / 1048576.0, static_cast<double>(hash_vec.z) / 1048576.0);
     // fract and make symmetrical
     res = glm::fract(res) - glm::dvec3(0.5);

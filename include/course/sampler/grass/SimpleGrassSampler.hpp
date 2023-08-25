@@ -20,7 +20,13 @@ namespace course {
       // also: avoid the green? (nvm - put the green on top of it)
       class SimpleGrassSampler : public ISampler<float> {
       public:
-        SimpleGrassSampler(const path::CoursePath& course_path, const path::CompoundCurve& bezier_curve, uint64_t seed);
+        SimpleGrassSampler(
+          const path::CoursePath& course_path,
+          const path::CompoundCurve& bezier_curve,
+          uint64_t seed,
+          double join_probability,
+          double join_probability_tee
+        );
         float Sample(float x, float y) const override;
 
         void SetThresholdModifier(float threshold);
@@ -38,6 +44,8 @@ namespace course {
         void FillRange_(const path::CompoundCurve& bezier_curve, double min_t, double max_t, int density);
         std::mt19937_64 engine;
         MetaballSampler underlying_sampler;
+        double join_probability_;
+        bool join_tee_;
       };
     }
   }

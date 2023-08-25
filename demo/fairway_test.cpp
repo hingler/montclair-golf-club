@@ -63,16 +63,30 @@ int main(int argc, char** argv) {
   std::cout << positions.course_path.size() + 1 << std::endl;
   auto curve = path::CoursePathToCurve(positions, 0.5);
 
-  std::shared_ptr<SimpleGrassSampler> fairway_sampler = std::make_shared<SimpleGrassSampler>(positions, curve, arc4random());
+  auto fairway_positions = CoursePath(positions);
+  fairway_positions.course_path.erase(fairway_positions.course_path.begin());
+  auto fairway_curve = CompoundCurve(curve);
+  fairway_curve.RemoveSegment(0);
+
+  std::shared_ptr<SimpleGrassSampler> fairway_sampler = std::make_shared<SimpleGrassSampler>(positions, curve, arc4random(), 0.82, 0.1);
   // difficulty: rough simpler wrapping fairway metaballs doesn't work, as we miss parts of the path
   // doubly so for "heavy rough"
   // ++: can we cover an acceptable range w just metaballs?
+  // yeah i feel like this is too stochastic and inconsistent
   // prob want to combine approaches
+
+  // this is really costly but right now i guess we're getting a feel for generation
+  // keep at this test file, and then go back sometime later
   std::shared_ptr<SimpleGrassSampler> rough_sampler = std::make_shared<SimpleGrassSampler>(*fairway_sampler);
-  
-  rough_sampler->SetThresholdModifier(fairway_sampler->GetThresholdModifier() * 0.5);
+  std::shared_ptr<SimpleGrassSampler> rough_sample_path = std::make_shared<SimpleGrassSampler>(positions, curve, arc4random(), 1.01, 1.01);
+
+  rough_sampler->SetThresholdModifier(fairway_sampler->GetThresholdModifier() * 0.75);
 
   std::shared_ptr<MaxFloatSampler> join_sampler = std::make_shared<MaxFloatSampler>();
+
+  std::shared_ptr<MaxFloatSampler> rough_join_sampler = std::make_shared<MaxFloatSampler>();
+  rough_join_sampler->AddSampler(rough_sampler);
+  rough_join_sampler->AddSampler(rough_sample_path);
 
   std::shared_ptr<TeeSampler> tee_sampler = std::make_shared<TeeSampler>(positions);
   tee_sampler->length = 14.0f;
@@ -83,10 +97,16 @@ int main(int argc, char** argv) {
   
   std::unordered_map<terrain_type, std::shared_ptr<sampler::ISampler<float>>> samplers;
   samplers.insert(std::make_pair(terrain_type::Fairway, std::dynamic_pointer_cast<sampler::ISampler<float>>(join_sampler)));
-  samplers.insert(std::make_pair(terrain_type::Rough, std::dynamic_pointer_cast<sampler::ISampler<float>>(rough_sampler)));
+  samplers.insert(std::make_pair(terrain_type::Rough, std::dynamic_pointer_cast<sampler::ISampler<float>>(rough_join_sampler)));
 
   auto image = writer::GetCourseTerrainFromSamplers(samplers, glm::ivec2(2048, 2048), glm::vec2(1024.0, 1024.0));
+  // should wrap this somehow and delegate sampling to threads (metaball sampling, esp this dense, is pricey)
+  // (this works for now though)
+  // (alt: is there a "cheaper" way to get this look???)
+
+  // tba: come up w some way to configure "course complexity" (ie higher density metaballs, noise deformation, etc...)
   auto image_rgba = image::converter::TerrainToRGBA(image, map);
+  std::cout << "sampling completed!" << std::endl;
 
   image::imagewriter::WriteImageToFile(image_rgba, "testfile.jpg");
 }

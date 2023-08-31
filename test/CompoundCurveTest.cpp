@@ -69,3 +69,7 @@ TEST(CompoundCurveTest, MultiCurveTest) {
     last_point = current_point;
   }
 }
+
+TEST(CompoundCurveTest, VerifyBoundingBoxIsAccurate) {
+  // TODO: :3
+}

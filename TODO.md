@@ -1,0 +1,18 @@
+# todos
+- (still need to generate green :D)
+  - make huge on gaussian, handle from fairway map
+  - GaussianGreenSampler (place a bunch of oblong samplers where we want the green to be)
+    - need to smooth it out a TON (probably)
+    - (how do we want to handle greens? i'll do it later :3)
+      - might be best to handle after sampling is complete
+- create splatmap from sand/fairway maps
+  - fairway: rough/fairway/green based on meta ball dist
+  - sand: threshold on sand sampler
+- create flat "height map" for course
+  - something we can eventually apply when we sample on course
+  - verify generation, use splatmap as a shitty texture
+- create gross-scale "heightmap" for terrain
+  - verify generation at-scale, in engine (w/ fly camera)
+- stamp course heightmap on top of it
+  - smooth out slightly if necc, around course
+  - fade out into general gen w distance

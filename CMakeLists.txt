@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_CXX_FLAGS "-g -O3")
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 set(INC_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(SRC_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -25,8 +26,12 @@ add_library(montclair-golf-club main.cpp
                                 src/course/sampler/SimplexNoiseSampler.cpp
                                 src/course/sampler/MaxFloatSampler.cpp
 
-                                src/course/sampler/fairway/SimpleFairwaySampler.cpp
-                                src/course/sampler/fairway/TeeSampler.cpp
+                                src/course/sampler/grass/SimpleGrassSampler.cpp
+                                src/course/sampler/grass/TeeSampler.cpp
+                                src/course/sampler/GaussianMetaballSampler.cpp
+
+                                src/course/sampler/gaussian/GaussianFairwaySampler.cpp
+                                src/course/sampler/gaussian/GaussianSandSampler.cpp
 
                                 src/course/sampler/terrain/SimpleCourseTerrainSampler.cpp
 
@@ -45,6 +50,13 @@ add_library(montclair-golf-club main.cpp
                                 src/image/TerrainImageConverter.cpp
                                 src/image/ImageWriter.cpp
                                 src/image/filter/GaussianBlur.cpp
+
+                                src/noise/TurbulentDisplace.cpp
+
+                                src/terrain/HillGenerator.cpp
+
+                                src/util/Gaussian.cpp
+
                                 src/support/prepare_stb.cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${STB_INCLUDES} ${GLM_INCLUDES})
@@ -88,6 +100,9 @@ target_link_libraries(sampler-write-demo PUBLIC ${PROJECT_NAME})
 
 add_executable(fairway-test demo/fairway_test.cpp)
 target_link_libraries(fairway-test PUBLIC ${PROJECT_NAME})
+
+add_executable(gaussian-test demo/gaussian_test.cpp)
+target_link_libraries(gaussian-test PUBLIC ${PROJECT_NAME})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

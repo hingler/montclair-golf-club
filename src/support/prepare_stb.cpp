@@ -1,11 +1,7 @@
 // prepares necessary STB implementation
 
-// temp, for intellisense
-#include "course/path/CoursePathToCurve.hpp"
-#include "course/path/CompoundCurve.hpp"
-
-#include "course/sampler/fairway/SimpleFairwaySampler.hpp"
-#include "course/sampler/fairway/TeeSampler.hpp"
+#include "terrain/HillGenerator.hpp"
+#include "terrain/CourseSmoother.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION

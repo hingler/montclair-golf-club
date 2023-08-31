@@ -1,5 +1,10 @@
 #include "image/TerrainImageConverter.hpp"
 
+#include "type/sampler_type.hpp"
+
+using namespace course;
+using namespace sampler;
+
 namespace image {
   namespace converter {
     GenericImage<RGBA<float>> TerrainToRGBA(const GenericImage<course::terrain_data>& terrain_data, const TerrainToColorMap& color_map) {

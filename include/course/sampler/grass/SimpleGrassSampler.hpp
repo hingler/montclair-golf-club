@@ -15,14 +15,24 @@
 
 namespace course {
   namespace sampler {
-    namespace fairway {
-      class SimpleFairwaySampler : public ISampler<float> {
+    namespace grass {
+      // thinking: generalize fairway sampler to a "metaball sampler"
+      // also: avoid the green? (nvm - put the green on top of it)
+      class SimpleGrassSampler : public ISampler<float> {
       public:
-        SimpleFairwaySampler(const path::CoursePath& course_path, const path::CompoundCurve& bezier_curve, uint64_t seed);
+        SimpleGrassSampler(
+          const path::CoursePath& course_path,
+          const path::CompoundCurve& bezier_curve,
+          uint64_t seed,
+          double join_probability,
+          double join_probability_tee
+        );
         float Sample(float x, float y) const override;
 
-        // should make it a little easier to get roughs from greens
-        float threshold_modifier;
+        void SetThresholdModifier(float threshold);
+        float GetThresholdModifier();
+
+        
       private:
         // fill in our course points
         void CreatePatches_(const path::CoursePath& course_path, const path::CompoundCurve& bezier_curve, int density);
@@ -34,6 +44,8 @@ namespace course {
         void FillRange_(const path::CompoundCurve& bezier_curve, double min_t, double max_t, int density);
         std::mt19937_64 engine;
         MetaballSampler underlying_sampler;
+        double join_probability_;
+        bool join_tee_;
       };
     }
   }

@@ -13,9 +13,13 @@ namespace course {
     public:
       CompoundCurve();
       glm::vec2 Sample(double time) const override;
+      glm::vec2 Tangent(double time) const;
       double Length() const override;
+      void Translate(const glm::vec2& offset) override;
+      Rect GetBoundingBox() const override;
 
       void AddSegment(std::shared_ptr<BezierCurve> segment);
+      void RemoveSegment(size_t index);
 
       /**
        * @param segment the segment whose end time we want

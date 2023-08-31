@@ -7,7 +7,7 @@
 
 namespace course {
   namespace sampler {
-    namespace fairway {
+    namespace grass {
       class TeeSampler : public ISampler<float> {
       public:
         TeeSampler(const path::CoursePath& course_path);

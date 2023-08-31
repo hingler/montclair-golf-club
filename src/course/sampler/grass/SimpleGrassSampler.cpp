@@ -1,14 +1,21 @@
-#include "course/sampler/fairway/SimpleFairwaySampler.hpp"
+#include "course/sampler/grass/SimpleGrassSampler.hpp"
 
 namespace course {
   
   using namespace path;
 
   namespace sampler {
-    namespace fairway {
-      SimpleFairwaySampler::SimpleFairwaySampler(const CoursePath& course_path, const CompoundCurve& bezier_curve, uint64_t seed) {
-        threshold_modifier = 1.0f;
+    namespace grass {
+      SimpleGrassSampler::SimpleGrassSampler(
+          const CoursePath& course_path,
+          const CompoundCurve& bezier_curve,
+          uint64_t seed,
+          double join_probability,
+          double join_probability_tee
+        ) : join_probability_(join_probability) {
         engine.seed(seed);
+        auto join_prob = std::uniform_real_distribution<double>(0.0, 1.0);
+        join_tee_ = (join_prob(engine) < join_probability_tee);
 
         underlying_sampler.threshold = 1.1f;
 
@@ -16,7 +23,7 @@ namespace course {
         FillPath_(course_path, bezier_curve);
       }
 
-      void SimpleFairwaySampler::CreatePatches_(const CoursePath& course_path, const CompoundCurve& bezier_curve, int density) {
+      void SimpleGrassSampler::CreatePatches_(const CoursePath& course_path, const CompoundCurve& bezier_curve, int density) {
         // visit points past 0
         // fill in a little bit of green around them
         // - establish a tangent line
@@ -26,7 +33,7 @@ namespace course {
         glm::vec2 normal;
         glm::vec2 cross;
         auto& path = course_path.course_path;
-        for (int i = 1; i < path.size(); i++) {
+        for (int i = join_tee_ ? 0 : 1; i < path.size(); i++) {
           normal = glm::normalize((i < path.size() - 1 ? path[i + 1] : path[i]) -  path[i - 1]);
           cross = glm::vec2(normal.y, -normal.x);
 
@@ -39,7 +46,7 @@ namespace course {
         }
       }
 
-      void SimpleFairwaySampler::FillPath_(const CoursePath& course_path, const CompoundCurve& bezier_curve) {
+      void SimpleGrassSampler::FillPath_(const CoursePath& course_path, const CompoundCurve& bezier_curve) {
         // create patches should ensure that our course is navigable
         // this method should fill in the bits in the middle
         std::uniform_real_distribution<double> f_dist(0.0, 1.0);
@@ -48,13 +55,14 @@ namespace course {
 
         auto& path = course_path.course_path;
         FillRange_(bezier_curve, start_t, first_t, 4);
-        for (int i = 2; i < path.size(); i++) {
+        for (int i = 1; i < path.size(); i++) {
           // possibly fill this in
-          if (f_dist(engine) > 0.18) {
+          if (f_dist(engine) < (i == 1 ? (join_tee_ ? 1.1 : -0.1) : join_probability_)) {
             double t_0 = bezier_curve.GetTimeForEndOfSpecifiedSegment(i - 2);
             double t_e = bezier_curve.GetTimeForEndOfSpecifiedSegment(i - 1);
 
             double t_range = t_e - t_0;
+            // stretch out fill a little bit
             t_0 += t_range * 0.18;
             t_e -= t_range * 0.18;
             FillRange_(bezier_curve, t_0, t_e, 3);
@@ -62,11 +70,19 @@ namespace course {
         }
       }
 
-      float SimpleFairwaySampler::Sample(float x, float y) const {
+      float SimpleGrassSampler::Sample(float x, float y) const {
         return underlying_sampler.Sample(x, y);
       }
 
-      void SimpleFairwaySampler::FillRange_(const path::CompoundCurve& bezier_curve, double min_t, double max_t, int density) {
+      void SimpleGrassSampler::SetThresholdModifier(float threshold) {
+        underlying_sampler.threshold = threshold;
+      }
+
+      float SimpleGrassSampler::GetThresholdModifier() {
+        return underlying_sampler.threshold;
+      }
+
+      void SimpleGrassSampler::FillRange_(const path::CompoundCurve& bezier_curve, double min_t, double max_t, int density) {
         double dist_covered = bezier_curve.Length() * (max_t - min_t);
         // let's do density as "1.0radius metaballs per 25"
         std::uniform_real_distribution<double> dist(0.0, 1.0);

@@ -47,3 +47,14 @@
   - as part of some features, i think we'll end up w some sort of "path-based" system
     - ex: for rivers, and for defining course boundaries
   - can bool-cut height map(?) and build walls below
+
+## execution - additional terrain types
+- rough
+  - want to build off the fairway, just space it out a bit more
+- deep rough
+  - just build even more
+- OOB
+  - thinking that it would be helpful to bound the course in a primitive outline, somewhere further outside the deep rough zone. would like it to be polygonal - thinking that eventually, we can use a convex course poly to fit a whole bunch of them together in space (eventual goal for a while)
+    - idea: sprinkle them around w poisson points, then djk them apart (we can mark surrounding territory as a convex, and push it out)
+    - alt: build a disk instead of a polygon (whichever is easier in execution)
+      - doesn't need to be "too tight" but should be tight-ish

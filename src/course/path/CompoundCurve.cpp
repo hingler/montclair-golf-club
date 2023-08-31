@@ -1,5 +1,7 @@
 #include "course/path/CompoundCurve.hpp"
 
+#include <algorithm>
+
 namespace course {
   namespace path {
     CompoundCurve::CompoundCurve() {}
@@ -34,6 +36,15 @@ namespace course {
       return segments[segments.size() - 1]->Sample(1.0);
     }
 
+    glm::vec2 CompoundCurve::Tangent(double time) const {
+      double time_clamp = glm::clamp(time, 0.0, 1.0);
+      if (time_clamp < 0.999) {
+        return glm::normalize(Sample(time_clamp + 0.001) - Sample(time_clamp));
+      } else {
+        return glm::normalize(Sample(time_clamp) - Sample(time_clamp - 0.001));
+      }
+    }
+
     double CompoundCurve::Length() const {
       double length = 0.0;
       for (auto& segment : segments) {
@@ -43,8 +54,38 @@ namespace course {
       return length;
     }
 
+    void CompoundCurve::Translate(const glm::vec2& offset) {
+      for (auto& segment : segments) {
+        segment->Translate(offset);
+      }
+    }
+
+    Rect CompoundCurve::GetBoundingBox() const {
+      Rect result;
+
+      if (segments.size() <= 0) {
+        result.start = glm::vec2(0, 0);
+        result.end = glm::vec2(0, 0);
+      } else {
+        result = segments[0]->GetBoundingBox();
+        for (auto segment : segments) {
+          Rect bounding_box_segment = segment->GetBoundingBox();
+          result.start.x  = std::min(result.start.x,  bounding_box_segment.start.x);
+          result.start.y  = std::min(result.start.y,  bounding_box_segment.start.y);
+          result.end.x    = std::max(result.end.x,    bounding_box_segment.end.x);
+          result.end.y    = std::max(result.end.y,    bounding_box_segment.end.y);
+        }
+      }
+
+      return result;
+    }
+
     void CompoundCurve::AddSegment(std::shared_ptr<BezierCurve> segment) {
       segments.push_back(segment);
+    }
+
+    void CompoundCurve::RemoveSegment(size_t index) {
+      segments.erase(segments.begin() + index);
     }
 
     double CompoundCurve::GetTimeForEndOfSpecifiedSegment(int segment) const {

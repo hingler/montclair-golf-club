@@ -76,19 +76,24 @@ int main(int argc, char** argv) {
   GaussianSandSampler sand_sampler(*sampler.get(), hazards, positions, curve);
   sand_sampler.Generate(config);
 
-  sampler->Merge(hazards, -1.0);
+  sampler->Merge(hazards, 1.0);
 
   // thinking we split this into the "nodes" and "fill" agai
 
   auto generator = std::make_shared<terrain::HillGenerator>();
 
+  std::uniform_real_distribution<double> test(-32768.0, 32768.0);
+  std::mt19937_64 engine;
+  engine.seed(arc4random());
+
   // up close: this looks really really good!
-  generator->cell_size = 1024.0;
-  generator->intensity_min = 15.5;
-  generator->intensity_max = 23.8;
-  generator->hill_sigma = 484.0;
+  generator->cell_size = 2048.0;
+  generator->intensity_min = 203.5;
+  generator->intensity_max = 183.8;
+  generator->hill_sigma = 968.0;
   generator->scatter = 0.7;
   generator->fill_probability = 1.0;
+  generator->offset = glm::dvec2(test(engine), test(engine));
   generator->scale = glm::vec2(1.0, 1.7);
   generator->displacement.intensity = glm::dvec2(8.0, 8.0);
   generator->displacement.noise_scale = glm::vec2(128.0, 128.0);
@@ -103,6 +108,29 @@ int main(int argc, char** argv) {
   // really i want that "voronoi/gaussian" combination (nvm - i think this sort of like worley-deluxe approach is fun!)
 
   // oops! all i've done is re-invent worley noise :3
+
+  // ok - need to bump back to the terrain generation code
+  // (alt: height map collision is still probably busted)
+
+  // - pump new hills into terrain gen
+  // - start working on generating splatmap from course layout
+  //   - discretize course layout as part of generating splatmap?
+  //   - two graphs - sand, and fairway (right now)
+  //   - generate fairway from fairway splat
+  //   - generate sand from sand splat
+  //   - etc...
+  //   - then: discretize combined course map at low res (thinking 1/4 coords)
+
+  // tex arrays
+  // - would like to put all textures for a control tex on a single tex array
+  // - need to figure out how to orchestrate :/
+  // - if we have 16 binding spots: what can we do?
+  // - 4 splatmaps (16 texes)
+  // - fairway/green/sand/rough can be handled in one group
+  // - rough 
+
+  // come up w blending rules on the rest (prob parameterize)
+  // - need to look a lil bit more into microsplat impl for "tips" :):)
 
   GenericImage<RGBA<float>> output = converter::GaussianToRGBA(smoother, 0.5, 0.0, dims);
   image::imagewriter::WriteImageToFile(output, "gaussian.jpg");

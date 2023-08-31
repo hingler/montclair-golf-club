@@ -156,13 +156,13 @@ namespace terrain {
     // this works for now - but i really really need to speed this up (eventually)
 
     constexpr static double FADE_START_LOG = -4.0;
-    constexpr static double FADE_END_LOG = -25.0;
+    constexpr static double FADE_END_LOG = -64.0;
 
     constexpr static double GRADIENT_STEP = 2.0;
     constexpr static double TIME_STEP = 0.005;
 
     // ~6 percent slope will be our threshold for now
-    constexpr static double GRADIENT_MAX = 0.000;
+    constexpr static double GRADIENT_MAX = 0.06;
   };
 }
 

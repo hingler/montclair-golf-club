@@ -34,7 +34,7 @@ namespace course {
         float low_freq = low_frequency_course_sampler.Sample(x, y) + 3.6f;
         acc += (glm::smoothstep(0.2f, 0.8f, low_freq) * 0.8 + low_freq * 0.2) * 3.5f;
         acc += infra_frequency_course_sampler.Sample(x, y) * 5.5f;
-
+        acc *= 12.0;
         return acc;
       }
     }

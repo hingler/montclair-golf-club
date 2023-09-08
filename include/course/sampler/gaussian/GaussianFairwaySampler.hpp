@@ -15,7 +15,7 @@ namespace course {
       /**
        * @brief Creates metaball samples to cover the course fairway
        */
-      class GaussianFairwaySampler {
+      class GaussianFairwaySampler : public GaussianMetaballSampler {
        public:
         /**
          * @brief Construct a new Gaussian Fairway Sampler object
@@ -23,7 +23,6 @@ namespace course {
          * @param underlying_sampler - underlying sampler
          */
         GaussianFairwaySampler(
-          GaussianMetaballSampler& underlying_sampler,
           const path::CoursePath& course_path,
           const path::CompoundCurve& bezier_curve
         );
@@ -51,6 +50,7 @@ namespace course {
         // node config
         // - intensity/sigma
         // - probability of filling tee (can handle w params trivially)
+        // (tba: handle this inheritance better :3)
 
         /**
          * @brief Fills in path along fairway
@@ -76,6 +76,11 @@ namespace course {
           const GaussianFairwayScatterConfig& config
         );
 
+        void CreateGreenNode(
+          const glm::vec2& green_point,
+          const GaussianGreenConfig& config
+        );
+
         // (tba: there's no reason for this to be wrapped up in a class lole)
 
         
@@ -98,7 +103,6 @@ namespace course {
         // - do something stupider?
 
        private:
-        GaussianMetaballSampler& sampler;
         path::CoursePath path;
         path::CompoundCurve curve;
         std::mt19937_64 engine;

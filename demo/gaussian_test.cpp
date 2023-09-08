@@ -70,13 +70,14 @@ int main(int argc, char** argv) {
   config.scatter_config.mean_distance = 56.0;
   config.scatter_config.intensity = 0.4;
 
-  GaussianFairwaySampler fairway_sampler(*sampler.get(), positions, curve);
+  GaussianFairwaySampler fairway_sampler(positions, curve);
   fairway_sampler.Generate(config);
 
-  GaussianSandSampler sand_sampler(*sampler.get(), hazards, positions, curve);
+  GaussianSandSampler sand_sampler(fairway_sampler, positions, curve);
   sand_sampler.Generate(config);
 
-  sampler->Merge(hazards, 1.0);
+  sampler->Merge(fairway_sampler, 1.0);
+  sampler->Merge(sand_sampler, 1.0);
 
   // thinking we split this into the "nodes" and "fill" agai
 
@@ -132,6 +133,6 @@ int main(int argc, char** argv) {
   // come up w blending rules on the rest (prob parameterize)
   // - need to look a lil bit more into microsplat impl for "tips" :):)
 
-  GenericImage<RGBA<float>> output = converter::GaussianToRGBA(smoother, 0.5, 0.0, dims);
+  GenericImage<RGBA<float>> output = converter::GaussianToRGBA(*sampler.get(), 0.5, 0.0, dims);
   image::imagewriter::WriteImageToFile(output, "gaussian.jpg");
 }

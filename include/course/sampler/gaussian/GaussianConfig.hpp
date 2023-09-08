@@ -23,7 +23,7 @@ namespace course {
         /* Node Fill */
 
         // sigma for nodes
-        double node_sigma = 32.0;
+        double node_sigma = 24.0;
 
         // intensity multiplier for nodes
         double intensity = 8.0;
@@ -33,10 +33,10 @@ namespace course {
         /* Fairway fill */
         
         // mean sigma for path fill
-        double mean_node_sigma = 32.0;
+        double mean_node_sigma = 18.0;
 
         // intensity multiplier for path fill
-        double intensity = 0.3;
+        double intensity = 0.4;
 
         // density of fill balls
         int density = 3;
@@ -49,13 +49,23 @@ namespace course {
         int density = 3;
 
         // mean scatter distance from path center
-        double mean_distance = 15.0;
+        double mean_distance = 18.0;
 
         // mean intensity for scatter fill
         double intensity = 0.15;
 
         // sigma value for scatter fill
-        double mean_scatter_sigma = 16.0;
+        double mean_scatter_sigma = 20.0;
+      };
+
+      struct GaussianGreenConfig {
+        int coarse_density = 3;
+        int fine_density = 5;
+
+        // green should be small ish - want points closer together
+        double green_intensity = 128.0;
+        double green_scatter_sigma = 15.0;
+        double green_sigma = 11.0;
       };
 
       struct GaussianSandConfig {
@@ -118,6 +128,7 @@ namespace course {
         GaussianNodeConfig node_config;
         GaussianFairwayConfig fairway_config;
         GaussianFairwayScatterConfig scatter_config;
+        GaussianGreenConfig green_config;
         GaussianSandConfig sand_config;
       };
     }

@@ -18,11 +18,10 @@ namespace course {
        * @brief Distributes metaball samples to create sand patches
        * 
        */
-      class GaussianSandSampler {
+      class GaussianSandSampler : public GaussianMetaballSampler {
        public:
         GaussianSandSampler(
           GaussianMetaballSampler& fairway_sampler,
-          GaussianMetaballSampler& hazard_sampler,
           const path::CoursePath& course_path,
           const path::CompoundCurve& bezier_curve
         );
@@ -35,7 +34,6 @@ namespace course {
         double GetNetSample(const glm::vec2& sample_point);
 
         GaussianMetaballSampler& fairway_sampler;
-        GaussianMetaballSampler& hazard_sampler;
         path::CoursePath path;
         path::CompoundCurve curve;
 

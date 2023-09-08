@@ -10,17 +10,16 @@ namespace course {
   namespace sampler {
     namespace gaussian {
       GaussianFairwaySampler::GaussianFairwaySampler(
-        GaussianMetaballSampler& underlying_sampler,
         const CoursePath& course_path,
         const CompoundCurve& bezier_curve
-        ) : sampler(underlying_sampler), path(course_path), curve(bezier_curve) 
+        ) : path(course_path), curve(bezier_curve) 
       {
         engine.seed(arc4random());
       }
 
       void GaussianFairwaySampler::Generate(const GaussianPathConfig& config) {
         // prune paths based on config values
-        sampler.Clear();
+        Clear();
 
         std::uniform_real_distribution<double> d_prob(0.0, 1.0);
 
@@ -58,6 +57,11 @@ namespace course {
           curve_local,
           config.scatter_config
         );
+
+        CreateGreenNode(
+          path_local.course_path[path_local.course_path.size() - 1],
+          config.green_config
+        );
       }
 
       void GaussianFairwaySampler::CreateFairwayNodes(
@@ -71,7 +75,7 @@ namespace course {
         auto& path = course_path.course_path;
         for (int i = 0; i < path.size(); i++) {
           auto& vertex = path[i];
-          sampler.Add(
+          Add(
             static_cast<double>(vertex.x),
             static_cast<double>(vertex.y),
             mean_sigma,
@@ -79,6 +83,8 @@ namespace course {
           );
         }
       }
+
+
 
       void GaussianFairwaySampler::CreateFairwayPath(
         const CoursePath& course_path,
@@ -96,7 +102,7 @@ namespace course {
           glm::vec2 position = bezier_curve.Sample(sample_t);
           double ball_intensity = intensity_distribution(engine);
 
-          sampler.Add(position.x, position.y, mean_sigma, ball_intensity * mean_sigma);
+          Add(position.x, position.y, mean_sigma, ball_intensity * mean_sigma);
 
         }
       }
@@ -129,7 +135,31 @@ namespace course {
           sample_point += normal * scatter_distribution(engine);
 
           double ball_intensity = intensity_distribution(engine) * config.intensity;
-          sampler.Add(sample_point.x, sample_point.y, config.mean_scatter_sigma, ball_intensity * config.mean_scatter_sigma);
+          Add(sample_point.x, sample_point.y, config.mean_scatter_sigma, ball_intensity * config.mean_scatter_sigma);
+        }
+      }
+
+      void GaussianFairwaySampler::CreateGreenNode(
+        const glm::vec2& green_point,
+        const GaussianGreenConfig& config
+      ) {
+        std::normal_distribution<double> intensity_distribution(1.0, 0.1);
+        std::uniform_real_distribution<double> theta_dist(0.0, 2.0 * M_PI);
+        std::uniform_real_distribution<double> r_dist(0.0, 1.0);
+
+        std::normal_distribution<double> scatter_dist(0.0, config.green_scatter_sigma);
+
+        for (int i = 0; i < config.coarse_density; i++) {
+          double theta = theta_dist(engine);
+          double scatter = scatter_dist(engine);
+
+          glm::vec2 center_point = green_point + glm::vec2(cos(theta) * scatter, sin(theta) * scatter);
+          for (int j = 0; j < config.fine_density; j++) {
+            double fine_theta = theta_dist(engine);
+            double fine_scatter = scatter_dist(engine) * 0.6;
+            glm::vec2 sample_point = center_point + glm::vec2(cos(theta) * fine_scatter, sin(theta) * fine_scatter);
+            Add(sample_point.x, sample_point.y, config.green_sigma, intensity_distribution(engine) * config.green_intensity * config.green_sigma);
+          }
         }
       }
     }

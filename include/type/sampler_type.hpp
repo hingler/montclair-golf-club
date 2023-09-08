@@ -32,7 +32,7 @@ namespace type {
 
   // wraps samplers w int precision
   template <typename IntSamplerType>
-  struct int_sampler_type : decltype(_impl::int_sampler_type_impl::test<IntSsamplerType>(0)) {};
+  struct int_sampler_type : decltype(_impl::int_sampler_type_impl::test<IntSamplerType>(0)) {};
 }
 
 #endif // SAMPLER_TYPE_H_

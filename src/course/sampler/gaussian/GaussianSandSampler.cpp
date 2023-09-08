@@ -11,11 +11,9 @@ namespace course {
 
       GaussianSandSampler::GaussianSandSampler(
         GaussianMetaballSampler& fairway_sampler,
-        GaussianMetaballSampler& hazard_sampler,
         const path::CoursePath& course_path,
         const path::CompoundCurve& bezier_curve
       ) : fairway_sampler(fairway_sampler),
-          hazard_sampler(hazard_sampler),
           path(course_path),
           curve(bezier_curve) {}
 
@@ -75,7 +73,7 @@ namespace course {
               
               for (int fine_sample = 0; fine_sample < sand_config.fine_density; fine_sample++) {
                 glm::vec2 offset_sample_point = coarse_sample_point + glm::vec2(1.0 - 2.0 * f_dist(engine), 1.0 - 2.0 * f_dist(engine)) * static_cast<float>(sand_config.fine_scatter_radius);
-                hazard_sampler.Add(offset_sample_point.x, offset_sample_point.y, sand_config.sigma, sand_config.sigma * sand_config.divot_intensity);
+                Add(offset_sample_point.x, offset_sample_point.y, sand_config.sigma, sand_config.sigma * sand_config.divot_intensity);
               }
             }
           }
@@ -86,11 +84,11 @@ namespace course {
       }
 
       glm::vec2 GaussianSandSampler::GetNetGradient(const glm::vec2& sample_point) {
-        return fairway_sampler.Gradient(sample_point.x, sample_point.y) + hazard_sampler.Gradient(sample_point.x, sample_point.y);
+        return fairway_sampler.Gradient(sample_point.x, sample_point.y) + Gradient(sample_point.x, sample_point.y);
       }
 
       double GaussianSandSampler::GetNetSample(const glm::vec2& sample_point) {
-        return fairway_sampler.Sample(sample_point.x, sample_point.y) + hazard_sampler.Sample(sample_point.x, sample_point.y);
+        return fairway_sampler.Sample(sample_point.x, sample_point.y) + Sample(sample_point.x, sample_point.y);
       }
     }
   }

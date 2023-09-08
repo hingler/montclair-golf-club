@@ -21,7 +21,8 @@ library = env.Library("build/montclairgolfclub", source=sources)
 demos = [
     "fairway_test",
     "sampler_write_demo",
-    "terrain_convert_demo"
+    "terrain_convert_demo",
+    "gaussian_test"
 ]
 
 for demo in demos:

@@ -74,13 +74,13 @@ int main(int argc, char** argv) {
   config.scatter_config.mean_distance = 56.0;
   config.scatter_config.intensity = 0.4;
 
-  GaussianFairwaySampler fairway_sampler(positions, curve);
-  fairway_sampler.Generate(config);
+  auto fairway_sampler = std::make_shared<GaussianFairwaySampler>(positions, curve);
+  fairway_sampler->Generate(config);
 
   GaussianSandSampler sand_sampler(fairway_sampler, positions, curve);
   sand_sampler.Generate(config);
 
-  metaball_sampler->Merge(fairway_sampler, 1.0);
+  metaball_sampler->Merge(*fairway_sampler, 1.0);
   metaball_sampler->Merge(sand_sampler, -1.0);
 
   // splat painting

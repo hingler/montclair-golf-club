@@ -21,7 +21,7 @@ namespace course {
       class GaussianSandSampler : public GaussianMetaballSampler {
        public:
         GaussianSandSampler(
-          GaussianMetaballSampler& fairway_sampler,
+          std::shared_ptr<GaussianMetaballSampler> fairway_sampler,
           const path::CoursePath& course_path,
           const path::CompoundCurve& bezier_curve
         );
@@ -33,7 +33,7 @@ namespace course {
         glm::vec2 GetNetGradient(const glm::vec2& sample_point);
         double GetNetSample(const glm::vec2& sample_point);
 
-        GaussianMetaballSampler& fairway_sampler;
+        std::shared_ptr<GaussianMetaballSampler> fairway_sampler;
         path::CoursePath path;
         path::CompoundCurve curve;
 

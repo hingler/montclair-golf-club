@@ -32,13 +32,15 @@ namespace course {
 
         // distance from clamp region
         double dist = std::max(-std::min(sample - min_, max_ - sample), 0.0);
-        return 1.0 - glm::smoothstep(0.0, smooth_, dist);
+        return (1.0 - glm::smoothstep(0.0, smooth_, dist)) * intensity;
       }
 
+      double intensity = 1.0;
       private:
       double min_;
       double max_;
       double smooth_;
+
 
       std::shared_ptr<Sampler> sampler_;
     };

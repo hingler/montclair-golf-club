@@ -17,7 +17,7 @@ namespace course {
        */
       class GaussianFairwaySampler : public GaussianMetaballSampler {
        public:
-        /**
+        /** 
          * @brief Construct a new Gaussian Fairway Sampler object
          * 
          * @param underlying_sampler - underlying sampler

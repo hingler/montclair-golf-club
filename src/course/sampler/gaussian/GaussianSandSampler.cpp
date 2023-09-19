@@ -10,7 +10,7 @@ namespace course {
       static const size_t STEP_MAX = 512;
 
       GaussianSandSampler::GaussianSandSampler(
-        GaussianMetaballSampler& fairway_sampler,
+        std::shared_ptr<GaussianMetaballSampler> fairway_sampler,
         const path::CoursePath& course_path,
         const path::CompoundCurve& bezier_curve
       ) : fairway_sampler(fairway_sampler),
@@ -84,11 +84,11 @@ namespace course {
       }
 
       glm::vec2 GaussianSandSampler::GetNetGradient(const glm::vec2& sample_point) {
-        return fairway_sampler.Gradient(sample_point.x, sample_point.y) + Gradient(sample_point.x, sample_point.y);
+        return fairway_sampler->Gradient(sample_point.x, sample_point.y) + Gradient(sample_point.x, sample_point.y);
       }
 
       double GaussianSandSampler::GetNetSample(const glm::vec2& sample_point) {
-        return fairway_sampler.Sample(sample_point.x, sample_point.y) + Sample(sample_point.x, sample_point.y);
+        return fairway_sampler->Sample(sample_point.x, sample_point.y) + Sample(sample_point.x, sample_point.y);
       }
     }
   }

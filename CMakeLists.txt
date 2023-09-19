@@ -44,6 +44,7 @@ add_library(montclair-golf-club main.cpp
                                 src/course/path/BezierCurve.cpp
                                 src/course/path/CompoundCurve.cpp
                                 src/course/path/CoursePathToCurve.cpp
+                                src/course/path/CoursePath.cpp
 
                                 src/image/rgba_color.cpp
                                 src/image/TerrainToColorMap.cpp
@@ -56,6 +57,8 @@ add_library(montclair-golf-club main.cpp
                                 src/terrain/HillGenerator.cpp
 
                                 src/util/Gaussian.cpp
+
+                                src/mgc/CourseGen.cpp
 
                                 src/support/prepare_stb.cpp)
 

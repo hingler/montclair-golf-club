@@ -6,7 +6,9 @@
 // debug :3
 #include <iostream>
 
+#include <atomic>
 #include <memory>
+#include <mutex>
 
 #include "course/sampler/GaussianMetaballSampler.hpp"
 #include "course/path/CompoundCurve.hpp"
@@ -16,7 +18,7 @@
 
 #include <glm/glm.hpp>
 
-namespace terrain {
+namespace gdterrain {
   /**
    * @brief Smooths out terrain in proximity of our course
    * 
@@ -42,9 +44,17 @@ namespace terrain {
       course::path::CompoundCurve& compound_curve
     ) : lo_freq_(lo_freq), hi_freq_(hi_freq), course_sampler_(course_sampler), curve_(compound_curve) {}
 
+    float Get(int x, int y) {
+      return Sample(static_cast<double>(x), static_cast<double>(y));
+    }
+
     double Sample(double x, double y) {
       if (!init_flag) {
-        GenerateHeightScale();
+        // only grab lock if condition initially fails
+        std::lock_guard lock(height_mutex);
+        if (!init_flag) {
+          GenerateHeightScale();
+        }
       }
 
       // when sampling: take ln bc otherwise it'll come out funny
@@ -145,7 +155,9 @@ namespace terrain {
     double lo_freq_height_scale = 1.0;
 
     // flag indicating whether we have initialized scaling params
-    bool init_flag = false;
+    std::atomic_bool init_flag = false;
+
+    std::mutex height_mutex;
 
     // tba params
     // - proximity threshold (mag of gaussian)
@@ -155,8 +167,8 @@ namespace terrain {
 
     // this works for now - but i really really need to speed this up (eventually)
 
-    constexpr static double FADE_START_LOG = -4.0;
-    constexpr static double FADE_END_LOG = -64.0;
+    constexpr static double FADE_START_LOG = -3.0;
+    constexpr static double FADE_END_LOG = -60.0;
 
     constexpr static double GRADIENT_STEP = 2.0;
     constexpr static double TIME_STEP = 0.005;

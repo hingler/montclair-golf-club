@@ -21,6 +21,11 @@ namespace course {
         // prune paths based on config values
         Clear();
 
+        if (path.course_path.size() <= 0 || curve.Length() < 0.1) {
+          // generate nothing!
+          return;
+        }
+
         std::uniform_real_distribution<double> d_prob(0.0, 1.0);
 
         path::CoursePath path_local(path);

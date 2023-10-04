@@ -19,6 +19,12 @@ namespace course {
 
       void GaussianSandSampler::Generate(const GaussianPathConfig& config) {
         engine.seed(arc4random());
+
+        if (path.course_path.size() <= 0 || curve.Length() < 0.1f) {
+          // generate nothing!
+          return;
+        }
+
         auto& sand_config = config.sand_config;
 
         // based on generation factor:

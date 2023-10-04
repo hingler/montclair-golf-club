@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
 
   // thinking we split this into the "nodes" and "fill" agai
 
-  auto generator = std::make_shared<terrain::HillGenerator>();
+  auto generator = std::make_shared<gdterrain::HillGenerator>();
 
   std::uniform_real_distribution<double> test(-32768.0, 32768.0);
   std::mt19937_64 engine;
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
   // want to build in golf course handling
   // - accept course as a feature map
 
-  terrain::CourseSmoother smoother(generator, generator, sampler, curve);
+  gdterrain::CourseSmoother smoother(generator, generator, sampler, curve);
 
   // can't get it right, but as far as noise goes it looks neat ish
   // really i want that "voronoi/gaussian" combination (nvm - i think this sort of like worley-deluxe approach is fun!)

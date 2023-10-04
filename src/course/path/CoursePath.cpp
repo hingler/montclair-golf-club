@@ -21,7 +21,7 @@ namespace course {
 
       glm::vec2 size = end - start;
 
-      auto ideal_start = (size / 2.0f) - ((bb_end - bb_start) / 2.0f) + end;
+      auto ideal_start = (size / 2.0f) - ((bb_end - bb_start) / 2.0f) + start;
       for (auto& position : course_path) {
         position += (ideal_start - bb_start);
       }

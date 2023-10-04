@@ -25,20 +25,31 @@ namespace mgc {
 
     GaussianPathConfig config;
 
+    config.scatter_config.density = 6;
+    // tba: can probably do this better, ie actually marching the gradient
+    config.scatter_config.mean_distance = 56.0;
+    config.scatter_config.intensity = 0.4;
+
     // throwaway rn
     std::shared_ptr<sampler::SimplexNoiseSampler> terrainsampler = std::make_shared<sampler::SimplexNoiseSampler>(glm::vec3(1.0), 4);
 
-    auto gen = BruteForceCourseGenerator();
+    BruteForceCourseGenerator gen;
     gen.seed = seed;
-    auto path = gen.GenerateCourse(terrainsampler, glm::vec2(1024, 1024));
-
+    gen.yardage = 525.0f;
+    path = gen.GenerateCourse(terrainsampler, glm::vec2(1024, 1024));
     path.Recenter(glm::vec2(0, 0), glm::vec2(1024, 1024));
 
-    auto curve = CoursePathToCurve(path, 0.5);
+    // path.Recenter(glm::vec2(0, 0), glm::vec2(1024, 1024));
+
+    curve = CoursePathToCurve(path, 0.5);
     auto fairway_sampler = std::make_shared<GaussianFairwaySampler>(
       path,
       curve
     );
+
+    // - path is bvad
+    // - sampling range is wrong
+    // - 
 
     fairway_sampler->Generate(config);
     
@@ -58,28 +69,31 @@ namespace mgc {
 
     this->fairway_sampler = std::make_shared<ThresholdSampler<GaussianMetaballSampler>>(0.4, 16.0, 0.1, course_sampler);
     this->green_sampler = std::make_shared<ThresholdSampler<GaussianMetaballSampler>>(15.9, 1000.0, 0.2, course_sampler);
-    this->sand_sampler = std::make_shared<ThresholdSampler<GaussianMetaballSampler>>(0.2, 500.0, 0.2, std::dynamic_pointer_cast<GaussianMetaballSampler>(sand_sampler));
-    this->rough_sampler = std::make_shared<ThresholdSampler<GaussianMetaballSampler>>(-1000.4, 0.4, 0.1, course_sampler);
+    auto sand_threshold = std::make_shared<ThresholdSampler<GaussianMetaballSampler>>(0.2, 500.0, 0.2, std::dynamic_pointer_cast<GaussianMetaballSampler>(sand_sampler));
+    auto course_threshold = std::make_shared<ThresholdSampler<GaussianMetaballSampler>>(-1000.0, -0.1, 0.05, course_sampler);
+    this->sand_sampler = std::make_shared<ArithmeticSampler<ThresholdSampler<GaussianMetaballSampler>, ThresholdSampler<GaussianMetaballSampler>>>(sand_threshold, course_threshold);
+    this->rough_sampler = std::make_shared<ThresholdSampler<GaussianMetaballSampler>>(-1000.4, 1000.0, 0.1, course_sampler);
     // decrease intensity to affect sampling - ensure hazards override it
-    this->rough_sampler->intensity = 0.1;
+    this->fairway_sampler->intensity = 1.0;
+    this->rough_sampler->intensity = 0.2;
 
     std::mt19937_64 engine;
     engine.seed(arc4random());
     std::uniform_real_distribution<double> test(-32768.0, 32768.0);
 
-    auto generator = std::make_shared<terrain::HillGenerator>();
-    generator->cell_size = 2048.0;
-    generator->intensity_min = 203.5;
-    generator->intensity_max = 183.8;
-    generator->hill_sigma = 968.0;
+    auto generator = std::make_shared<gdterrain::HillGenerator>();
+    generator->cell_size = 256.0;
+    generator->intensity_min = 65.5;
+    generator->intensity_max = 255.8;
+    generator->hill_sigma = 225.0;
     generator->scatter = 0.7;
     generator->fill_probability = 1.0;
     generator->offset = glm::dvec2(test(engine), test(engine));
     generator->scale = glm::vec2(1.0, 1.7);
-    generator->displacement.intensity = glm::dvec2(8.0, 8.0);
-    generator->displacement.noise_scale = glm::vec2(128.0, 128.0);
+    generator->displacement.intensity = glm::dvec2(24.0, 24.0);
+    generator->displacement.noise_scale = glm::vec2(256.0, 256.0);
     generator->displacement.octaves = 2;
-    base_terrain = std::make_shared<terrain::CourseSmoother<terrain::HillGenerator, terrain::HillGenerator>>(
+    base_terrain = std::make_shared<gdterrain::CourseSmoother<gdterrain::HillGenerator, gdterrain::HillGenerator>>(
       generator,
       generator,
       feature_sampler,
@@ -91,7 +105,10 @@ namespace mgc {
 
   CourseGen::CourseTerrainPtr CourseGen::GetFairwaySampler() { return fairway_sampler; }
   CourseGen::CourseTerrainPtr CourseGen::GetGreenSampler() { return green_sampler; }
-  CourseGen::CourseTerrainPtr CourseGen::GetSandSampler() { return sand_sampler; }
+  CourseGen::SandSampler      CourseGen::GetSandSampler() { return sand_sampler; }
   CourseGen::CourseTerrainPtr CourseGen::GetRoughSampler() { return rough_sampler; }
   std::shared_ptr<CourseGen::HeightMapType> CourseGen::GetHeightMap() { return base_terrain; }
+
+  course::path::CoursePath CourseGen::GetCoursePath() { return path; }
+  course::path::CompoundCurve CourseGen::GetCourseCurve() { return curve; }
 }

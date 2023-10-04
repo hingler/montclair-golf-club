@@ -12,7 +12,7 @@
 #define FALLOFF_END 5.0
 
 
-namespace terrain {
+namespace gdterrain {
   using namespace _impl;
 
   HillInfo GenerateHillInfo(std::mt19937_64& engine, double scatter_radius, double intensity_min, double intensity_max, double fill_probability, double sigma_max) {
@@ -21,7 +21,7 @@ namespace terrain {
     // - fix: use builder to prep vars on ctor
     // - not gonna deal w it now bc i dont need it to do anything weird yet
     std::uniform_real_distribution<double> f_dist(0.0, 1.0);
-    double theta     = f_dist(engine) * 2 * M_PI;
+    double theta     = f_dist(engine) * 2 * M_PI; 
     double intensity = f_dist(engine);
     double fill      = f_dist(engine);
     double half_scatter_radius = (scatter_radius / 2.0);
@@ -52,7 +52,7 @@ namespace terrain {
         // calculate the cell we're sampling from
         glm::ivec2 local_offset = glm::ivec2(cell_offset.x + x, cell_offset.y + y);
 
-        const HillInfo& info = LookupHill(local_offset);
+        HillInfo info = LookupHill(local_offset);
         if (info.fill) {
           glm::dvec2 hill_center = glm::dvec2(
             local_offset.x * cell_size + info.scatter_x, local_offset.y * cell_size + info.scatter_y
@@ -75,19 +75,28 @@ namespace terrain {
 
   // idea: do we want to make this thread safe?
   // (just need to synch hill generation and engine access)
-  const HillInfo& HillGenerator::LookupHill(const glm::ivec2& offset) {
-    auto hill = hill_cache.find(offset);
-    if (hill == hill_cache.end()) {
-      // ?? whatever
+  HillInfo HillGenerator::LookupHill(const glm::ivec2& offset) {
+    // significant slow down - any way we can speed this up for threads???
+    tbb::concurrent_hash_map<glm::ivec2, HillInfo>::const_accessor hill;
+    // tbb: faster than before but not *fantastic*
+    if (!hill_cache_concurrent.find(hill, offset)) {
       auto seed = std::seed_seq(std::initializer_list<int>{ offset.x, offset.y });
       engine.seed(seed);
 
       double eff_scatter = scatter * cell_size;
       auto res = GenerateHillInfo(engine, eff_scatter, intensity_min, intensity_max, fill_probability, hill_sigma);
-      hill_cache.insert(std::make_pair(offset, res));
+      
+      {
+        std::unique_lock lock(cache_mutex);
+        if (!hill_cache_concurrent.find(hill, offset)) {
+          // confirm that someone else hasn't written this
+          hill_cache_concurrent.insert(hill, std::make_pair(offset, res));
+
+        }
+      }
     }
 
     // should be inserted if not already
-    return hill_cache.at(offset);
+    return hill->second;
   }
 }

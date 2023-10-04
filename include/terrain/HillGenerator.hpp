@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 
+#include <shared_mutex>
 #include <random>
 #include <unordered_map>
 
@@ -10,7 +11,9 @@
 
 #include "noise/TurbulentDisplace.hpp"
 
-namespace terrain {
+#include <tbb/concurrent_hash_map.h>
+
+namespace gdterrain {
   namespace _impl {
     // info stored when generating hills
     struct HillInfo {
@@ -71,10 +74,12 @@ namespace terrain {
     // assist in rng; seeding is super expensive :3
     std::mt19937_64 engine;
     // need to cache generation results somewhere
-    std::unordered_map<glm::ivec2, _impl::HillInfo> hill_cache;
+    tbb::concurrent_hash_map<glm::ivec2, _impl::HillInfo> hill_cache_concurrent;
+
+    std::shared_mutex cache_mutex;
 
     // looks up hill params, generating if necessary
-    const _impl::HillInfo& LookupHill(const glm::ivec2& offset);
+    _impl::HillInfo LookupHill(const glm::ivec2& offset);
   };
 }
 

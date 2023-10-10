@@ -29,6 +29,13 @@ namespace gdterrain {
    */
   class HillGenerator {
    public:
+
+    // default ctor
+    HillGenerator();
+
+    // copy ctor
+    HillGenerator(const HillGenerator& other);
+
    /**
     * @brief Samples this generator.
     * 
@@ -76,7 +83,7 @@ namespace gdterrain {
     // need to cache generation results somewhere
     tbb::concurrent_hash_map<glm::ivec2, _impl::HillInfo> hill_cache_concurrent;
 
-    std::shared_mutex cache_mutex;
+    // tba: add seed
 
     // looks up hill params, generating if necessary
     _impl::HillInfo LookupHill(const glm::ivec2& offset);

@@ -24,7 +24,7 @@ namespace mgc {
     typedef course::sampler::ThresholdSampler<course::sampler::GaussianMetaballSampler> CourseTerrainSampler;
     typedef std::shared_ptr<CourseTerrainSampler> CourseTerrainPtr;
     typedef std::shared_ptr<course::sampler::ArithmeticSampler<CourseTerrainSampler, CourseTerrainSampler>> SandSampler;
-    typedef gdterrain::CourseSmoother<gdterrain::HillGenerator, gdterrain::HillGenerator> HeightMapType;
+    typedef gdterrain::CourseSmoother<gdterrain::HillGenerator, gdterrain::HillGenerator, gdterrain::HillGenerator> HeightMapType;
     
     /**
      * @brief Construct a new Course Gen object
@@ -82,7 +82,7 @@ namespace mgc {
     std::shared_ptr<course::sampler::GaussianMetaballSampler> course_sampler;
     course::path::CoursePath path;
     course::path::CompoundCurve curve;
-    std::shared_ptr<gdterrain::CourseSmoother<gdterrain::HillGenerator, gdterrain::HillGenerator>> base_terrain;
+    std::shared_ptr<gdterrain::CourseSmoother<gdterrain::HillGenerator, gdterrain::HillGenerator, gdterrain::HillGenerator>> base_terrain;
 
     // samplers
     CourseTerrainPtr fairway_sampler;

@@ -93,9 +93,22 @@ namespace mgc {
     generator->displacement.intensity = glm::dvec2(24.0, 24.0);
     generator->displacement.noise_scale = glm::vec2(256.0, 256.0);
     generator->displacement.octaves = 2;
-    base_terrain = std::make_shared<gdterrain::CourseSmoother<gdterrain::HillGenerator, gdterrain::HillGenerator>>(
+
+    auto generator_distant = std::make_shared<gdterrain::HillGenerator>();
+    generator_distant->cell_size = 768.0;
+    generator_distant->intensity_min = 752.5;
+    generator_distant->intensity_max = 1225.6;
+    generator_distant->hill_sigma = 945.2;
+    generator_distant->scatter = 0.6;
+    generator_distant->fill_probability = 0.84;
+    generator_distant->displacement.intensity = glm::dvec2(48.0, 48.0);
+    generator_distant->displacement.noise_scale = glm::vec2(512.0, 512.0);
+    generator_distant->displacement.octaves = 2;
+
+    base_terrain = std::make_shared<gdterrain::CourseSmoother<gdterrain::HillGenerator, gdterrain::HillGenerator, gdterrain::HillGenerator>>(
       generator,
       generator,
+      generator_distant,
       feature_sampler,
       curve
     );

@@ -9,6 +9,9 @@ namespace noise {
   class TurbulentDisplace {
    public:
     TurbulentDisplace();
+
+    TurbulentDisplace(const TurbulentDisplace& other);
+    TurbulentDisplace& operator=(const TurbulentDisplace& other);
     
     /**
      * @brief Re-seeds this displace field

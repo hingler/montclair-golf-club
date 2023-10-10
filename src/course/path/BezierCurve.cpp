@@ -1,6 +1,7 @@
 #include "course/path/BezierCurve.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 namespace course {
   namespace path {
@@ -46,6 +47,8 @@ namespace course {
       glm::vec2 x_max_sample = Sample(extrema_x.y);
       glm::vec2 y_min_sample = Sample(extrema_y.x);
       glm::vec2 y_max_sample = Sample(extrema_y.y);
+
+      std::cout << "curve bb: " << x_min_sample.x << ", " << y_min_sample.y << std::endl;
 
       Rect result;
       result.start = glm::vec2(x_min_sample.x, y_min_sample.y);

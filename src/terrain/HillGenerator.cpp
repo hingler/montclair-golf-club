@@ -35,6 +35,29 @@ namespace gdterrain {
     return res;
   }
 
+  HillGenerator::HillGenerator() {}
+
+  HillGenerator::HillGenerator(const HillGenerator& other) {
+    intensity_min = other.intensity_min;
+    intensity_max = other.intensity_max;
+
+    // tba: changes to sampler don't propagate
+
+    cell_size = other.cell_size;
+    hill_sigma = other.hill_sigma;
+    displacement = other.displacement;
+
+    scatter = other.scatter;
+    offset = other.offset;
+    scale = other.scale;
+    fill_probability = other.fill_probability;
+
+    engine = other.engine;
+
+    // cache only - should regen, no need to copy.
+    hill_cache_concurrent = tbb::concurrent_hash_map<glm::ivec2, _impl::HillInfo>();
+  }
+
   double HillGenerator::Sample(double x, double y) {
     // TODO: totally burned out on this. need to plug this into sampler output just to confirm that it looks ok :3
     // tba: is double compatible w our sampler?? i sure hope so :3
@@ -87,11 +110,10 @@ namespace gdterrain {
       auto res = GenerateHillInfo(engine, eff_scatter, intensity_min, intensity_max, fill_probability, hill_sigma);
       
       {
-        std::unique_lock lock(cache_mutex);
         if (!hill_cache_concurrent.find(hill, offset)) {
           // confirm that someone else hasn't written this
-          hill_cache_concurrent.insert(hill, std::make_pair(offset, res));
-
+          hill_cache_concurrent.insert(std::make_pair(offset, res));
+          return res;
         }
       }
     }

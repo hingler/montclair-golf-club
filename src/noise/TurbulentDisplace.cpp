@@ -10,6 +10,28 @@ namespace noise {
     Seed(0);
   }
 
+  TurbulentDisplace::TurbulentDisplace(const TurbulentDisplace& other) {
+    intensity = other.intensity;
+    noise_scale = other.noise_scale;
+    octaves = other.octaves;
+
+    engine = other.engine;
+    offset_dist = other.offset_dist;
+    offset_x = other.offset_x;
+    offset_y = other.offset_y;
+  }
+
+  TurbulentDisplace& TurbulentDisplace::operator=(const TurbulentDisplace& other) {
+    intensity = other.intensity;
+    noise_scale = other.noise_scale;
+    octaves = other.octaves;
+
+    engine = other.engine;
+    offset_dist = other.offset_dist;
+    offset_x = other.offset_x;
+    offset_y = other.offset_y;
+  }
+
   void TurbulentDisplace::Seed(size_t seed) {
     engine.seed(seed);
 

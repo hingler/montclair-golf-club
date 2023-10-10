@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
   // want to build in golf course handling
   // - accept course as a feature map
 
-  gdterrain::CourseSmoother smoother(generator, generator, sampler, curve);
+  gdterrain::CourseSmoother smoother(generator, generator, generator, sampler, curve);
 
   // can't get it right, but as far as noise goes it looks neat ish
   // really i want that "voronoi/gaussian" combination (nvm - i think this sort of like worley-deluxe approach is fun!)
@@ -133,6 +133,6 @@ int main(int argc, char** argv) {
   // come up w blending rules on the rest (prob parameterize)
   // - need to look a lil bit more into microsplat impl for "tips" :):)
 
-  GenericImage<RGBA<float>> output = converter::GaussianToRGBA(*sampler.get(), 0.5, 0.0, dims);
+  GenericImage<RGBA<float>> output = converter::GaussianToRGBA(smoother, 0.5, 0.0, dims);
   image::imagewriter::WriteImageToFile(output, "gaussian.jpg");
 }

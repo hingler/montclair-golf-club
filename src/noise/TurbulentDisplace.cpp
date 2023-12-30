@@ -30,6 +30,8 @@ namespace noise {
     offset_dist = other.offset_dist;
     offset_x = other.offset_x;
     offset_y = other.offset_y;
+
+    return *this;
   }
 
   void TurbulentDisplace::Seed(size_t seed) {

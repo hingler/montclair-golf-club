@@ -277,16 +277,6 @@ namespace gdterrain {
 
 
     // scaling params (lazy init later)
-
-    // height origin which terrain is scaled from
-    double height_origin = 0.0;
-
-    // scale applied to height in proximity of course terrain
-    double lo_freq_height_scale = 1.0;
-
-    // flag indicating whether we have initialized scaling params
-    bool init_flag = false;
-
     // min/max dimension estimates for the course itself
     glm::dvec2 course_min;
     glm::dvec2 course_max;

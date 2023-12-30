@@ -15,6 +15,8 @@ using namespace sampler;
 using namespace gaussian;
 using namespace generator;
 
+// need a lil bit of logic to establish bounds on the course itself (for course render)
+
 namespace mgc {
   CourseGen::CourseGen(
     uint64_t seed
@@ -116,11 +118,22 @@ namespace mgc {
     // this should be it! just need to define the helpers
   }
 
+  // when i wake up 
+
   CourseGen::CourseTerrainPtr CourseGen::GetFairwaySampler() { return fairway_sampler; }
   CourseGen::CourseTerrainPtr CourseGen::GetGreenSampler() { return green_sampler; }
   CourseGen::SandSampler      CourseGen::GetSandSampler() { return sand_sampler; }
   CourseGen::CourseTerrainPtr CourseGen::GetRoughSampler() { return rough_sampler; }
   std::shared_ptr<CourseGen::HeightMapType> CourseGen::GetHeightMap() { return base_terrain; }
+
+  glm::dvec2 CourseGen::GetCourseOrigin() {
+    return base_terrain->GetCourseOrigin();
+  }
+
+  glm::dvec2 CourseGen::GetCourseSize() {
+    // tba: need some tests to confirm that these numbers are roughly correct
+    return base_terrain->GetCourseSize();
+  }
 
   course::path::CoursePath CourseGen::GetCoursePath() { return path; }
   course::path::CompoundCurve CourseGen::GetCourseCurve() { return curve; }

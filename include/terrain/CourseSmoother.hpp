@@ -21,6 +21,9 @@
 #include <glm/glm.hpp>
 
 namespace gdterrain {
+
+  // can probably estimate course edges here
+
   /**
    * @brief Smooths out terrain in proximity of our course
    * 
@@ -75,6 +78,24 @@ namespace gdterrain {
 
     float Get(double x, double y) {
       return Sample(static_cast<double>(x), static_cast<double>(y));
+    }
+
+    glm::dvec2 GetCourseOrigin() {
+      if (!init_flag) {
+        GenerateHeightScale();
+      }
+
+      return course_min;
+    }
+
+    glm::dvec2 GetCourseSize() {
+      if (!init_flag) {
+        GenerateHeightScale();
+      }
+
+      // should be fine
+
+      return (course_max - course_min);
     }
 
     double Sample(double x, double y) {
@@ -171,6 +192,10 @@ namespace gdterrain {
       glm::dvec2 rolling_sum(0.0);
       size_t course_sample_count = 0;
 
+      glm::dvec2 min_bound = curve_.Sample(0.0);
+      glm::dvec2 max_bound = min_bound;
+
+
       for (double i = 0.0; i < 1.0; i += TIME_STEP) {
         course_sample_count++;
         glm::dvec2 curve_pos = static_cast<glm::dvec2>(curve_.Sample(i));
@@ -184,6 +209,7 @@ namespace gdterrain {
         glm::dvec2 rolling_pos = curve_pos;
 
         // roll gradient in one direction
+        // crunch course dims here
         do {
           sampled_value = lo_freq_->Sample(rolling_pos.x, rolling_pos.y);
           rolling_sampled_value += sampled_value;
@@ -191,7 +217,15 @@ namespace gdterrain {
           rolling_pos += normal * GRADIENT_STEP;
           local_gradient = util::Gradient(*lo_freq_.get(), rolling_pos.x, rolling_pos.y);
           max_gradient = std::max(max_gradient, glm::length(local_gradient));
+
+          {
+            // check bounds
+            min_bound = glm::min(min_bound, rolling_pos);
+            max_bound = glm::max(max_bound, rolling_pos);
+          }
+
         } while (course_sampler_->Sample(rolling_pos.x, rolling_pos.y) > fade_start_exp);
+        // on bordewr
 
         rolling_pos = curve_pos;
 
@@ -204,7 +238,16 @@ namespace gdterrain {
           rolling_pos += inv_normal * GRADIENT_STEP;
           local_gradient = util::Gradient(*lo_freq_.get(), rolling_pos.x, rolling_pos.y);
           max_gradient = std::max(max_gradient, glm::length(local_gradient));
+
+          {
+            // check bounds
+            min_bound = glm::min(min_bound, rolling_pos);
+            max_bound = glm::max(max_bound, rolling_pos);
+          }
+
         } while (course_sampler_->Sample(rolling_pos.x, rolling_pos.y) > fade_start_exp);
+        min_bound = glm::min(min_bound, rolling_pos);
+        max_bound = glm::max(max_bound, rolling_pos);
         // missing a few spots - but should be fine for now
       }
 
@@ -224,11 +267,29 @@ namespace gdterrain {
       }
       lo_freq_height_scale = std::clamp(GRADIENT_MAX / max_gradient, 0.0, 1.0);
 
+      // prep min and max
+      course_min = min_bound;
+      course_max = max_bound;
+
       init_flag = true;
+      std::cout << "height origin: " << height_origin << " // lo freq scale: " << lo_freq_height_scale << std::endl;
     }
 
 
     // scaling params (lazy init later)
+
+    // height origin which terrain is scaled from
+    double height_origin = 0.0;
+
+    // scale applied to height in proximity of course terrain
+    double lo_freq_height_scale = 1.0;
+
+    // flag indicating whether we have initialized scaling params
+    bool init_flag = false;
+
+    // min/max dimension estimates for the course itself
+    glm::dvec2 course_min;
+    glm::dvec2 course_max;
 
     // tba params
     // - proximity threshold (mag of gaussian)

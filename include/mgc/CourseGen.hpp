@@ -14,6 +14,8 @@
 #include "terrain/HillGenerator.hpp"
 #include "terrain/CourseSmoother.hpp"
 
+#include <glm/glm.hpp>
+
 namespace mgc {
   /**
    * @brief Wraps course generation and returns splats, samplers, height maps, etc...
@@ -77,6 +79,20 @@ namespace mgc {
 
     course::path::CoursePath GetCoursePath();
     course::path::CompoundCurve GetCourseCurve();
+
+    /**
+     * @brief Returns estimate of bottom left corner of our course, as a yard-displacement from origin.
+     * 
+     * @return glm::dvec2 - bottom left corner
+     */
+    glm::dvec2 GetCourseOrigin();
+
+    /**
+     * @brief Returns size of our course, in yards.
+     * 
+     * @return glm::dvec2 - size, in yds
+     */
+    glm::dvec2 GetCourseSize();
 
    private:
     std::shared_ptr<course::sampler::GaussianMetaballSampler> course_sampler;

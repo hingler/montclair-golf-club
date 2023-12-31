@@ -46,17 +46,21 @@ namespace gdterrain {
       std::shared_ptr<DistantFreqType> distant_freq,
       std::shared_ptr<course::sampler::GaussianMetaballSampler> course_sampler,
       course::path::CompoundCurve& compound_curve
-    ) : lo_freq_(lo_freq), hi_freq_(hi_freq), distant_freq_(distant_freq), course_sampler_(course_sampler), curve_(compound_curve) {}
+    ) : lo_freq_(lo_freq), hi_freq_(hi_freq), distant_freq_(distant_freq), course_sampler_(course_sampler), curve_(compound_curve), init_flag(false) 
+    {
+      GenerateHeightScale();
+    }
 
     CourseSmoother(CourseSmoother& other)
     : lo_freq_(other.lo_freq_),
       hi_freq_(other.hi_freq_),
       distant_freq_(other.distant_freq_),
       course_sampler_(other.course_sampler_),
-      curve_(other.curve_)
+      curve_(other.curve_),
+      init_flag(false)
     {
       // not marked as const so we can do this if we need to
-      if (!other.init_flag) {
+      if (!other.init_flag.load()) {
         // generate before copying
         other.GenerateHeightScale();
       }
@@ -74,10 +78,11 @@ namespace gdterrain {
     }
 
     double Sample(double x, double y) {
-      if (!init_flag) {
+      if (!init_flag.load()) {
         // only grab lock if condition initially fails
         std::lock_guard lock(height_mutex);
-        if (!init_flag) {
+        if (!init_flag.load()) {
+          // some super weird bugs appearing here
           GenerateHeightScale();
         }
       }
@@ -108,14 +113,12 @@ namespace gdterrain {
       if (distant_weight > SAMPLE_EPS) {
         distant_freq_sample = distant_freq_->Sample(x, y);
       }
-      // scale down
-
 
       // squash about height_origin
       lo_freq_sample = ((lo_freq_sample - height_origin) * lo_freq_scale) + height_origin;
       hi_freq_sample = ((hi_freq_sample - height_origin) * hi_freq_scale) + height_origin;
       // should be independent - ie don't trump these for now
-      distant_freq_sample = distant_freq_sample * distant_weight;
+      distant_freq_sample = (distant_freq_sample - height_origin) * distant_weight + height_origin;
       // sampling
       // - generate height context if not already done
       // - crunch course mb
@@ -135,6 +138,8 @@ namespace gdterrain {
     std::shared_ptr<course::sampler::GaussianMetaballSampler> course_sampler_;
     course::path::CompoundCurve curve_;
 
+    // need to inspect this shit
+   public:
     glm::dvec2 course_center;
     double distant_radius;
 
@@ -145,24 +150,26 @@ namespace gdterrain {
     double lo_freq_height_scale = 1.0;
 
     // flag indicating whether we have initialized scaling params
-    std::atomic_bool init_flag = false;
+    std::atomic_bool init_flag;
 
     std::mutex height_mutex;
 
 
     // computes scale for terrain height
     void GenerateHeightScale() {
+      // lock while generating
+      std::lock_guard<std::mutex> lock(height_mutex);
       glm::dvec2 local_gradient;
       double max_gradient;
 
       double sampled_value;
-      double rolling_sampled_value;
-      size_t sample_count;
+      double rolling_sampled_value = 0;
+      size_t sample_count = 0;
 
       double fade_start_exp = exp(FADE_START_LOG);
 
       glm::dvec2 rolling_sum(0.0);
-      size_t course_sample_count;
+      size_t course_sample_count = 0;
 
       for (double i = 0.0; i < 1.0; i += TIME_STEP) {
         course_sample_count++;

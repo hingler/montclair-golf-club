@@ -94,6 +94,13 @@ namespace mgc {
      */
     glm::dvec2 GetCourseSize();
 
+    /**
+     * @brief Get the seed for this course generator
+     * 
+     * @return uint64_t - the seed in question:
+     */
+    uint64_t GetSeed();
+
    private:
     std::shared_ptr<course::sampler::GaussianMetaballSampler> course_sampler;
     course::path::CoursePath path;
@@ -105,6 +112,7 @@ namespace mgc {
     CourseTerrainPtr green_sampler;
     CourseTerrainPtr rough_sampler;
     SandSampler sand_sampler;
+    uint64_t seed_;
   };
 }
 

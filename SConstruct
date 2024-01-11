@@ -1,10 +1,13 @@
 Import('env')
 
-env.Append(CPPPATH=[
+# dupe - how does it work??
+chunker = SConscript("lib/chunker/SConsctruct", exports = 'env')
+
+env.Append(CPPPATH=[[env.Dir(d) for d in [
     "include",
     "lib/stb",
     "lib/glm"
-])
+]]])
 
 env.Append(CXXFLAGS=["-std=c++17"])
 

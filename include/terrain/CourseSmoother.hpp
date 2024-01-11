@@ -98,6 +98,18 @@ namespace gdterrain {
       return (course_max - course_min);
     }
 
+    glm::dvec3 GetCourseCenter() {
+      if (!init_flag) {
+        GenerateHeightScale();
+      }
+
+      // midpoint of course path - should be more acc?????
+      // (we'll see :3)
+      auto xz_center = curve_.Sample(0.5);
+      // ensures it's on the ground :3
+      return glm::dvec3(xz_center.x, Sample(xz_center.x, xz_center.y), xz_center.y);
+    }
+
     double Sample(double x, double y) {
       if (!init_flag.load()) {
         // only grab lock if condition initially fails

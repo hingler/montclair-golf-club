@@ -135,6 +135,11 @@ namespace mgc {
     return base_terrain->GetCourseSize();
   }
 
+  glm::dvec3 CourseGen::GetCourseCenter() {
+    return base_terrain->GetCourseCenter();
+    
+  }
+
   course::path::CoursePath CourseGen::GetCoursePath() { return path; }
   course::path::CompoundCurve CourseGen::GetCourseCurve() { return curve; }
 }

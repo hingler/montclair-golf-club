@@ -95,6 +95,13 @@ namespace mgc {
     glm::dvec2 GetCourseSize();
 
     /**
+     * @brief Returns an approximation of the course's center.
+     * 
+     * @return glm::dvec3 - xyz coords for the course's center
+     */
+    glm::dvec3 GetCourseCenter();
+
+    /**
      * @brief Get the seed for this course generator
      * 
      * @return uint64_t - the seed in question:

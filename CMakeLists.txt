@@ -8,6 +8,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_SYSTEM_PROCESSOR arm64)
+# i've got libs on x86 and on arm, how to delineate??
+set(CMAKE_OSX_ARCHITECTURES arm64)
+
 set(CMAKE_CXX_FLAGS "-g -O3")
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
@@ -18,7 +22,17 @@ set(LIB_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(STB_INCLUDES ${LIB_DIR}/stb)
 set(GLM_INCLUDES ${LIB_DIR}/glm)
 
+# x86 bindings
+set(HOMEBREW_PREFIX "/usr/local")
+set(HOMEBREW_INCLUDE_PREFIX ${HOMEBREW_PREFIX}/include)
+set(HOMEBREW_LIB_PREFIX ${HOMEBREW_PREFIX}/lib)
+
 add_subdirectory(${LIB_DIR}/googletest)
+
+find_library(TBB_LIB
+  NAMES tbb libtbb
+  PATHS ${HOMEBREW_LIB_PREFIX}
+)
 
 add_library(montclair-golf-club main.cpp
                                 src/course/terrain_data.cpp
@@ -63,7 +77,8 @@ add_library(montclair-golf-club main.cpp
                                 src/support/prepare_stb.cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${STB_INCLUDES} ${GLM_INCLUDES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${INC_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${INC_DIR} ${HOMEBREW_INCLUDE_PREFIX})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${TBB_LIB})
 
 set(TEST_DIR ${CMAKE_SOURCE_DIR}/test)
 
@@ -88,7 +103,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   foreach(test_path test_name IN ZIP_LISTS TEST_PATHS TEST_NAMES)
     add_executable(${test_name} ${test_path})
     target_link_libraries(${test_name} PRIVATE GTest::gtest_main ${PROJECT_NAME})
-    target_include_directories(${test_name} PUBLIC ${INC_DIR}
+    target_include_directories(${test_name} PUBLIC ${INC_DIR} ${HOMEBREW_INCLUDE_PREFIX}
     )
     add_test(NAME ${test_name} COMMAND ${test_name})
   endforeach()

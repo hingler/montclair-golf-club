@@ -26,7 +26,7 @@ namespace noise {
      * @param point - point we wish to sample at
      * @return glm::vec2 - the inputted point, displaced.
      */
-    glm::dvec2 Sample(const glm::dvec2& point);
+    glm::dvec2 Sample(const glm::dvec2& point) const;
 
     // size of displacement along each axis.
     glm::dvec2 intensity = glm::dvec2(1.0);

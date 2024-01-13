@@ -110,13 +110,13 @@ namespace gdterrain {
       return glm::dvec3(xz_center.x, Sample(xz_center.x, xz_center.y), xz_center.y);
     }
 
-    double Sample(double x, double y) {
+    double Sample(double x, double y) const {
       if (!init_flag.load()) {
         // only grab lock if condition initially fails
         std::lock_guard lock(height_mutex);
         if (!init_flag.load()) {
-          // some super weird bugs appearing here
-          GenerateHeightScale();
+          // workaround for caching
+          const_cast<CourseSmoother*>(this)->GenerateHeightScale();
         }
       }
 
@@ -183,9 +183,9 @@ namespace gdterrain {
     double lo_freq_height_scale = 1.0;
 
     // flag indicating whether we have initialized scaling params
-    std::atomic_bool init_flag;
+    mutable std::atomic_bool init_flag;
 
-    std::mutex height_mutex;
+    mutable std::mutex height_mutex;
 
 
     // computes scale for terrain height

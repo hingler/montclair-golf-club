@@ -27,7 +27,7 @@ namespace course {
         const std::shared_ptr<Sampler>& sampler
       ) : min_(min), max_(max), smooth_(smooth), sampler_(sampler) {}
 
-      double Sample(double x, double y) {
+      double Sample(double x, double y) const {
         double sample = sampler_->Sample(x, y);
 
         // distance from clamp region

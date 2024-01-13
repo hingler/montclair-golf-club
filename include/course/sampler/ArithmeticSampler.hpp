@@ -15,18 +15,18 @@ namespace course {
       static_assert(type::sampler_type<sA>::value);
       static_assert(type::sampler_type<sB>::value);
      public:
-      ArithmeticSampler(std::shared_ptr<sA> samplerA, std::shared_ptr<sB> samplerB) : sampler_a(samplerA), sampler_b(samplerB) {}
-      double Sample(double x, double y) {
+      ArithmeticSampler(std::shared_ptr<sA> samplerA, std::shared_ptr<sB> samplerB) : sampler_a(*samplerA), sampler_b(*samplerB) {}
+      double Sample(double x, double y) const {
         switch (mode) {
           case Multiply:
-            return sampler_a->Sample(x, y) * sampler_b->Sample(x, y);
+            return sampler_a.Sample(x, y) * sampler_b.Sample(x, y);
         }
       }
 
       ArithmeticMode mode;
      private:
-      std::shared_ptr<sA> sampler_a;
-      std::shared_ptr<sB> sampler_b;
+      sA sampler_a;
+      sB sampler_b;
     };
   }
 }

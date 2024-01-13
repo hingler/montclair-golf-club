@@ -46,7 +46,7 @@ namespace noise {
   }
 
 
-  glm::dvec2 TurbulentDisplace::Sample(const glm::dvec2& point) {
+  glm::dvec2 TurbulentDisplace::Sample(const glm::dvec2& point) const {
     if (octaves <= 0) {
       return point;
     }

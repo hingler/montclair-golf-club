@@ -1,7 +1,7 @@
 Import('env')
 
 # dupe - how does it work??
-chunker = SConscript("lib/chunker/SConsctruct", exports = 'env')
+chunker = SConscript("lib/chunker/SConstruct", exports = 'env')
 
 env.Append(CPPPATH=[[env.Dir(d) for d in [
     "include",

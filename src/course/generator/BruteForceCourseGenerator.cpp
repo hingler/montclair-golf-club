@@ -1,9 +1,13 @@
+#define _USE_MATH_DEFINES
+
 #include "course/generator/BruteForceCourseGenerator.hpp"
 #include "course/generator/impl/GetDistanceToCircle.hpp"
 
 
 #include <algorithm>
 #include <iostream>
+
+#include <cmath>
 
 namespace course {
 

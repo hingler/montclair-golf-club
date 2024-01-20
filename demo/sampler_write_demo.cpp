@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
   map.AssignColor(terrain_type::OutOfBounds, {1.0, 1.0, 1.0, 1.0});
 
   generator::BruteForceCourseGenerator gen;
-  gen.seed = arc4random();
+  gen.seed = 1214UL;
   gen.yardage = 575.0f;
   auto positions = gen.GenerateCourse(sampler, glm::vec2(1024, 1024));
   std::cout << positions.course_path.size() + 1 << std::endl;

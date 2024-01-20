@@ -69,6 +69,9 @@ namespace mgc {
     feature_sampler->Merge(*fairway_sampler, 1.0);
     feature_sampler->Merge(*sand_sampler, 1.0);
 
+    tree_sampler = std::make_shared<FillSamplerType>(*feature_sampler, -3.0, -55.0);
+
+
     this->fairway_sampler = std::make_shared<ThresholdSampler<GaussianMetaballSampler>>(0.4, 16.0, 0.1, course_sampler);
     this->green_sampler = std::make_shared<ThresholdSampler<GaussianMetaballSampler>>(15.9, 1000.0, 0.2, course_sampler);
     auto sand_threshold = std::make_shared<ThresholdSampler<GaussianMetaballSampler>>(0.2, 500.0, 0.2, std::dynamic_pointer_cast<GaussianMetaballSampler>(sand_sampler));
@@ -80,7 +83,7 @@ namespace mgc {
     this->rough_sampler->intensity = 0.2;
 
     std::mt19937_64 engine;
-    engine.seed(arc4random());
+    engine.seed(142758UL);
     std::uniform_real_distribution<double> test(-32768.0, 32768.0);
 
     auto generator = std::make_shared<gdterrain::HillGenerator>();
@@ -124,7 +127,10 @@ namespace mgc {
   CourseGen::CourseTerrainPtr CourseGen::GetGreenSampler() { return green_sampler; }
   CourseGen::SandSampler      CourseGen::GetSandSampler() { return sand_sampler; }
   CourseGen::CourseTerrainPtr CourseGen::GetRoughSampler() { return rough_sampler; }
-  std::shared_ptr<CourseGen::HeightMapType> CourseGen::GetHeightMap() { return base_terrain; }
+  std::shared_ptr<CourseGen::HeightMapType> CourseGen::GetHeightMap() { return std::make_shared<CourseGen::HeightMapType>(*base_terrain); }   // tba: return unique ptr instead???
+  std::shared_ptr<CourseGen::FillSamplerType>  CourseGen::GetTreeFillSampler() { return tree_sampler; }
+
+  // return a tree fill map??
 
   glm::dvec2 CourseGen::GetCourseOrigin() {
     return base_terrain->GetCourseOrigin();

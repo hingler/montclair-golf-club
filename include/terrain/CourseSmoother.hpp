@@ -54,10 +54,11 @@ namespace gdterrain {
       GenerateHeightScale();
     }
 
+    // try copying underlying samplers!
     CourseSmoother(CourseSmoother& other)
-    : lo_freq_(other.lo_freq_),
-      hi_freq_(other.hi_freq_),
-      distant_freq_(other.distant_freq_),
+    : lo_freq_(std::make_shared<LoFreqType>(*other.lo_freq_)),
+      hi_freq_(std::make_shared<HiFreqType>(*other.hi_freq_)),
+      distant_freq_(std::make_shared<DistantFreqType>(*other.distant_freq_)),
       course_sampler_(other.course_sampler_),
       curve_(other.curve_),
       init_flag(false)
@@ -120,7 +121,10 @@ namespace gdterrain {
         }
       }
 
+      double center_dist = (glm::dvec2(x, y) - course_center).length();
+
       // when sampling: take ln bc otherwise it'll come out funny
+      // (still costly, but definitely not as bad as it was)
       double course_sample_log = log(course_sampler_->Sample(x, y));
       double distant_freq_sample = 0.0;
       double hi_freq_sample = 0.0;
@@ -128,7 +132,10 @@ namespace gdterrain {
 
       // 1.0: use lo freq
       // 0.0: use hi freq
+
+      // trying using radius instead of course sample, to speed things up a bit
       double sample_t = glm::smoothstep(FADE_END_LOG, FADE_START_LOG, course_sample_log);
+
       double lo_freq_scale = sample_t * lo_freq_height_scale;
       double hi_freq_scale = (1.0 - sample_t);
 
@@ -136,15 +143,26 @@ namespace gdterrain {
         lo_freq_sample = lo_freq_->Sample(x, y);
       } 
 
+      // in the busiest cases: this gets resampled
       if (hi_freq_scale > SAMPLE_EPS) {
-        hi_freq_sample = hi_freq_->Sample(x, y);
+        if (hi_freq_ == lo_freq_ && sample_t > SAMPLE_EPS) {
+          hi_freq_sample = lo_freq_sample;
+        } else {
+          hi_freq_sample = hi_freq_->Sample(x, y);
+        }
+
       }
 
       double dist = glm::length(glm::dvec2(x, y) - course_center);
       double distant_weight = glm::smoothstep(5.0 * distant_radius, 15.0 * distant_radius, dist);
 
+      // 3x speed up lmao
       if (distant_weight > SAMPLE_EPS) {
-        distant_freq_sample = distant_freq_->Sample(x, y);
+        if (distant_freq_ == lo_freq_ && sample_t > SAMPLE_EPS) {
+          distant_freq_sample = lo_freq_sample;
+        } else {
+          distant_freq_sample = distant_freq_->Sample(x, y);
+        }
       }
 
       // squash about height_origin
@@ -157,6 +175,8 @@ namespace gdterrain {
       // - crunch course mb
       // - sample low
       // - if below threshold: smoothstep into hi freq map
+
+      // there NEEDS to be a better way to implement this smoothing behavior - majority of the time is just course sampling
 
       // calc distant
       return lo_freq_sample + hi_freq_sample + distant_freq_sample;
@@ -266,9 +286,10 @@ namespace gdterrain {
       // rough estimate of course center
       course_center = rolling_sum / static_cast<double>(course_sample_count);
       auto bb = curve_.GetBoundingBox();
-      std::cout << "course center: " << course_center.x << ", " << course_center.y << std::endl;
       std::cout << "bb: " << bb.start.x << ", " << bb.start.y << " to " << bb.end.x << ", " << bb.end.y << std::endl;
-      distant_radius = glm::length(bb.end - bb.start);
+      // i kinda did it here
+      // conservative estimate
+      distant_radius = glm::length(bb.end - bb.start) * 0.8;
       std::cout << "radius: " << distant_radius << std::endl;
 
       // set origin to mean height (we'll scale up/down around this point)

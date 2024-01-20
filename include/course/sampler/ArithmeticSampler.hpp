@@ -21,6 +21,8 @@ namespace course {
           case Multiply:
             return sampler_a.Sample(x, y) * sampler_b.Sample(x, y);
         }
+
+        return sampler_a.Sample(x, y);
       }
 
       ArithmeticMode mode;

@@ -82,6 +82,7 @@ namespace gdterrain {
     std::mt19937_64 engine;
     // need to cache generation results somewhere
     tbb::concurrent_hash_map<glm::ivec2, _impl::HillInfo> hill_cache_concurrent;
+    std::unordered_map<glm::ivec2, _impl::HillInfo> hill_cache;
 
     // tba: add seed
 

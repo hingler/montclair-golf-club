@@ -1,4 +1,13 @@
+#define __USE_MATH_DEFINES
 #include "course/sampler/grass/SimpleGrassSampler.hpp"
+
+#include <cmath>
+// win fix (tba: separate header for defines???)
+#ifndef M_PI
+  #define M_PI 3.14159265358979323846264338327950288 
+#endif
+
+// need local copy of TBB to build :3
 
 namespace course {
   
@@ -40,7 +49,7 @@ namespace course {
           for (int j = 0; j < density; j++) {
             float theta = theta_dist(engine);
             float r = 2.0f + 10.0f * sqrt(radius_dist(engine));
-            glm::vec2 metaball_loc = path[i] + (cross * (cos(theta) * r) + normal * (sin(theta) * r * 2.1f));
+            glm::vec2 metaball_loc = path[i] + (cross * static_cast<float>(cos(theta) * r) + normal * static_cast<float>(sin(theta) * r * 2.1f));
             underlying_sampler.AddMetaball(metaball_loc.x, metaball_loc.y, 1.0f);
           }
         }

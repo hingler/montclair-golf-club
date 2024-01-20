@@ -1,9 +1,14 @@
+#define __USE_MATH_DEFINES
 #include "course/sampler/gaussian/GaussianFairwaySampler.hpp"
 
 #include <glm/gtx/rotate_vector.hpp>
 
 #include <cmath>
 #include <random>
+
+#ifndef M_PI
+  #define M_PI 3.14159265358979323846264338327950288
+#endif  
 
 namespace course {
   using namespace path;
@@ -14,7 +19,8 @@ namespace course {
         const CompoundCurve& bezier_curve
         ) : path(course_path), curve(bezier_curve) 
       {
-        engine.seed(arc4random());
+        // need a better seeding approach - why didn't i do this everywhere??
+        engine.seed(67123L);
       }
 
       void GaussianFairwaySampler::Generate(const GaussianPathConfig& config) {

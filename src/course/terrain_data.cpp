@@ -60,4 +60,12 @@ namespace course {
 
     return *this;
   }
+
+  terrain_data operator*(terrain_data lhs, float rhs) {
+    return lhs *= rhs;
+  }
+
+  terrain_data operator+(terrain_data lhs, const terrain_data& rhs) {
+    return lhs += rhs;
+  }
 }

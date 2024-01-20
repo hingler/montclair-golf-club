@@ -1,6 +1,10 @@
+#define _USE_MATH_DEFINES
+
 #include "course/sampler/gaussian/GaussianSandSampler.hpp"
 
 #include <iostream>
+
+#include <cmath>
 
 namespace course {
   namespace sampler {
@@ -18,7 +22,8 @@ namespace course {
           curve(bezier_curve) {}
 
       void GaussianSandSampler::Generate(const GaussianPathConfig& config) {
-        engine.seed(arc4random());
+        // oops! fix later
+        engine.seed(142857UL);
 
         if (path.course_path.size() <= 0 || curve.Length() < 0.1f) {
           // generate nothing!

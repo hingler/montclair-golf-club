@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
   auto dims = glm::ivec2(1024, 1024);
 
   generator::BruteForceCourseGenerator gen;
-  gen.seed = arc4random();
+  gen.seed = 141241UL;
   gen.yardage = 575.0f;
 
   const auto terrain_size = glm::vec2(1024, 1024);
@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
 
   std::uniform_real_distribution<double> test(-32768.0, 32768.0);
   std::mt19937_64 engine;
-  engine.seed(arc4random());
+  engine.seed(142857UL);
 
   // up close: this looks really really good!
   generator->cell_size = 2048.0;

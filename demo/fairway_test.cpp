@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
   // (tba: want to better delineate fairway sampler, etc because i don't like )
 
   generator::BruteForceCourseGenerator gen;
-  gen.seed = arc4random();
+  gen.seed = 123457L;
   gen.yardage = 575.0f;
 
   const auto terrain_size = glm::vec2(1024, 1024);

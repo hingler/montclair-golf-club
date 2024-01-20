@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+
 #include "terrain/HillGenerator.hpp"
 
 #include "noise/simplex_noise.hpp"
@@ -7,9 +9,11 @@
 #include <glm/gtx/hash.hpp>
 
 #include <functional>
+#include <cmath>
 
 #define FALLOFF_BEGIN 1.5
 #define FALLOFF_END 5.0
+
 
 
 namespace gdterrain {
@@ -20,7 +24,14 @@ namespace gdterrain {
     // issue: generation fails if we change params
     // - fix: use builder to prep vars on ctor
     // - not gonna deal w it now bc i dont need it to do anything weird yet
+
+    // uh
+    // need to speed this up a ton
+    // - generate programmatically with a cheaper hashing function (ie not fetching random values from a big engine!!!)
+    // - come up with a way to speed up fetches from map, or at least minimize concurrent accesses (probably the big cost)
     std::uniform_real_distribution<double> f_dist(0.0, 1.0);
+
+    // random samples are costly!!!
     double theta     = f_dist(engine) * 2 * M_PI; 
     double intensity = f_dist(engine);
     double fill      = f_dist(engine);
@@ -87,6 +98,8 @@ namespace gdterrain {
           // scale up a bit more.
           double adjusted_intensity = info.intensity * info.local_sigma;
           // weird interference circles popping up on the fringes of shapes
+          // (this is for sure the slowest element of generation - we can cut it a bit but it's always going to be slow)
+          // (how can we optimize??)
           accumulator += util::GaussianFalloff(dist_squared, info.local_sigma, FALLOFF_BEGIN, FALLOFF_END) * adjusted_intensity;
         }
       }
@@ -100,25 +113,31 @@ namespace gdterrain {
   // (just need to synch hill generation and engine access)
   HillInfo HillGenerator::LookupHill(const glm::ivec2& offset) {
     // significant slow down - any way we can speed this up for threads???
-    tbb::concurrent_hash_map<glm::ivec2, HillInfo>::const_accessor hill;
+    // tbb::concurrent_hash_map<glm::ivec2, HillInfo>::const_accessor hill;
+    HillInfo res;
+    auto itr = hill_cache.find(offset);
+    // lookups are costly!!!
     // tbb: faster than before but not *fantastic*
-    if (!hill_cache_concurrent.find(hill, offset)) {
+    if (itr == hill_cache.end()) {
       auto seed = std::seed_seq(std::initializer_list<int>{ offset.x, offset.y });
       engine.seed(seed);
 
       double eff_scatter = scatter * cell_size;
-      auto res = GenerateHillInfo(engine, eff_scatter, intensity_min, intensity_max, fill_probability, hill_sigma);
+      res = GenerateHillInfo(engine, eff_scatter, intensity_min, intensity_max, fill_probability, hill_sigma);
       
       {
-        if (!hill_cache_concurrent.find(hill, offset)) {
-          // confirm that someone else hasn't written this
-          hill_cache_concurrent.insert(std::make_pair(offset, res));
-          return res;
-        }
+        hill_cache.insert(std::make_pair(offset, res));
+        // if (!hill_cache_concurrent.find(hill, offset)) {
+        //   // confirm that someone else hasn't written this
+        //   hill_cache_concurrent.insert(std::make_pair(offset, res));
+        //   return res;
+        // }
       }
+    } else {
+      res = itr->second;
     }
 
     // should be inserted if not already
-    return hill->second;
+    return res;
   }
 }

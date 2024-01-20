@@ -13,6 +13,7 @@
 
 #include "terrain/HillGenerator.hpp"
 #include "terrain/CourseSmoother.hpp"
+#include "course/sampler/TreeFillSampler.hpp"
 
 #include <glm/glm.hpp>
 
@@ -27,6 +28,7 @@ namespace mgc {
     typedef std::shared_ptr<CourseTerrainSampler> CourseTerrainPtr;
     typedef std::shared_ptr<course::sampler::ArithmeticSampler<CourseTerrainSampler, CourseTerrainSampler>> SandSampler;
     typedef gdterrain::CourseSmoother<gdterrain::HillGenerator, gdterrain::HillGenerator, gdterrain::HillGenerator> HeightMapType;
+    typedef course::sampler::TreeFillSampler<course::sampler::GaussianMetaballSampler> FillSamplerType;
     
     /**
      * @brief Construct a new Course Gen object
@@ -71,6 +73,13 @@ namespace mgc {
     CourseTerrainPtr GetRoughSampler();
 
     /**
+     * @brief Returns sampler representing tree fill
+     * 
+     * @return TreeFillSampler 
+     */
+     std::shared_ptr<CourseGen::FillSamplerType> GetTreeFillSampler();
+
+    /**
      * @brief Returns course heightmap
      * 
      * @return std::shared_ptr<HeightMapType> 
@@ -113,11 +122,11 @@ namespace mgc {
     course::path::CoursePath path;
     course::path::CompoundCurve curve;
     std::shared_ptr<gdterrain::CourseSmoother<gdterrain::HillGenerator, gdterrain::HillGenerator, gdterrain::HillGenerator>> base_terrain;
-
     // samplers
     CourseTerrainPtr fairway_sampler;
     CourseTerrainPtr green_sampler;
     CourseTerrainPtr rough_sampler;
+    std::shared_ptr<FillSamplerType> tree_sampler;
     SandSampler sand_sampler;
     uint64_t seed_;
   };

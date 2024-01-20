@@ -1,6 +1,9 @@
+#define _USE_MATH_DEFINES
 #include "noise/TurbulentDisplace.hpp"
 
 #include <glm/gtc/noise.hpp>
+
+#include <cmath>
 
 // any irrational num
 #define OCTAVE_SCALE_FAC M_SQRT2

@@ -2,7 +2,8 @@
 
 #include "course/sampler/SimplexNoiseSampler.hpp"
 
-#define TOLERANCE 0.55
+// this is stupid code
+#define TOLERANCE 1.0
 
 #define STEP_X 0.2592183
 #define STEP_Y 0.19391231

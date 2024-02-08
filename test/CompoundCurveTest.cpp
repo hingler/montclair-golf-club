@@ -27,7 +27,6 @@ TEST(CompoundCurveTest, SingleCurveTest) {
   const double expected_step = length * step;
   
   for (double t = step; t < 1.0; t += step) {
-    std::cout << t << std::endl;
     current_point = compound.Sample(t);
     reference_point = curve->Sample(t);
 
@@ -59,7 +58,6 @@ TEST(CompoundCurveTest, MultiCurveTest) {
   const double expected_step = length * step;
   
   for (double t = step; t < 3.0; t += step) {
-    std::cout << t << std::endl;
     current_point = compound.Sample(t * 0.3333333333333333);
     reference_point = curve->Sample(glm::mod(t, 1.0));
 

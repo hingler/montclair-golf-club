@@ -17,7 +17,6 @@ TEST(BezierCurveTest, EnsureSamplesRemainConsistent) {
   const double expected_step = length * step;
   
   for (double t = step; t < 1.0; t += step) {
-    std::cout << t << std::endl;
     current_point = curve.Sample(t);
     double dist_covered = glm::length(current_point - last_point);
     EXPECT_NEAR(dist_covered, expected_step, 0.001);

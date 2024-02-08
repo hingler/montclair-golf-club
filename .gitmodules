@@ -10,3 +10,6 @@
 [submodule "lib/googletest"]
 	path = lib/googletest
 	url = git@github.com:google/googletest.git
+[submodule "lib/gog43"]
+	path = lib/gog43
+	url = git@github.com:hingler/gog43.git

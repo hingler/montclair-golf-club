@@ -1,0 +1,16 @@
+Import('env')
+
+env.Append(CPPPATH=[[env.Dir(d) for d in [
+  "lib/googletest/googletest/include", 
+  "lib/googletest/googlemock/include", 
+  "lib/googletest/googletest", 
+  "lib/googletest/googlemock"
+]]])
+
+sources = Glob("lib/googletest/googletest/src/*.cc")
+sources.extend(Glob("lib/googletest/googlemock/src/*.cc"))
+
+library = env.Library("lib/googletest/build/googletest", source=sources)
+
+Default(library)
+Return("library")

@@ -3,18 +3,20 @@
 
 #include "seed/path/node/PathNode.hpp"
 
+#include "seed/path/impl/SeedPathIteratorValue.hpp"
+
 #include <iterator>
 #include <stack>
 
 #include <glm/glm.hpp>
 
-namespace terraingen {
-  class SeedPathIterator {
+namespace mgc {
+  class SeedPathIterator : public SeedPathIteratorValue {
    public:
     using iterator_category = std::forward_iterator_tag;
     using difference_type = std::ptrdiff_t;
 
-    using value_type = glm::dvec2;
+    using value_type = const SeedPathIteratorValue;
     using reference = value_type&;
     using pointer = value_type*;
 
@@ -24,8 +26,8 @@ namespace terraingen {
     SeedPathIterator& operator++();
     SeedPathIterator operator++(int);
 
-    value_type operator*();
-    // operator-> ?
+    reference operator*();
+    pointer operator->();
 
     bool operator==(const SeedPathIterator& other) const;
     bool operator!=(const SeedPathIterator& other) const;
@@ -37,7 +39,7 @@ namespace terraingen {
     // cursor (progress through stack)
 
     int path_cur;
-    const PathNode* current_path;
+    PathNode* current_path;
     std::stack<PathNode*> branch_stack;
   };
 }

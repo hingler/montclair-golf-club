@@ -21,7 +21,7 @@
 // we fetch a shared ref to the root ptr to march the path
 // root ptr manages itr etc (ie seedpath)
 
-namespace terraingen {
+namespace mgc {
   struct BranchNode {
     PathNode* main;
     PathNode* branch;

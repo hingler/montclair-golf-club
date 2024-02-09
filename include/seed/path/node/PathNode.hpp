@@ -12,7 +12,7 @@
 // - does a path node point to the next branch node?
 
 
-namespace terraingen {
+namespace mgc {
   struct BranchNode;
 
   struct PathNode {

@@ -4,7 +4,7 @@
 #include "seed/path/node/PathNode.hpp"
 #include "seed/path/impl/SeedPathIterator.hpp"
 
-namespace terraingen {
+namespace mgc {
   // encompasses the path which a seed will eventually take
   class SeedPath {
    public:

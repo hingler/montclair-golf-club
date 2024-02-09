@@ -3,7 +3,7 @@
 
 #include "seed/path/SeedPath.hpp"
 
-namespace terraingen {
+namespace mgc {
   class SeedPathImpl : public SeedPath {
     public:
      using SeedPath::SeedPath;

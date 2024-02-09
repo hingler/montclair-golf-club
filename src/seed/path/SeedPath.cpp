@@ -1,7 +1,7 @@
 #include "seed/path/SeedPath.hpp"
 #include "seed/path/node/BranchNode.hpp"
 
-namespace terraingen {
+namespace mgc {
 
   static void path_free(PathNode* node);
   static void branch_free(BranchNode* node);

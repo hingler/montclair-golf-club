@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace terraingen {
+namespace mgc {
   // initialize blank
   // initialize with a root path node to build off of
   // return a finalized path (as a seedpath ptr)
@@ -27,17 +27,6 @@ namespace terraingen {
     // if pathnode not provided: use underlying root
     PathNode* current_node;
     std::shared_ptr<SeedPathImpl> underlying;
-
-    // "build" returns underlying w a cast
-    // addpt adds to the pathnode
-    // branch:
-    // - path node pts to new branch
-    // - 2 new paths
-    // - current node = main
-    // - output param new builder with branch path
-
-    // seeds will spawn several paths, i guess, to get something looking like roots
-    // - pick a few candidate directions to pre-search - if they don't look good, then funnel that energy into the more hospitable paths
   };
 }
 

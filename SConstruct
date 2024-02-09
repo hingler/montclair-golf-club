@@ -56,7 +56,8 @@ tests = [
     "SimplexNoiseSamplerTest",
     "TerrainDataTest",
     "SeedPathBuilderTest",
-    "SeedPathIteratorTest"
+    "SeedPathIteratorTest",
+    "SeedPathDrawTest"
 ]
 
 # keep out of lib build?

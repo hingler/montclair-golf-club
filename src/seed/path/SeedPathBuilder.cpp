@@ -2,7 +2,7 @@
 
 #include "seed/path/node/BranchNode.hpp"
 
-namespace terraingen {
+namespace mgc {
 
   SeedPathBuilder::SeedPathBuilder(const glm::dvec2& init_point) 
   : underlying(std::make_shared<SeedPathImpl>(init_point)) 

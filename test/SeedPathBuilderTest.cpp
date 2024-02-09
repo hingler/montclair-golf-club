@@ -8,7 +8,7 @@
 #include "seed/path/node/BranchNode.hpp"
 
 using namespace gog43;
-using namespace terraingen;
+using namespace mgc;
 
 
 class SeedPathBuilderTest : public ::testing::Test {

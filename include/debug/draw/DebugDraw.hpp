@@ -11,6 +11,8 @@
 
 #include "stb_image_write.h"
 
+#include "gog43/Logger.hpp"
+
 namespace mgc {
   // accept a bunch of RGBA samplers
   // write their output to an image
@@ -18,7 +20,7 @@ namespace mgc {
    public:
     template <typename SamplerType>
     void AddSampler(std::shared_ptr<SamplerType> sampler, const glm::dvec4& color) {
-      canvas_list.push_back(std::make_shared<impl::DrawCanvasImpl>(sampler, color));
+      canvas_list.push_back(std::make_shared<impl::DrawCanvasImpl<SamplerType>>(sampler, color));
     }
 
     // creating image:
@@ -42,8 +44,9 @@ namespace mgc {
       memset(temp, 0, dims.x * dims.y * 4 * sizeof(float));
 
       for (int y = 0; y < dims.y; y++) {
+        gog43::print("writing y=", y);
         for (int x = 0; x < dims.x; x++) {
-          glm::dvec2 coord(x * scale + origin.x, y * scale * origin.y);
+          glm::dvec2 coord(x * scale + origin.x, y * scale + origin.y);
 
           glm::dvec4 rolling_sample = glm::dvec4(0, 0, 0, 1);
 

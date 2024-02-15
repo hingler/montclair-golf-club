@@ -23,28 +23,29 @@ namespace mgc {
 
       while (itr != path_->end()) {
         if (itr->jump) {
-          continue;
-        }
-
-        double dist;
-        glm::dvec2 pt_dist = (prev_point - itr->point);
-
-        // last step was a jump - continue
-
-        if (length_squared(pt_dist) < 0.000001) {
-          // points are overlapping - just find dist to whichever
-          dist = length_squared(sample - prev_point);
+          prev_point = itr->point;
         } else {
-          dist = dist_to_line(sample, prev_point, itr->point);
+          double dist;
+          glm::dvec2 pt_dist = (prev_point - itr->point);
+
+          // last step was a jump - continue
+
+          if (length_squared(pt_dist) < 0.000001) {
+            // points are overlapping - just find dist to whichever
+            dist = length_squared(sample - prev_point);
+          } else {
+            dist = dist_to_line(sample, prev_point, itr->point);
+          }
+
+          // update prev point
+          prev_point = itr->point;
+
+          min_dist = glm::min(
+            min_dist,
+            dist
+          );
+
         }
-
-        // update prev point
-        prev_point = itr->point;
-
-        min_dist = glm::min(
-          min_dist,
-          dist
-        );
 
         ++itr;
       }

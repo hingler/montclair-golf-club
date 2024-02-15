@@ -74,9 +74,11 @@ namespace mgc {
           // end of branch
           if (!branch_stack.empty()) {
             // reached branch end, jumping back to main
-            jump = true;
             current_path = branch_stack.top();
             branch_stack.pop();
+
+            // jumped from branch to last main - set jump to true
+            jump = true;
             path_cur = 0;
           } else {
             // end of path!

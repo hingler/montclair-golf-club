@@ -68,3 +68,28 @@ TEST_F(SeedPathDrawTest, StressTest) {
 
   print(m);
 }
+
+TEST_F(SeedPathDrawTest, JumpTest) {
+  SeedPathBuilder b(glm::dvec2(0));
+  b.AddPoint(glm::dvec2(25, 25));
+
+  SeedPathBuilder branch = b.AddBranch();
+
+  branch.AddPoint(glm::dvec2(50, 40));
+  branch.AddPoint(glm::dvec2(25, 50));
+  // will jump back to 25, 25
+
+  b.AddPoint(glm::dvec2(0, 25));
+
+  SeedPathDraw draw(b.Build(), 5.0);
+
+  ASSERT_EQ(draw.Sample(37.5, 32.5), 1.0);
+  ASSERT_EQ(draw.Sample(37.5, 45), 1.0);
+
+  // btwn end of branch and start of branch - on jump, will pass thru this
+  ASSERT_EQ(draw.Sample(25, 32), 0.0);
+}
+
+// work on seed wander
+// - i think "rolling" and "root travel" shuold be separate
+// - plop down a thing and let it do its thing

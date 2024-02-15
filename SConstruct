@@ -42,7 +42,8 @@ demos = [
     "fairway_test",
     "sampler_write_demo",
     "terrain_convert_demo",
-    "gaussian_test"
+    "gaussian_test",
+    "seed_demo"
 ]
 
 tests = [

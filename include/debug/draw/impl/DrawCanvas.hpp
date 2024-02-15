@@ -8,7 +8,7 @@ namespace mgc {
     class DrawCanvas {
       // this is all i want
      public:
-      virtual glm::dvec4 Sample(double x, double y) = 0;
+      virtual glm::dvec4 Sample(double x, double y) const = 0;
     };
   }
 }

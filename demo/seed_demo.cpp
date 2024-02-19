@@ -27,13 +27,47 @@ int main(int argc, char** argv) {
 
   GrowConfig config;
   config.base_energy = 3125;
-  config.branch_angle_degs = 90;
+  config.branch_angle_degs = 65;
   config.rigidity = 0.99;
   config.step_size = 4.5;
-  config.branch_probability = 0.2;
+  config.branch_probability = 0.6;
 
   std::seed_seq sseq(std::initializer_list<int>{142857, 1331, 2442});
 
+  // path gen works, mostly!
+  // what next?
+  // - step along path sequences and make course
+  // - want to re-visit course gen
+  // - bezier path but a gaussian
+  // - sand still the same
+  // handling course gen
+  // - iterate along a path node until we branch?
+  //   - or: just get the path node and iterate along it
+  // - the goal is to get sufficiently distant from surrounding courses, then make our own
+  
+  // course building
+  // - courses fit into feature boxes
+  // - when building a hole: make sure its far enough from all others
+  // continue marching step by step until we hit some threshold yardage, or we encounter a course
+  // take the snippet of resultant points and put a hole on it
+  // - tee box
+  // - fairway (paths, or patches)
+  // - green
+  // - sand patches
+  // box the whole thing in
+  // bounds: we can guess metaball bounds based on thresholds??
+  // alt: use some conservative bounds-estimate
+  // alt2: swap from metaballs to sdfs, and calculate the distance to our feature
+  // - smin - i think sdfs would be better overall
+  // - thinking: how will smin handle overlap??
+
+  // write a little "sdf" component
+
+  // lol i kinda like the idea of writing the sdf workload in rust as its own lib
+  // - caller gets a "struct" representing the sdf
+  // - functional: call funcs to add parts (lines, spheres, etc.)
+  // - functional sample - sample the struct and return!!!
+  // - lolwhynot :3
   auto path = grower.GeneratePaths(glm::dvec2(0, 0), config, sseq);
 
   if (path.size() > 0) {

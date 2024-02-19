@@ -3,6 +3,8 @@
 #include "image/GenericImage.hpp"
 #include "course/sampler/InterpolatingImageSampler.hpp"
 
+#include "sdf_bundle.h"
+
 using namespace image;
 using namespace course;
 using namespace sampler;
@@ -32,6 +34,10 @@ test_data operator*(test_data lhs, float rhs) {
 }
 
 TEST(InterpolatingImageSamplerTest, TestSimpleSample) {
+  // yippee!
+  SDFBundle* b = bundle_get();
+  bundle_free(b);
+  // d
   std::shared_ptr<GenericImage<test_data>> image = std::make_shared<GenericImage<test_data>>(32, 32);
   test_data data;
   for (int i = 0; i < 32; i++) {
@@ -66,3 +72,5 @@ TEST(InterpolatingImageSamplerTest, TestSimpleSample) {
   sample = sampler.Sample(32.0, 75.0);
   EXPECT_NEAR(sample.data, 1007.5, 0.001);
 }
+
+// gen courses now!

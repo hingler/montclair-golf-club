@@ -117,8 +117,10 @@ namespace mgc {
       // pick some arb direction to go
       double branch_direction = (branch_dist(engine) > 0.5 ? 1.0 : -1.0);
 
-      // bias towards larger values
-      double rotation_rads = (0.9 + std::pow(branch_dist(engine), 0.45)) * branch_direction;
+      double branch_mid_rads = global_config.branch_angle_degs * M_PI / 180.0;
+
+      // 0.8 -> 1.2x branch mid (that's ok for this?)
+      double rotation_rads = (0.8 + 0.4 * std::pow(branch_dist(engine), 0.45)) * branch_direction * branch_mid_rads;
       glm::dvec2 new_direction = glm::rotate(info.direction, rotation_rads);
 
       // generate branch path

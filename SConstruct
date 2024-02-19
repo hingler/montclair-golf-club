@@ -10,7 +10,11 @@ gtest = SConscript("./SConstruct_gtest", exports = 'env')
 
 gog = SConscript("lib/gog43/SConstruct", exports = 'env')
 
+sdf = SConscript("lib/sdf-jak/SConstruct", exports = 'env')
+
 test_dir = "test/"
+
+# busted, need to fix build
 
 env.Append(CXXFLAGS=["-std=c++17"])
 
@@ -18,6 +22,7 @@ env.Append(CXXFLAGS=["-std=c++17"])
 # or: export godot env here
 
 # sucks shit
+# dont want to fw rust for a bit
 
 sources = [
 ]
@@ -34,7 +39,7 @@ sources.extend(Glob("src/*/*/*/*.cpp"))
 # dedupe - anything from sources
 sources = list(set(sources))
 
-env.Append(LIBS=[ gog ])
+env.Append(LIBS=[ gog, sdf ])
 
 library = env.Library("build/montclairgolfclub", source=sources)
 

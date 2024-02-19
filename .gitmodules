@@ -13,3 +13,6 @@
 [submodule "lib/gog43"]
 	path = lib/gog43
 	url = git@github.com:hingler/gog43.git
+[submodule "lib/sdf-jak"]
+	path = lib/sdf-jak
+	url = git@github.com:hingler/sdf-jak.git

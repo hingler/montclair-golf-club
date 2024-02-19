@@ -112,4 +112,11 @@ namespace mgc {
 // ex: dealing with water levels?
 // - if we do something ewquiv: water level will be scripted in
 // - ...and we'll add some component telling courses to "avoid water" or treat it as a "height floor" when generating terrain
+
+// course gen
+// - rationale for SDFs is that bounding boxes are pretty simple to calculate, and determinate
+// - math should also (theoretically) be simpler
+//   - (capsules will be a PITA for point lists :[)
+
+
 #endif // SEED_GROWER_H_

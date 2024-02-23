@@ -12,6 +12,8 @@ gog = SConscript("lib/gog43/SConstruct", exports = 'env')
 
 sdf = SConscript("lib/sdf-jak/SConstruct", exports = 'env')
 
+SConscript("lib/extra-corrugated/SConstruct", exports = 'env')
+
 test_dir = "test/"
 
 # busted, need to fix build
@@ -30,6 +32,7 @@ sources = [
 # glob doubles up sources - need to go thru and actually prune these out
 
 # (tba2: add gog43 to the golf club code)
+# lol
 
 sources.extend(Glob("src/*.cpp"))
 sources.extend(Glob("src/*/*.cpp"))

@@ -16,3 +16,6 @@
 [submodule "lib/sdf-jak"]
 	path = lib/sdf-jak
 	url = git@github.com:hingler/sdf-jak.git
+[submodule "lib/extra-corrugated"]
+	path = lib/extra-corrugated
+	url = git@github.com:hingler/extra-corrugated.git

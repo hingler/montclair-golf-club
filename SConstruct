@@ -66,7 +66,10 @@ tests = [
     "TerrainDataTest",
     "SeedPathBuilderTest",
     "SeedPathIteratorTest",
-    "SeedPathDrawTest"
+    "SeedPathDrawTest",
+    "HoleBoxTest",
+    "HoleChunkBoxTest",
+    "HoleChunkManagerTest"
 ]
 
 # keep out of lib build?

@@ -14,7 +14,7 @@ namespace mgc {
   class HoleGenerator {
    public:
     // return a different type
-    virtual std::shared_ptr<SDFHoleBox> GenerateHole(const HoleBox& box) = 0;
+    virtual std::unique_ptr<SDFHoleBox> GenerateHole(const HoleBox& box) = 0;
   };
 }
 

@@ -21,6 +21,9 @@ namespace mgc {
     PathNode(const glm::dvec2& start) { points.push_back(start); }
 
     const glm::dvec2& operator[](size_t i) const { return points[i]; }
+
+    // ibnar
+    const glm::dvec2& cat(size_t i) const { return points[i]; }
     glm::dvec2& at(size_t i) { return points[i]; }
 
     glm::dvec2 get(size_t i) const { return points[i]; }

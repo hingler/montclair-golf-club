@@ -19,6 +19,7 @@ namespace mgc {
 
       double sample = height->Sample(context.point.x, context.point.y);
 
+      // triple the samples, to compute gradient (ie: 24 perlin samples per pixel, w 8 octaves)
       double grad_dx = (height->Sample(dx.x, dx.y) - sample) / GRAD_EPSILON;
       double grad_dy = (height->Sample(dy.x, dy.y) - sample) / GRAD_EPSILON;
 

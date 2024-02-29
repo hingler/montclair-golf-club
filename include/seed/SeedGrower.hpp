@@ -7,7 +7,10 @@
 #include "seed/path/SeedPath.hpp"
 #include "seed/path/SeedPathBuilder.hpp"
 
+#include "direct/DirectorBase.hpp"
+
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 #include <random>
@@ -16,11 +19,16 @@ namespace mgc {
   /// eyup
   class SeedGrower {
    public:
+    typedef std::shared_ptr<SeedPath> path_ptr;
     SeedGrower();
 
     template <typename DirectorType, class... Args>
     void AddDirector(Args... args) {
-      directors.push_back(std::make_unique<DirectorType>(args...));
+      static_assert(std::is_base_of<DirectorBase, DirectorType>::value);
+      // create raw ptr
+      DirectorType* d = new DirectorType(args...);
+      // delegate ownership to this unique ptr instance
+      directors.push_back(std::unique_ptr<DirectorBase>(d));
     }
 
     /**
@@ -30,50 +38,11 @@ namespace mgc {
      * @param config - configuration for this generations
      * @return std::vector<std::shared_ptr<SeedPath>>
      */
-    std::vector<std::shared_ptr<SeedPath>> GeneratePaths(const glm::dvec2& init_point, const GrowConfig& config, std::seed_seq& sseq);
-
-    // generate func - receive a config and return an array of paths
-    // - delegate function: pass rigidity, branch dist, and energy
-    // - run some time, make a branch, and then recur
-
-    // course gen
-    // - just step along and try to make a hole, greedily
-    // - looking at real courses: "branches" tend to be longer, and split less
-    // - (handle course gen appropriately)
-
-    // how do we ensure course variety?
-    // - a. generate as long as we can, and trim nodes down
-    // - b. build "node chains" as we go, fill them in once we reach a termination point
-    // - c. pre-determine a "yardage" and generate a course which matches it
-    //   - if we're short: try to fill it in
-    // - d. sliding yardage - get a stretch of "path length" to fill in with holes
-    //   - like this the most - seems more resilient
-    //   - eff: we go step by step, and append bits to our final yardage
-    //   - once we have a sub-path: try to fill in some holes on that
-    //   - start point is first safe point, end point is last safe point (or term)
-    //   - yeah i like this : )
-    // - e. try to generate courses within path nodes
-    //   - each node represents one "hole"
-    //   - instead of generating w a prespec'd branch length, we generate w a given yardage
-    //     - on complete: we either branch, or we don't
-    //     - if we run out of energy, just terminate early
-    //     - instead of a branching dist, use a branching probability (lower for less hospitable terrain)
-
-    //   - for course gen: leave some buffer space on the initial end (configurable i think)
-    //     - when we go to generate the course: generate dynamically based on surrounding territory, and cut short if we have to
-
-    //     - generate by total dist, not by dist traveled?
-
-    //   - alt: will the courses be a bit too rigid? (ie: no dog legs???)
-
-    //     - i think we'll be fine
-    //     - i think: could introduce a turbulent director to push thingsd around a bit
-
-
-    // wander logic
-    // - courses tend to twist a bit more
-    // - avoiding self-intersection when generating paths? eh
-    // - i think just go with longer branch dists, larger angles
+    std::vector<path_ptr> GeneratePaths(
+      const glm::dvec2& init_point,
+      const GrowConfig& config,
+      std::seed_seq& sseq
+    ) const;
 
     // return gradient as sampled/weighted from components. mag >= 1.0.
     glm::dvec2 SampleDirection(const DirectorInfo& info) const;
@@ -101,8 +70,9 @@ namespace mgc {
       const glm::dvec2& init_point,
       const glm::dvec2& init_direction,
       double init_energy,
-      const GrowConfig& global_config
-    );
+      const GrowConfig& global_config,
+      std::mt19937_64& local_engine
+    ) const;
 
 
     std::uniform_real_distribution<double> len_dist = std::uniform_real_distribution(150.5, 675.0);

@@ -5,6 +5,10 @@
 
 #include "util/LineUtil.hpp"
 
+#include "seed/path/node/PathNode.hpp"
+
+#include "gog43/Logger.hpp"
+
 #include <algorithm>
 #include <limits>
 #include <vector>
@@ -19,11 +23,8 @@ namespace mgc {
   }
   class HoleBox : public cg::FeatureBox {
    public:
+    HoleBox(const PathNode* path, double padding, size_t seed) : HoleBox(HoleBox::GetPathPoints(path), padding, seed) {}
     HoleBox(const std::vector<glm::dvec2>& path, double padding, size_t seed) : HoleBox(HoleBox::GetConfig(path, padding), path, padding, seed) {}
-    // how do we want to handle path? i think it should be box-local lo
-    //
-    //
-    // seeding this?
 
     typedef std::vector<glm::dvec2>::const_iterator iterator;
 
@@ -52,6 +53,16 @@ namespace mgc {
     : cg::FeatureBox(config.start, (config.end - config.start), 1.0f, 0.01f, 1.0f),
       path(HoleBox::MovePathToLocal(path, config.start)), padding(padding), seed(seed)
     {}
+
+    static std::vector<glm::dvec2> GetPathPoints(const PathNode* input) {
+      std::vector<glm::dvec2> output;
+      output.reserve(input->size() + 1);
+      for (size_t i = 0; i < input->size(); i++) {
+        output.push_back(input->cat(i));
+      }
+
+      return output;
+    }
 
     bool TestPadding_local(const glm::dvec2& point_local) const {
       double dist = std::numeric_limits<double>::max();

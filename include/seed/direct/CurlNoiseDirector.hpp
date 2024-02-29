@@ -8,7 +8,12 @@
 namespace mgc {
   class CurlNoiseDirector : public GradNormalDirector<_impl::SimplexHeightFunc> {
    public:
-    CurlNoiseDirector(size_t octaves, double weight) : GradNormalDirector(std::make_shared<_impl::SimplexHeightFunc>(octaves), weight) {}
+    CurlNoiseDirector(
+      size_t octaves, 
+      double amplitude, 
+      double scale, 
+      double weight
+    ) : GradNormalDirector(std::make_shared<_impl::SimplexHeightFunc>(octaves, amplitude, scale), weight) {}
   };
 }
 

@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
   // - iterate along a path node until we branch?
   //   - or: just get the path node and iterate along it
   // - the goal is to get sufficiently distant from surrounding courses, then make our own
-  
+
   // course building
   // - courses fit into feature boxes
   // - when building a hole: make sure its far enough from all others

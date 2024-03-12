@@ -3,7 +3,6 @@
 #include "seed/hole/impl/SimplePathParser.hpp"
 #include <random>
 
-#include "gog43/Logger.hpp"
 
 using namespace gog43;
 
@@ -45,11 +44,13 @@ namespace mgc {
 
     // something about this is a bit "wordy" - might generate a list of seeds in a separate func and return that
     for (const PathNode*& node : nodes) {
-      // bad values
-      results.push_back(HoleBox(node, 48.0, 123));
+      // tba: unify this padding param and the "threshiold dist"
+      // tba: resize capsule - sizes per point?
+      // tba: add some turbulent displacement on samples
+      results.push_back(HoleBox(node, config.box_padding, 123));
     }
 
-    return std::make_unique<HoleChunkBox>(results);
+    return std::make_unique<HoleChunkBox>(results, chunk);
     // lastly: create boxes
   }
 

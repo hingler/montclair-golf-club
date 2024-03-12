@@ -29,7 +29,7 @@ TEST_F(HoleChunkBoxTest, BasicTest) {
   holes.push_back(get(glm::dvec2(0), glm::dvec2(32), 0.0));
   holes.push_back(get(glm::dvec2(-16), glm::dvec2(40), 0.0));
 
-  HoleChunkBox box(holes);
+  HoleChunkBox box(holes, glm::ivec2(0));
 
   glm::dvec2 origin = box.GetOrigin();
   glm::dvec2    end = box.GetEnd();
@@ -48,7 +48,7 @@ TEST_F(HoleChunkBoxTest, UnevenTest) {
   holes.push_back(get(glm::dvec2(37, 21), glm::dvec2(15, 21), 4.0));
   holes.push_back(get(glm::dvec2(81, 22), glm::dvec2(44, 22), 0.0));
 
-  HoleChunkBox box(holes);
+  HoleChunkBox box(holes, glm::ivec2(0, 0));
 
   glm::dvec2 origin = box.GetOrigin();
   glm::dvec2    end = box.GetEnd();

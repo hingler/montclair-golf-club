@@ -17,15 +17,24 @@ class HoleChunkManagerTest : public ::testing::Test {
   }
 };
 
-// create a chunk with a single seed - confirm that boxes align with expectations
-// create a chunk with multiple seeds, same thing
+// "seems" to be working fine rn
+// - need to write up an overlap tester ✅
+// - need to confirm that it works as expected (test)
+// - need to generate SDF holes (code in place)
+// - need to generate samplers from those (easy enough - converter in place)
+// once that's done: need to write up some orchestration logic, (tba)
+// - mesh data + splat data currently run sample by sample
+// - modify to utilize
+// ...to bound it all up in something sampler-like
 
-// up next
-// - need to create component to fetch hole boxes and turn them into SDF boxes
-// - need to create component which tests against neighbor hole boxes + local SDF boxes
-// - need to create component which transforms sdf boxes into sampler boxes, and wraps them up
-//   - down the line: spawn/despawn chunks automagically?
-//
+// current impl
+// - hole chunk manager returns hole chunk boxes
+// - overlap test receives neighbors, and sdf multisampler
+// - generate holes, insert SDFs as we go
+// - once SDFs are complete, then convert to samples and insert into final multisampler
+// generation algo
+// - optional function call (if supported) pre-caches chunk data for sampling
+// - cache positions, then sample cache
 
 using namespace mgc;
 

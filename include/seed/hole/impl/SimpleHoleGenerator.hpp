@@ -1,10 +1,10 @@
 #ifndef SIMPLE_HOLE_GENERATOR_H_
 #define SIMPLE_HOLE_GENERATOR_H_
 
-#include "seed/hole/HoleGenerator.hpp"
+#include "seed/hole/gen/HoleGenerator.hpp"
 
 #include "seed/hole/impl/SimpleSDFHoleBuilder.hpp"
-#include "seed/hole/store/OverlapTester.hpp"
+#include "seed/hole/overlap/OverlapTester.hpp"
 
 #include "traits/mgc_sampler.hpp"
 
@@ -22,17 +22,26 @@ namespace mgc {
 
     std::unique_ptr<SDFHoleBox> GenerateHole(const HoleBox& box) override {
       HoleBox::iterator itr = box.begin();
-      while (itr != box.end() && tester->Test(*itr)) {
+      // testing against local coordinates!!! test global instead
+      while (itr != box.end() && tester->Test(*itr + box.GetOrigin())) {
         ++itr;
       }
 
+      if (itr == box.end()) {
+        // could not create - don't try to sample!
+        return std::unique_ptr<SDFHoleBox>(nullptr);
+      }
+
       // point get
+      // absolute points
       std::vector<glm::dvec2> points;
       points.push_back(*itr);
-      while (itr != box.end() && !tester->Test(*(++itr))) {
+      while (itr != box.end() && !tester->Test(*(itr) + box.GetOrigin())) {
         points.push_back(*itr);
         ++itr;
       }
+
+      // min threshold - no maximum threshold
 
       double min_dist = glm::length(points[points.size() - 1] - points[0]);
       if (min_dist > MIN_COURSE_LEN) {
@@ -40,7 +49,7 @@ namespace mgc {
       }
 
       // couldn't create course
-      return std::make_unique<SDFHoleBox>(nullptr);
+      return std::unique_ptr<SDFHoleBox>(nullptr);
     }
 
     // i guess this is good : )

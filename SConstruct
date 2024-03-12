@@ -51,7 +51,8 @@ demos = [
     "sampler_write_demo",
     "terrain_convert_demo",
     "gaussian_test",
-    "seed_demo"
+    "seed_demo",
+    "course_demo"
 ]
 
 tests = [
@@ -69,17 +70,18 @@ tests = [
     "SeedPathDrawTest",
     "HoleBoxTest",
     "HoleChunkBoxTest",
-    "HoleChunkManagerTest"
+    "HoleChunkManagerTest",
+    "SCPCTest"
 ]
 
 # keep out of lib build?
 env.Append(LIBS=[ gtest ])
+baseDir = Dir('#').abspath
 
 for demo in demos:
     print(demo)
-    Default(env.Program("build/" + demo, sources + ["demo/" + demo + ".cpp"]))
+    Default(env.Program(baseDir + "/build/" + demo, sources + ["demo/" + demo + ".cpp"]))
 
-baseDir = Dir('#').abspath
 
 test_sources = [test_dir + test + ".cpp" for test in tests]
 Default(env.Program(baseDir + "/build/GTEST_mgc", test_sources))

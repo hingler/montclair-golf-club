@@ -14,14 +14,14 @@ namespace mgc {
 
     void AddCircle(double x, double y, double radius);
     void AddCapsule(const glm::dvec2* elements, size_t count, double radius);
-    double Sample(double x, double y);
+    double Sample(double x, double y) const;
 
     SDFBundle* raw_ptr() { return bundle; }
 
     ~Bundle();
 
-    Bundle(const Bundle& other) = delete;
-    Bundle& operator=(const Bundle& other) = delete;
+    Bundle(const Bundle& other);
+    Bundle& operator=(const Bundle& other);
 
     Bundle(Bundle&& other);
     Bundle& operator=(Bundle&& other);

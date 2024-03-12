@@ -35,6 +35,7 @@ namespace mgc {
           if (util::length_squared(pt_dist) < 0.000001) {
             // points are overlapping - just find dist to whichever
             dist = util::length_squared(sample - prev_point);
+
           } else {
             dist = util::dist_to_line(sample, prev_point, itr->point);
           }

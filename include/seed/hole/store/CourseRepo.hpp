@@ -1,7 +1,7 @@
 #ifndef COURSE_REPO_H_
 #define COURSE_REPO_H_
 
-#include "seed/hole/store/OverlapTester.hpp"
+#include "seed/hole/overlap/OverlapTester.hpp"
 
 #include "seed/hole/HoleBox.hpp"
 #include "seed/path/node/PathNode.hpp"
@@ -33,8 +33,8 @@ namespace mgc {
     //   - also: need SDFs for neighboring chunks lol
     //   - alt1: convert hole box -> hole SDF -> hole terrain based on proximity to sample point
     //   - if the hole box is a conservative estimate then we can just fetch from chunk write
-    //   
-    // - start generating hole boxes in sampled chunk - as we go, 
+    //
+    // - start generating hole boxes in sampled chunk - as we go,
 
     // options
     // - wrap chunk seeds in a box - if we touch that box, THEN create SDFs for that chunk.
@@ -43,7 +43,7 @@ namespace mgc {
     // - SDF -> Sampler is super easy right now I think.
 
     // impl
-    // - on sample, generate paths for 3x3 chunks 
+    // - on sample, generate paths for 3x3 chunks
     //   - (queue any chunks we're inside, run that until complete)
     //   - store the resultant paths somewhere, assc'd with their resp chunks
     //   - bounding box
@@ -59,11 +59,12 @@ namespace mgc {
 
     // gen
     // - we generate hole boxes in a 3x3 radius
-    // 
+    //
 
     std::shared_ptr<const HoleBox> ConvertPath(const std::vector<glm::dvec2>& path);
     bool Test(const glm::dvec2& point) const override;
    private:
+    // i dont think we're using this class lole
     cg::MultiSampler<HoleBox> store;
   };
 }

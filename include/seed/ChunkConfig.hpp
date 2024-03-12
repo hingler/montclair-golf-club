@@ -13,6 +13,9 @@ namespace mgc {
 
     // size of each chunk, in units - origin is always 0
     double chunk_size;
+
+    // padding on each hole box - for generation
+    double box_padding = 256.0;
   };
 }
 

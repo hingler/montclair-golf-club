@@ -5,6 +5,9 @@
 
 #include "corrugate/box/BaseSmoothingSamplerBox.hpp"
 #include "corrugate/box/SmoothingTerrainBox.hpp"
+
+
+#include "seed/hole/impl/SDFThresholdSampler.hpp"
 #include <corrugate/sampler/splat/SplatManager.hpp>
 
 namespace mgc {
@@ -28,11 +31,15 @@ namespace mgc {
    public:
     SDFHoleBox(const cg::FeatureBox& source) : cg::FeatureBox(source) {}
     virtual std::unique_ptr<cg::BaseSmoothingSamplerBox> Convert() const = 0;
+    /// return distance to nearest feature in box
+    virtual double Dist(const glm::dvec2& point) const = 0;
+
+    virtual ~SDFHoleBox() {}
   };
 
   namespace _impl {
     struct ZeroSampler {
-      double Sample(double x, double y) {
+      double Sample(double x, double y) const {
         return 0.0;
       }
     };
@@ -49,11 +56,18 @@ namespace mgc {
     ) : SDFHoleBox(source), fairway(fairway), green(green), sand(sand) {}
 
     std::unique_ptr<cg::BaseSmoothingSamplerBox> Convert() const override {
+      // eventuall: use holeterrain type to map sdf -> terrain
       auto height = std::make_shared<_impl::ZeroSampler>();
       auto fill = std::make_shared<_impl::ZeroSampler>();
       auto splat = std::make_shared<cg::SplatManager>();
 
-      splat->BindSamplers(green, fairway, sand, std::make_shared<_impl::ZeroSampler>(), 0);
+      splat->BindSamplers(
+        std::make_shared<SDFThresholdSampler>(green), 
+        std::make_shared<SDFThresholdSampler>(fairway), 
+        std::make_shared<SDFThresholdSampler>(sand),
+        std::make_shared<_impl::ZeroSampler>(),
+        0
+      );
 
       // tba: return box lol hehe haha r
 
@@ -70,11 +84,23 @@ namespace mgc {
       );
     }
 
+    double Dist(const glm::dvec2& point) const override {
+      // return min of all distances
+
+      // need to convert to local space
+
+      glm::dvec2 eff_point = point - GetOrigin();
+      return std::min({
+        fairway->Sample(eff_point.x, eff_point.y),
+        green->Sample(eff_point.x, eff_point.y),
+        sand->Sample(eff_point.x, eff_point.y)
+      });
+    }
+
    private:
     std::shared_ptr<FT> fairway;
     std::shared_ptr<GT> green;
     std::shared_ptr<ST> sand;
-
   };
 }
 

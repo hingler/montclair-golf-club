@@ -6,6 +6,7 @@ namespace mgc {
       return line.x * line.x + line.y * line.y;
     }
 
+    // squared dist!!!!!!!!!!!!!!!!!!!!!!
     double dist_to_line(const glm::dvec2& sample, const glm::dvec2& start, const glm::dvec2& end) {
       // project dist to point onto line, subtract projected component
       // if projection is not on the line, then use dist to point
@@ -13,8 +14,7 @@ namespace mgc {
 
       glm::dvec2 line_proj = glm::normalize(end - start);
 
-      // dot gives us mag of tangent component
-      // subtract line to get point
+      // perpendicular point in global space
       glm::dvec2 perp_point = end - (glm::dot(e_dist, line_proj) * line_proj);
 
       glm::dvec2 bb_min(glm::min(start.x, end.x), glm::min(start.y, end.y));

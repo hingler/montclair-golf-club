@@ -9,6 +9,7 @@
 
 #include "seed/hole/HoleChunkBox.hpp"
 
+#include <mutex>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -50,8 +51,6 @@ namespace mgc {
       return hole_map.size();
     }
 
-    // need to
-
    private:
     ptr_type CacheNeighbors(const glm::ivec2& chunk, output_type* output = nullptr);
 
@@ -62,7 +61,15 @@ namespace mgc {
     SeedChunkFactory factory;
     ChunkConfig config;
     cg::MultiSampler<HoleChunkBox> hole_map;
-    std::unordered_map<glm::ivec2, ptr_type> hole_cache;
+
+    typedef std::unordered_map<glm::ivec2, ptr_type> cache_type;
+    cache_type hole_cache;
+    std::recursive_mutex cache_mutex;
+
+    typedef std::shared_ptr<std::recursive_mutex> lock_ptr;
+    typedef std::unordered_map<glm::ivec2, lock_ptr> lock_cache_type;
+    lock_cache_type lock_cache;
+
   };
 }
 

@@ -67,7 +67,7 @@ namespace mgc {
     bool TestPadding_local(const glm::dvec2& point_local) const {
       double dist = std::numeric_limits<double>::max();
       for (size_t i = 1; i < path.size(); i++) {
-        dist = std::min(dist, util::dist_to_line(point_local, path.at(i - 1), path.at(i)));
+        dist = std::min(dist, glm::sqrt(util::dist_to_line(point_local, path.at(i - 1), path.at(i))));
       }
 
       return (dist < padding);

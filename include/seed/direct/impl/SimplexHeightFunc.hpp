@@ -10,14 +10,14 @@ namespace mgc {
       // modify decay?
       // later lole
       SimplexHeightFunc(
-        size_t octaves, 
+        size_t octaves,
         double amplitude,
         double scale
       ): octaves(octaves), amplitude(amplitude), scale(scale) {}
 
       // https://thebookofshaders.com/13/
       // https://www.redblobgames.com/maps/terrain-from-noise/#octaves
-      double Sample(double x, double y) {
+      double Sample(double x, double y) const {
         glm::dvec2 pos(x, y);
         // apply scale first
         pos /= scale;
@@ -47,4 +47,3 @@ namespace mgc {
 // - plug in a height func (prob some simplex noise)
 // - trace it out and make sure that we follow it
 //   - (ie: demo app :3)
-

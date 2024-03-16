@@ -62,9 +62,9 @@ namespace mgc {
       auto splat = std::make_shared<cg::SplatManager>();
 
       splat->BindSamplers(
-        std::make_shared<SDFThresholdSampler>(green), 
-        std::make_shared<SDFThresholdSampler>(fairway), 
-        std::make_shared<SDFThresholdSampler>(sand),
+        std::make_shared<SDFThresholdSampler<FT>>(fairway),
+        std::make_shared<SDFThresholdSampler<GT>>(green),
+        std::make_shared<SDFThresholdSampler<ST>>(sand),
         std::make_shared<_impl::ZeroSampler>(),
         0
       );

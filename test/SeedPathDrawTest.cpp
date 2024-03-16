@@ -60,11 +60,11 @@ TEST_F(SeedPathDrawTest, StressTest) {
 
   double m = 0.0;
 
-  // for (double i = -128; i < 128; i += 0.45) {
-  //   for (double j = -128; j < 128; j += 0.43) {
-  //     m += draw.Sample(i, j);
-  //   }
-  // }
+  for (double i = -128; i < 128; i += 0.45) {
+    for (double j = -128; j < 128; j += 0.43) {
+      m += draw.Sample(i, j);
+    }
+  }
 
   print(m);
 }

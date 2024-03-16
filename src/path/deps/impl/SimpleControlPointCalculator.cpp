@@ -9,13 +9,13 @@ namespace mgc {
   namespace deps {
     namespace impl {
 
-      std::vector<glm::dvec2> SimpleControlPointCalculator::GetControlPoints(
+      std::vector<size_t> SimpleControlPointCalculator::GetControlPoints(
         const std::vector<glm::dvec2>& course_path,
-        size_t seed
+        std::mt19937_64& engine
       ) const {
         // everything can be inferred from stops
         if (course_path.size() <= 0) {
-          return std::vector<glm::dvec2>();
+          return std::vector<size_t>();
         }
         double len_sum = 0;
         for (size_t i = 1; i < course_path.size(); i++) {
@@ -25,8 +25,8 @@ namespace mgc {
         size_t par = GetPar(len_sum);
         // bias spacing greedily
         // want to ensure that we don't go above, like, 240 yards to next hole
-        std::vector<glm::dvec2> res;
-        res.push_back(course_path.at(0));
+        std::vector<size_t> res;
+        res.push_back(0);
 
         // dist thus far
         double len_acc = 0.0;
@@ -34,8 +34,6 @@ namespace mgc {
         double len_cur = 0.0;
         // set a min, set a max
         size_t index = 1;
-        // shot count
-        engine.seed(seed);
         for (size_t s = 1; s < (par - 2); s++) {
           // set arb len threshold
           len_cur = 0.0;
@@ -52,7 +50,8 @@ namespace mgc {
           std::uniform_real_distribution<double> yardage_dist(len_min, len_max);
 
           double len_target = yardage_dist(engine);
-          while (index < course_path.size() && len_cur < len_target) {
+          // edge case: index reaches end of the course
+          while (index < (course_path.size() - 1) && len_cur < len_target) {
             double inc = glm::length(course_path.at(index) - course_path.at(index - 1));
             len_acc += inc;
             len_cur += inc;
@@ -60,10 +59,10 @@ namespace mgc {
             index++;
           }
 
-          res.push_back(course_path.at(index));
+          res.push_back(index);
         }
 
-        res.push_back(course_path.at(course_path.size() - 1));
+        res.push_back(course_path.size() - 1);
 
         return res;
       }

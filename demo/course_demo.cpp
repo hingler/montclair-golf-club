@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
   // - obv: need a teebox, and a green
 
   // 60 kilometers drawn
-  draw.WriteImage(glm::dvec2(-2048, -3120), glm::ivec2(512, 512), 12.0, "courses.jpg");
+  draw.WriteImage(glm::dvec2(-1024, -1560), glm::ivec2(2048, 2048), 12.0, "courses.jpg");
 
   // chunk draw
   // call sample - don't mind the cost

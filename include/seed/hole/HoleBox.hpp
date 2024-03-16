@@ -57,8 +57,18 @@ namespace mgc {
     static std::vector<glm::dvec2> GetPathPoints(const PathNode* input) {
       std::vector<glm::dvec2> output;
       output.reserve(input->size() + 1);
-      for (size_t i = 0; i < input->size(); i++) {
-        output.push_back(input->cat(i));
+      glm::dvec2 last_point = input->cat(0);
+      output.push_back(last_point);
+      for (size_t i = 1; i < input->size(); i++) {
+        const glm::dvec2& current_point = input->cat(i);
+        if (glm::length(current_point - last_point) > 0.001) {
+          // invariant: consecutive points are not overlapping
+          output.push_back(current_point);
+          // update only if we assign
+          last_point = current_point;
+        } else {
+          gog43::print("pruned point from array!");
+        }
       }
 
       return output;

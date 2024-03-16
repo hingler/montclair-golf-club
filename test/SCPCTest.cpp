@@ -38,12 +38,13 @@ TEST_F(SCPCTest, ControlPointTest) {
   }
 
   SimpleControlPointCalculator c;
-  auto controls = c.GetControlPoints(point_list, 3);
+  std::mt19937_64 engine;
+  auto controls = c.GetControlPoints(point_list, engine);
 
 
 
-  ASSERT_NEAR(controls.at(0).x, point_list.at(0).x, 0.00001);
-  ASSERT_NEAR(controls.at(0).y, point_list.at(0).y, 0.00001);
+  ASSERT_EQ(controls.at(0), 0);
+  ASSERT_EQ(controls.at(0), 0);
 
   size_t cur_points =   0;
   size_t cur_controls = 0;
@@ -52,8 +53,8 @@ TEST_F(SCPCTest, ControlPointTest) {
 
   while (cur_points < point_list.size() && cur_controls < controls.size()) {
     if (
-      std::abs(point_list.at(cur_points).x - controls.at(cur_controls).x) < 0.0001
-      && std::abs(point_list.at(cur_points).y - controls.at(cur_controls).y) < 0.0001
+      std::abs(point_list.at(cur_points).x - point_list.at(controls.at(cur_controls)).x) < 0.0001
+      && std::abs(point_list.at(cur_points).y - point_list.at(controls.at(cur_controls)).y) < 0.0001
     ) {
       gog43::print("got it!");
       ++cur_controls;
@@ -64,7 +65,5 @@ TEST_F(SCPCTest, ControlPointTest) {
 
   ASSERT_EQ(cur_controls, controls.size());
 
-  ASSERT_NEAR(controls.at(controls.size() - 1).x, point_list.at(point_list.size() - 1).x, 0.00001);
-  ASSERT_NEAR(controls.at(controls.size() - 1).y, point_list.at(point_list.size() - 1).y, 0.00001);
-
+  ASSERT_EQ(controls.at(controls.size() - 1), point_list.size() - 1);
 }

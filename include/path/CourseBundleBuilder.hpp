@@ -1,10 +1,12 @@
 #ifndef COURSE_BUNDLE_BUILDER_H_
 #define COURSE_BUNDLE_BUILDER_H_
 
+#include "corrugate/FeatureBox.hpp"
 #include "path/CourseBundle.hpp"
 #include "path/deps/ControlPointCalculator.hpp"
 
 #include <memory>
+#include <random>
 #include <vector>
 
 namespace mgc {
@@ -24,7 +26,8 @@ namespace mgc {
 
     CourseBundle Convert(
       const std::vector<glm::dvec2>& point_list,
-      size_t seed
+      std::mt19937_64& engine,
+      const cg::FeatureBox& box
     ) const;
 
    private:

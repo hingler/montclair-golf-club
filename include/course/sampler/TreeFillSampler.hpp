@@ -3,7 +3,7 @@
 
 #include "type/sampler_type.hpp"
 
-#include "debug/Logger.hpp"
+#include "gog43/Logger.hpp"
 
 #include <algorithm>
 #include <cmath>

@@ -1,6 +1,7 @@
 #ifndef SIMPLE_HOLE_GENERATOR_H_
 #define SIMPLE_HOLE_GENERATOR_H_
 
+#include "gog43/Logger.hpp"
 #include "seed/hole/gen/HoleGenerator.hpp"
 
 #include "seed/hole/impl/SimpleSDFHoleBuilder.hpp"
@@ -22,13 +23,11 @@ namespace mgc {
 
     std::unique_ptr<SDFHoleBox> GenerateHole(const HoleBox& box) override {
       HoleBox::iterator itr = box.begin();
-      // testing against local coordinates!!! test global instead
       while (itr != box.end() && tester->Test(*itr + box.GetOrigin())) {
         ++itr;
       }
 
       if (itr == box.end()) {
-        // could not create - don't try to sample!
         return std::unique_ptr<SDFHoleBox>(nullptr);
       }
 

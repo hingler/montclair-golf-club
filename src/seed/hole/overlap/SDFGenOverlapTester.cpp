@@ -1,6 +1,7 @@
 #include "seed/hole/overlap/SDFGenOverlapTester.hpp"
 
 #include "seed/hole/impl/chunk_hash.hpp"
+#include "util/AABB.hpp"
 
 namespace mgc {
   SDFGenOverlapTester::SDFGenOverlapTester(
@@ -27,11 +28,6 @@ namespace mgc {
 
     sdfs->FetchPoint(point, intersect_test);
     for (auto& sdf : intersect_test) {
-
-      // current config: if it's inside the box, it'll return true - else, false
-      // (shouldn't do that)
-
-      // draw seed paths on top?????
       if (sdf->Dist(point) < config.box_padding) {
         return true;
       }

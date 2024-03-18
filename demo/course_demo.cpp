@@ -30,11 +30,11 @@ int main(int argc, char** argv) {
   grower->AddDirector<GradNormalDirector<_impl::SimplexHeightFunc>>(height, 1.0);
 
   GrowConfig config;
-  config.base_energy = 3125;
+  config.base_energy = 2841;
   config.branch_angle_degs = 65;
-  config.rigidity = 0.99;
-  config.step_size = 4.5;
-  config.branch_probability = 0.6;
+  config.rigidity = 0.98;
+  config.step_size = 4.6;
+  config.branch_probability = 0.5;
 
   ChunkConfig chunk_config;
   chunk_config.chunk_size = 4096;
@@ -48,7 +48,11 @@ int main(int argc, char** argv) {
     config
   );
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 4; i++) {
+    // indiv samples are about 30us
+    // - 35 / ms (not great)
+    // - 35k / sec (not great either)
+    // bulk of the time is spent on sampling - not box fetch : (
     auto c_draw = std::make_shared<SeedCreatorDraw<_impl::SimplexHeightFunc>>(
       c,
       0,
@@ -82,8 +86,17 @@ int main(int argc, char** argv) {
   // - obv: need a teebox, and a green
 
   // 60 kilometers drawn
-  draw.WriteImage(glm::dvec2(-1024, -1560), glm::ivec2(2048, 2048), 12.0, "courses.jpg");
+  // 12secs w present config to draw ~240k pixels (960k samples -> 80k samples / thread / sec (that's ok!))
+  // 1024x -> about 12 seconds to generate - not awful! (768pix in 30ms)
 
+  // move to cpp: about 120k pixels per second (480k samples)
+  // much more reasonable - wtf was i doing in rust to make it run so shit?????
+  //
+  // at higher scales, more paths: about 70k pixels / second (sample time of ~ 10us)
+  // - 280k samples / second - would take 4secs for a single thread to crunch a pixel
+  benchStart("draw_time");
+  draw.WriteImage(glm::dvec2(-1024, -1560), glm::ivec2(4096, 4096), 15.0, "courses.jpg");
+  benchEnd("draw_time");
   // chunk draw
   // call sample - don't mind the cost
 }

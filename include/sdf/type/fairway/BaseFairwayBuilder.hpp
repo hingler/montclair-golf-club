@@ -24,7 +24,7 @@ namespace mgc {
        void CreateCapsules(
          const CourseBundle& bundle,
          std::mt19937_64& engine,
-         const std::shared_ptr<Bundle>& output
+         const std::shared_ptr<CPPBundle>& output
        ) const;
     };
   }

@@ -6,15 +6,9 @@
 
 #include "seed/hole/HoleBox.hpp"
 
+#include "util/AABB.hpp"
+
 namespace mgc {
-  // Wraps some number of generated holes
-  namespace _impl {
-    // bounding box for hole data
-    struct HoleBoxAABB {
-      glm::dvec2 origin;
-      glm::dvec2 size;
-    };
-  }
 
   class HoleChunkBox : public cg::FeatureBox {
    public:
@@ -30,6 +24,7 @@ namespace mgc {
     // fiugh
     bool Test(const glm::dvec2& point) const;
 
+
     const glm::ivec2 chunk;
     // z index equiv - for sdf gen
     // how to gen?
@@ -38,9 +33,9 @@ namespace mgc {
     const size_t priority_hash;
    private:
     // priv call - receives pre-calculated origin and size
-    HoleChunkBox(const _impl::HoleBoxAABB& bb, const std::vector<HoleBox>& holes, const glm::ivec2& chunk);
+    HoleChunkBox(const AABB& bb, const std::vector<HoleBox>& holes, const glm::ivec2& chunk);
     // contains holes, in global space
-    static _impl::HoleBoxAABB GetBoundingBox(const std::vector<HoleBox>& holes);
+    static AABB GetBoundingBox(const std::vector<HoleBox>& holes);
     cg::MultiSampler<HoleBox> holes;
   };
 }

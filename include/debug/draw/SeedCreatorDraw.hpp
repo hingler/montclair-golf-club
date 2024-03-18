@@ -1,6 +1,7 @@
 #ifndef SEED_CREATOR_DRAW_H_
 #define SEED_CREATOR_DRAW_H_
 
+#include "gog43/Logger.hpp"
 #include "seed/SeedBasedHoleCreator.hpp"
 namespace mgc {
 

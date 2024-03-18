@@ -10,6 +10,7 @@
 #include "corrugate/MultiSampler.hpp"
 
 #include <memory>
+#include <vector>
 
 // provide as a builder? a bit iffy
 namespace mgc {

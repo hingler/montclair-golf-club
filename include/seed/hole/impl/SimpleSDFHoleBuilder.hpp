@@ -54,8 +54,6 @@ namespace mgc {
         engine
       );
 
-      gog43::print("point count: ", points.size());
-
       auto builder = SDFBuilder(
         fairway,
         green,

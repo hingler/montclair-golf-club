@@ -30,7 +30,7 @@ namespace mgc {
       // once we pick a point: i think the goal should be to aim for a "rough shape" vs a blob
       // (tba ig)
 
-      auto res = std::make_shared<Bundle>(23.5);
+      auto res = std::make_shared<CPPBundle>(23.5);
 
       // for placing sand
       // placement along cross axis

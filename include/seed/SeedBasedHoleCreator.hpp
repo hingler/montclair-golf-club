@@ -5,6 +5,7 @@
 #include "corrugate/box/BaseSmoothingSamplerBox.hpp"
 #include "corrugate/sampler/DataSampler.hpp"
 #include "corrugate/sampler/SmoothingMultiBoxSampler.hpp"
+#include "gog43/Logger.hpp"
 #include "seed/hole/HoleChunkConverter.hpp"
 #include "seed/hole/HoleChunkManager.hpp"
 #include <memory>
@@ -51,9 +52,21 @@ namespace mgc {
       return holes.SampleHeight(x, y, underlying);
     }
 
+    mutable glm::vec4 splat_cache;
+    mutable glm::dvec2 last_coord;
+    mutable size_t last_index;
+
     glm::vec4 SampleSplat(double x, double y, size_t index) const {
+      if (last_coord.x == x && last_coord.y == y && last_index == index) {
+        return splat_cache;
+      }
+
       sampler_type holes = GetHoles(glm::dvec2(x, y));
-      return holes.SampleSplat(x, y, index);
+      splat_cache = holes.SampleSplat(x, y, index);
+      last_coord = glm::dvec2(x, y);
+      last_index = index;
+
+      return splat_cache;
     }
 
     float SampleTreeFill(double x, double y) const {

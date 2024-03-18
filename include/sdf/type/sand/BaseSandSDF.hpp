@@ -1,7 +1,7 @@
 #ifndef BASE_SAND_SDF_H_
 #define BASE_SAND_SDF_H_
 
-#include "sdf/Bundle.hpp"
+#include "sdf/CPPBundle.hpp"
 
 #include <memory>
 
@@ -10,14 +10,14 @@ namespace mgc {
     class BaseSandSDF {
      public:
       BaseSandSDF(
-        const std::shared_ptr<Bundle>& traps
+        const std::shared_ptr<CPPBundle>& traps
       );
 
       double Sample(double x, double y) const;
 
-      std::shared_ptr<Bundle> GetBundle();
+      std::shared_ptr<CPPBundle> GetBundle();
      private:
-      const std::shared_ptr<Bundle> traps;
+      const std::shared_ptr<CPPBundle> traps;
     };
   }
 }

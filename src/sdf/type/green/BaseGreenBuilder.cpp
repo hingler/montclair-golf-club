@@ -1,9 +1,9 @@
 #include "sdf/type/green/BaseGreenBuilder.hpp"
-#include "sdf/Bundle.hpp"
+#include "sdf/CPPBundle.hpp"
 
 namespace mgc {
   namespace green {
-    std::shared_ptr<Bundle> BaseGreenBuilder::Get(
+    std::shared_ptr<CPPBundle> BaseGreenBuilder::Get(
       const CourseBundle& bundle,
       std::mt19937_64& engine
     ) const {
@@ -12,7 +12,7 @@ namespace mgc {
 
       // ensure tee location is covered
       // ensure center is covered
-      auto res = std::make_shared<Bundle>(25.0);
+      auto res = std::make_shared<CPPBundle>(25.0);
       // - generate in large range around end of path
       // - ensure generation reaches the hole
       // - give the center a few circles, and give the hole a couple smaller ones
@@ -54,7 +54,7 @@ namespace mgc {
       std::normal_distribution<double>& radius,
       size_t patch_count,
       std::mt19937_64& engine,
-      const std::shared_ptr<Bundle>& output
+      const std::shared_ptr<CPPBundle>& output
     ) const {
       for (int i = 0; i < patch_count; i++) {
         glm::dvec2 center = glm::dvec2(

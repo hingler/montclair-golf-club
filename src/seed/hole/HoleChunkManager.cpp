@@ -1,4 +1,5 @@
 #include "seed/hole/HoleChunkManager.hpp"
+#include "gog43/Logger.hpp"
 
 // i should probagly write tests for this hehe
 // gonna write all the impl in one pass and then test it all at once
@@ -88,6 +89,10 @@ namespace mgc {
       if (itr_lock != lock_cache.end()) {
         // box is being created - wait on associated lock
         lock_ptr chunk_mutex = itr_lock->second;
+
+        // release here - we don't need it anymore
+        // possible issue: holding the cache lock thru this op
+        cache_lock.unlock();
         std::lock_guard chunk_lock(*chunk_mutex);
 
         // should be valid - lock is only released once runner is complete
@@ -106,6 +111,8 @@ namespace mgc {
 
         // no more cache ops for now - unlock cache lock
         cache_lock.unlock();
+
+        gog43::print("generating chunk at ", chunk.x, ", ", chunk.y);
 
         // create instance
         std::unique_ptr<HoleChunkBox> res = factory.Create(chunk);

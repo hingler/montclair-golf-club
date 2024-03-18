@@ -1,11 +1,10 @@
 #include "sdf/type/fairway/BaseFairwayBuilder.hpp"
 
+#include "gog43/Logger.hpp"
 #include "sdf/Bundle.hpp"
 #include "sdf/type/fairway/BaseFairwaySDF.hpp"
 #include <algorithm>
 #include <random>
-
-#include <gog43/Logger.hpp>
 
 namespace mgc {
   namespace fairway {
@@ -21,7 +20,6 @@ namespace mgc {
       std::mt19937_64& engine
     ) const {
       // tee box (tba)
-      gog43::print("generating fairway...");
       const glm::dvec2& tee_center = bundle.course_path.at(0);
       const glm::dvec2& tee_direction = bundle.tee_direction;
       // 10x8 yards - may even be too big
@@ -29,7 +27,7 @@ namespace mgc {
       // first stop point circle
 
       // smooth w/in 16.0 yds i guess
-      auto fairway_bundle = std::make_shared<Bundle>(25.0);
+      auto fairway_bundle = std::make_shared<CPPBundle>(25.0);
 
       // dist for path stop circle radius
       std::normal_distribution<double> circle_rad(17.0, 4.5);
@@ -61,8 +59,6 @@ namespace mgc {
         fairway_bundle
       );
 
-      gog43::print("finished generating fairway");
-
       return std::make_shared<BaseFairwaySDF>(
         fairway_bundle,
         tee_center,
@@ -74,11 +70,12 @@ namespace mgc {
     void BaseFairwayBuilder::CreateCapsules(
       const CourseBundle& bundle,
       std::mt19937_64& engine,
-      const std::shared_ptr<Bundle>& output
+      const std::shared_ptr<CPPBundle>& output
     ) const {
-      std::uniform_int_distribution<size_t> start_index(16, bundle.stop_indices.at(1) - 16);
+      // what happens if ctrl point 16 is ahead of (16 behind stop 1)? undef'd b
+      std::uniform_int_distribution<size_t> start_index(bundle.stop_indices.at(1) - 8, bundle.stop_indices.at(1));
       // work with an init index
-      size_t index_cursor = start_index(engine);
+      size_t index_cursor = std::max<size_t>(start_index(engine), 0);
 
       std::uniform_real_distribution<double> join_probability(0.0, 1.0);
 
@@ -95,18 +92,18 @@ namespace mgc {
         points_working.clear();
         radii.clear();
 
-        while (index_cursor < bundle.stop_indices.at(i) && index_cursor < bundle.course_path.size()) {
+        while (index_cursor < bundle.stop_indices.at(i) && index_cursor < bundle.course_path.size()) {\
+
           glm::dvec2 sample_point = bundle.course_path.at(index_cursor) + bundle.origin;
           points_working.push_back(bundle.course_path.at(index_cursor));
 
           double sample = sampler.Sample(sample_point.x, sample_point.y);
-
-
           radii.push_back(sample * 11.5 + 41.0);
+
           index_cursor++;
         }
 
-        output->AddCapsule(points_working.data(), points_working.size(), 36.0);
+        output->AddCapsule(points_working, radii);
       }
     }
   }

@@ -1,9 +1,13 @@
 #ifndef OVERLAP_TESTER_H_
 #define OVERLAP_TESTER_H_
 
+#include "seed/hole/overlap/PointRange.hpp"
+
 #include <glm/glm.hpp>
+#include <vector>
 
 namespace mgc {
+
   // checks if we're overlapping with a specific feature
   class OverlapTester {
    public:

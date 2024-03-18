@@ -29,7 +29,7 @@ namespace mgc {
     typedef sand::BaseSandBuilder::sdf_type b_sand;
 
    public:
-    typedef Bundle green_type;
+    typedef b_green green_type;
     typedef CPPSmoother<b_green, b_sand> sand_type;
     typedef CPPSmoother<CPPSmoother<b_sand, b_fairway>, b_green> fairway_type;
 

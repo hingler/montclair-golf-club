@@ -2,13 +2,13 @@
 
 namespace mgc {
   namespace sand {
-    BaseSandSDF::BaseSandSDF(const std::shared_ptr<Bundle>& traps) : traps(traps) {}
+    BaseSandSDF::BaseSandSDF(const std::shared_ptr<CPPBundle>& traps) : traps(traps) {}
 
     double BaseSandSDF::Sample(double x, double y) const {
       return traps->Sample(x, y);
     }
 
-    std::shared_ptr<Bundle> BaseSandSDF::GetBundle() {
+    std::shared_ptr<CPPBundle> BaseSandSDF::GetBundle() {
       return traps;
     }
   }

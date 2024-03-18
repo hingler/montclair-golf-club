@@ -4,7 +4,7 @@
 namespace mgc {
   namespace fairway {
     BaseFairwaySDF::BaseFairwaySDF(
-      const std::shared_ptr<Bundle>& bundle,
+      const std::shared_ptr<CPPBundle>& bundle,
       const glm::dvec2& center,
       const glm::dvec2& direction,
       const glm::dvec2& dimensions
@@ -18,7 +18,7 @@ namespace mgc {
       return std::min(bundle_sample, teebox_sample);
     }
 
-    std::shared_ptr<Bundle> BaseFairwaySDF::GetBundle() {
+    std::shared_ptr<CPPBundle> BaseFairwaySDF::GetBundle() {
       return bundle;
     }
 

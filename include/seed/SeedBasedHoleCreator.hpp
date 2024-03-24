@@ -5,7 +5,6 @@
 #include "corrugate/box/BaseSmoothingSamplerBox.hpp"
 #include "corrugate/sampler/DataSampler.hpp"
 #include "corrugate/sampler/SmoothingMultiBoxSampler.hpp"
-#include "gog43/Logger.hpp"
 #include "seed/hole/HoleChunkConverter.hpp"
 #include "seed/hole/HoleChunkManager.hpp"
 #include <memory>
@@ -27,11 +26,11 @@ namespace mgc {
   template <typename HeightMap>
   class SeedBasedHoleCreator {
     typedef cg::MultiSampler<cg::BaseSmoothingSamplerBox>::output_type sampler_output;
-    typedef cg::SmoothingMultiBoxSampler<cg::BaseSmoothingSamplerBox> sampler_type;
    public:
+    typedef cg::SmoothingMultiBoxSampler<cg::BaseSmoothingSamplerBox> sampler_type;
     SeedBasedHoleCreator(
-      std::shared_ptr<HeightMap> height,
-      std::shared_ptr<SeedGrower>& grower,
+      const std::shared_ptr<HeightMap>& height,
+      const std::shared_ptr<SeedGrower>& grower,
       const ChunkConfig& config,
       const GrowConfig& config_grow
     ) : manager(std::make_shared<HoleChunkManager>(
@@ -41,17 +40,18 @@ namespace mgc {
     )), converter(
       manager,
       config
-    ) {
+    ), height(height) {
       // build seed grower here? nah
       // should be handled from outside this
     }
 
     // Sample height of underlying holes
-    float SampleHeight(double x, double y, double underlying) {
-      sampler_type holes = GetHoles(glm::dvec2(x, y));
+    float SampleHeight(double x, double y, double underlying) const {
+      sampler_type holes = GetHoleSampler(glm::dvec2(x, y));
       return holes.SampleHeight(x, y, underlying);
     }
 
+    // temp - just for splat, for now
     mutable glm::vec4 splat_cache;
     mutable glm::dvec2 last_coord;
     mutable size_t last_index;
@@ -61,7 +61,7 @@ namespace mgc {
         return splat_cache;
       }
 
-      sampler_type holes = GetHoles(glm::dvec2(x, y));
+      sampler_type holes = GetHoleSampler(glm::dvec2(x, y));
       splat_cache = holes.SampleSplat(x, y, index);
       last_coord = glm::dvec2(x, y);
       last_index = index;
@@ -70,7 +70,7 @@ namespace mgc {
     }
 
     float SampleTreeFill(double x, double y) const {
-      sampler_type holes = GetHoles(glm::dvec2(x, y));
+      sampler_type holes = GetHoleSampler(glm::dvec2(x, y));
       return holes.SampleTreeFill(x, y);
     }
 
@@ -83,7 +83,7 @@ namespace mgc {
       size_t n_bytes
     ) const {
       glm::dvec2 size = glm::dvec2(sample_dims.x, sample_dims.y) * scale;
-      sampler_type holes = GetHoles(origin, size);
+      sampler_type holes = GetHoleSampler(origin, size);
       return holes.WriteHeight(
         origin,
         sample_dims,
@@ -103,7 +103,7 @@ namespace mgc {
       size_t n_bytes
     ) const {
       glm::dvec2 size = glm::dvec2(sample_dims.x, sample_dims.y) * scale;
-      sampler_type holes = GetHoles(origin, size);
+      sampler_type holes = GetHoleSampler(origin, size);
       return holes.WriteSplat(
         origin,
         sample_dims,
@@ -122,7 +122,7 @@ namespace mgc {
       size_t n_bytes
     ) const {
       glm::dvec2 size = glm::dvec2(sample_dims.x, sample_dims.y) * scale;
-      sampler_type holes = GetHoles(origin, size);
+      sampler_type holes = GetHoleSampler(origin, size);
       return holes.WriteTreeFill(
         origin,
         sample_dims,
@@ -132,8 +132,7 @@ namespace mgc {
       );
     }
 
-   private:
-    sampler_type GetHoles(
+    sampler_type GetHoleSampler(
       const glm::dvec2& point
     ) const {
       HoleChunkManager::output_type chunks;
@@ -145,7 +144,7 @@ namespace mgc {
       return sampler_type(output);
     }
 
-    sampler_type GetHoles(
+    sampler_type GetHoleSampler(
       const glm::dvec2& origin,
       const glm::dvec2& size
     ) const {
@@ -158,11 +157,14 @@ namespace mgc {
       return sampler_type(output);
     }
 
+   private:
+
     void UpdateChunks(const HoleChunkManager::output_type& chunks) const {
       for (auto& chunk : chunks) {
         if (gen_cache.find(chunk) == gen_cache.end()) {
           std::vector<std::unique_ptr<cg::BaseSmoothingSamplerBox>> output = converter.Convert(chunk, height);
           for (std::unique_ptr<cg::BaseSmoothingSamplerBox>& hole : output) {
+
             holes.InsertBox(std::move(hole));
           }
           gen_cache.insert(chunk);

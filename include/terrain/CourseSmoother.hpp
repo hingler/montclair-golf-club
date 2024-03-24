@@ -125,6 +125,12 @@ namespace gdterrain {
 
       // when sampling: take ln bc otherwise it'll come out funny
       // (still costly, but definitely not as bad as it was)
+
+      // this (iirc) is costly, bc we had to sample that metaball thing
+      // yeah like 20% the runtime lole
+      // - 10k -> 30k us : 60 -> 80k us - over 4096 samples: cost of about 12us on sampling
+      // - that's *about* the delay we were seeing on the sampler?
+      // - (i think we were getting like 100 rows per sample, like 200 - 400k samples? a good bit quicker ig)
       double course_sample_log = log(course_sampler_->Sample(x, y));
       double distant_freq_sample = 0.0;
       double hi_freq_sample = 0.0;

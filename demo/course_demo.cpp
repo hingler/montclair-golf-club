@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
   provide_logger(new IOStreamLogger());
   auto draw = DebugDraw();
 
-  auto height = std::make_shared<_impl::SimplexHeightFunc>(3, 8.0, 1024.0);
+  auto height = std::make_shared<_impl::SimplexHeightFunc>(2, 8.0, 1024.0);
   auto func_draw = std::make_shared<GradientDraw<_impl::SimplexHeightFunc>>(height, 0.0, 4.0);
 
   auto grower = std::make_shared<SeedGrower>();

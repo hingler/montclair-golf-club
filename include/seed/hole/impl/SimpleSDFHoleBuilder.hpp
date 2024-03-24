@@ -22,7 +22,11 @@ namespace mgc {
   class SimpleSDFHoleBuilder {
    public:
     SimpleSDFHoleBuilder(std::shared_ptr<HeightType> height) : height(height) {}
-    std::unique_ptr<SDFHoleBox> CreateSDF(const HoleBox& box, const std::vector<glm::dvec2>& points, double len) {
+    std::unique_ptr<SDFHoleBox> CreateSDF(
+      const HoleBox& box,
+      const std::vector<glm::dvec2>& points,
+      double len
+    ) {
       // tba: now that we have our lib in place, we can jump straight to making proper boxes and converting them!
       // single thread constraint?
       engine.seed(box.seed);
@@ -65,13 +69,15 @@ namespace mgc {
         SDFHoleBoxImpl<
           SDFBuilder::fairway_type,
           SDFBuilder::green_type,
-          SDFBuilder::sand_type
+          SDFBuilder::sand_type,
+          HeightType
         >
       >(
         box,
         builder.GetFairway(),
         builder.GetGreen(),
-        builder.GetSand()
+        builder.GetSand(),
+        height
       );
     }
    private:

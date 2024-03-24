@@ -4,11 +4,17 @@
 #include "corrugate/FeatureBox.hpp"
 
 #include "corrugate/box/BaseSmoothingSamplerBox.hpp"
+#include "corrugate/box/SimpleConstBox.hpp"
 #include "corrugate/box/SmoothingTerrainBox.hpp"
 
 
 #include "seed/hole/impl/SDFThresholdSampler.hpp"
+
 #include <corrugate/sampler/splat/SplatManager.hpp>
+
+// goals
+// - speed up splat gen a lil
+// - dynamic terrain res (ie generating larger splats)
 
 namespace mgc {
   // is there a better way to handle the "underlying sampler" problem?
@@ -45,15 +51,16 @@ namespace mgc {
     };
   }
 
-  template <typename FT, typename GT, typename ST>
+  template <typename FT, typename GT, typename ST, typename BT>
   class SDFHoleBoxImpl : public SDFHoleBox {
    public:
     SDFHoleBoxImpl(
       const cg::FeatureBox& source,
       std::shared_ptr<FT> fairway,
       std::shared_ptr<GT> green,
-      std::shared_ptr<ST> sand
-    ) : SDFHoleBox(source), fairway(fairway), green(green), sand(sand) {}
+      std::shared_ptr<ST> sand,
+      std::shared_ptr<BT> base_height
+    ) : SDFHoleBox(source), fairway(fairway), green(green), sand(sand), base(base_height) {}
 
     std::unique_ptr<cg::BaseSmoothingSamplerBox> Convert() const override {
       // eventuall: use holeterrain type to map sdf -> terrain
@@ -61,11 +68,13 @@ namespace mgc {
       auto fill = std::make_shared<_impl::ZeroSampler>();
       auto splat = std::make_shared<cg::SplatManager>();
 
+      // empty space -> 0-sample (black)
+
       splat->BindSamplers(
         std::make_shared<SDFThresholdSampler<FT>>(fairway),
         std::make_shared<SDFThresholdSampler<GT>>(green),
         std::make_shared<SDFThresholdSampler<ST>>(sand),
-        std::make_shared<_impl::ZeroSampler>(),
+        std::make_shared<cg::_impl::ConstSampler>(1.0f),
         0
       );
 
@@ -75,13 +84,17 @@ namespace mgc {
       // what to do?
       // - move splat map to corrugate since we're handling some "terrain logic" there wrt boxes
       // - i'm fine w this - opens up that functionality in a diff ctx
-      return std::make_unique<cg::SmoothingTerrainBox>(
+      auto res = new cg::SmoothingTerrainBox(
         *this,
         height,
         splat,
         fill,
-        0.9
+        0.0
       );
+
+      res->PrepareCache(base);
+
+      return std::unique_ptr<cg::BaseSmoothingSamplerBox>(res);
     }
 
     double Dist(const glm::dvec2& point) const override {
@@ -101,6 +114,7 @@ namespace mgc {
     std::shared_ptr<FT> fairway;
     std::shared_ptr<GT> green;
     std::shared_ptr<ST> sand;
+    std::shared_ptr<BT> base;
   };
 }
 

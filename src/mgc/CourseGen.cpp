@@ -22,7 +22,7 @@ namespace mgc {
     uint64_t seed
   ) {
     course_sampler = std::make_shared<GaussianMetaballSampler>();
-    
+
     auto feature_sampler = std::make_shared<GaussianMetaballSampler>();
 
     GaussianPathConfig config;
@@ -51,10 +51,10 @@ namespace mgc {
 
     // - path is bvad
     // - sampling range is wrong
-    // - 
+    // -
 
     fairway_sampler->Generate(config);
-    
+
     auto sand_sampler = std::make_shared<GaussianSandSampler>(
       fairway_sampler,
       path,
@@ -121,7 +121,7 @@ namespace mgc {
     // this should be it! just need to define the helpers
   }
 
-  // when i wake up 
+  // when i wake up
 
   CourseGen::CourseTerrainPtr CourseGen::GetFairwaySampler() { return fairway_sampler; }
   CourseGen::CourseTerrainPtr CourseGen::GetGreenSampler() { return green_sampler; }
@@ -143,7 +143,7 @@ namespace mgc {
 
   glm::dvec3 CourseGen::GetCourseCenter() {
     return base_terrain->GetCourseCenter();
-    
+
   }
 
   course::path::CoursePath CourseGen::GetCoursePath() { return path; }

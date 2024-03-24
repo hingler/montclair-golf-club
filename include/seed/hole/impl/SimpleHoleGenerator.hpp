@@ -1,7 +1,6 @@
 #ifndef SIMPLE_HOLE_GENERATOR_H_
 #define SIMPLE_HOLE_GENERATOR_H_
 
-#include "gog43/Logger.hpp"
 #include "seed/hole/gen/HoleGenerator.hpp"
 
 #include "seed/hole/impl/SimpleSDFHoleBuilder.hpp"

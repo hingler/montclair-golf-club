@@ -2,6 +2,7 @@
 #define HOLE_CHUNK_CONVERTER_H_
 
 #include "corrugate/box/BaseSmoothingSamplerBox.hpp"
+#include "gog43/Logger.hpp"
 #include "seed/ChunkConfig.hpp"
 #include "seed/hole/HoleChunkBox.hpp"
 #include "seed/hole/HoleChunkManager.hpp"

@@ -17,6 +17,8 @@ namespace mgc {
     size = (max - min);
   }
 
+  AABB::AABB(const glm::dvec2& origin, const glm::dvec2& size) : origin(origin), size(size) {}
+
   AABB AABB::merge(const AABB& other) {
     glm::dvec2 start = glm::min(origin, other.origin);
     glm::dvec2 end = glm::max(origin + size, other.origin + other.size);

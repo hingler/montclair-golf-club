@@ -8,7 +8,7 @@
 namespace mgc {
   HoleChunkBox::HoleChunkBox(const std::vector<HoleBox>& holes, const glm::ivec2& chunk) : HoleChunkBox(HoleChunkBox::GetBoundingBox(holes), holes, chunk) {}
 
-  HoleChunkBox::HoleChunkBox(const AABB& bb, const std::vector<HoleBox>& holes, const glm::ivec2& chunk)
+  HoleChunkBox::HoleChunkBox(const GC_AABB& bb, const std::vector<HoleBox>& holes, const glm::ivec2& chunk)
   : cg::FeatureBox(bb.origin, bb.size, 1.0f, 0.0f), chunk(chunk), priority_hash(hash::chunk_hash(chunk)) {
     for (auto& hole : holes) {
       // cctor lole
@@ -30,8 +30,8 @@ namespace mgc {
     return false;
   }
 
-  AABB HoleChunkBox::GetBoundingBox(const std::vector<HoleBox>& holes) {
-    AABB res;
+  GC_AABB HoleChunkBox::GetBoundingBox(const std::vector<HoleBox>& holes) {
+    GC_AABB res;
 
     // do i care about itr order? not really (should, ideally, be random)
 

@@ -65,6 +65,31 @@ namespace mgc {
     return min_dist;
   }
 
+  double CPPBundle::Sample(double x, double y, double z) const {
+    glm::dvec3 point(x, y, z);
+    double min_dist = std::numeric_limits<double>::max();
+    glm::dvec3 working_c;
+    working_c.z = 0.0;
+    for (auto& circle : circles) {
+      working_c.x = circle.x;
+      working_c.y = circle.y;
+
+      min_dist = smin_f(
+        min_dist,
+        glm::length(point - working_c) - circle.z
+      );
+    }
+
+    for (auto& capsule : capsules) {
+      min_dist = smin_f(
+        min_dist,
+        capsule.Sample(point)
+      );
+    }
+
+    return min_dist;
+  }
+
   double CPPBundle::smin_f(
     double a,
     double b

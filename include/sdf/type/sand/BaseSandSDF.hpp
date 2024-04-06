@@ -14,6 +14,7 @@ namespace mgc {
       );
 
       double Sample(double x, double y) const;
+      double Sample(double x, double y, double z) const;
 
       std::shared_ptr<CPPBundle> GetBundle();
      private:

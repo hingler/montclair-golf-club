@@ -2,13 +2,13 @@
 #define SIMPLE_SDF_HOLE_BUILDER_H_
 
 #include "path/CourseBundleBuilder.hpp"
-#include "sdf/Bundle.hpp"
+
 #include "sdf/type/SDFBuilder.hpp"
 #include "sdf/type/fairway/BaseFairwayBuilder.hpp"
-#include "sdf/type/fairway/BaseFairwaySDF.hpp"
+
 #include "sdf/type/green/BaseGreenBuilder.hpp"
 #include "sdf/type/sand/BaseSandBuilder.hpp"
-#include "sdf/type/sand/BaseSandSDF.hpp"
+
 #include "seed/hole/SDFHoleBox.hpp"
 #include "seed/hole/HoleBox.hpp"
 

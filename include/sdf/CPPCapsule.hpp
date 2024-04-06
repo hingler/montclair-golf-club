@@ -22,12 +22,22 @@ namespace mgc {
 
     double Sample(double x, double y) const;
     double Sample(const glm::dvec2& point) const;
+
+    double Sample(const glm::dvec3& point) const;
    private:
     inline static double SampleCapsule(
       const glm::dvec2& point,
       const glm::dvec2& pa,
       const double& radius_a,
       const glm::dvec2& pb,
+      const double& radius_b
+    );
+
+    inline static double SampleCapsule3D(
+      const glm::dvec3& point,
+      const glm::dvec3& pa,
+      const double& radius_a,
+      const glm::dvec3& pb,
       const double& radius_b
     );
 

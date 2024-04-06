@@ -9,15 +9,16 @@ namespace mgc {
   template <typename SDFType>
   class SDFThresholdSampler {
    public:
-    SDFThresholdSampler(std::shared_ptr<SDFType> sdf) : sdf(sdf) {
+    SDFThresholdSampler(std::shared_ptr<SDFType> sdf) : SDFThresholdSampler(sdf, 0.0) {}
 
-    }
+    SDFThresholdSampler(const std::shared_ptr<SDFType>& sdf, double t) : sdf(sdf), threshold(t) {}
 
     double Sample(double x, double y) const {
-      return (sdf->Sample(x, y) <= 0.0 ? 1.0 : 0.0);
+      return (sdf->Sample(x, y) <= threshold ? 1.0 : 0.0);
     }
    private:
     std::shared_ptr<SDFType> sdf;
+    double threshold;
   };
 }
 

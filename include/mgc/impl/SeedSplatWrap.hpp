@@ -23,9 +23,19 @@ namespace mgc {
         glm::vec4* output,
         size_t n_bytes
       ) const {
-        return ptr->WriteSplat(
+        size_t res = ptr->WriteSplat(
           origin, sample_dims, scale, index, output, n_bytes
         );
+
+        size_t elems = (res / sizeof(glm::vec4));
+        for (size_t i = 0; i < elems; i++) {
+          // want a default value
+          if (glm::length(output[i]) < 0.01) {
+            output[i] = glm::vec4(0, 0, 0, 1);
+          }
+        }
+
+        return res;
       }
 
      private:

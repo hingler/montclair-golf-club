@@ -1,7 +1,6 @@
 #include "seed/hole/overlap/SDFGenOverlapTester.hpp"
 
 #include "seed/hole/impl/chunk_hash.hpp"
-#include "util/AABB.hpp"
 
 namespace mgc {
   SDFGenOverlapTester::SDFGenOverlapTester(

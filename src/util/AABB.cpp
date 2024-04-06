@@ -1,10 +1,9 @@
-#include "util/AABB.hpp"
-#include <limits>
+#include "util/GC_AABB.hpp"
 
 
 namespace mgc {
-  AABB::AABB() {}
-  AABB::AABB(const std::vector<glm::dvec2>& points) {
+  GC_AABB::GC_AABB() {}
+  GC_AABB::GC_AABB(const std::vector<glm::dvec2>& points) {
     glm::dvec2 min(std::numeric_limits<double>::max());
     glm::dvec2 max(std::numeric_limits<double>::lowest());
 
@@ -17,12 +16,13 @@ namespace mgc {
     size = (max - min);
   }
 
-  AABB::AABB(const glm::dvec2& origin, const glm::dvec2& size) : origin(origin), size(size) {}
+  GC_AABB::GC_AABB(const glm::dvec2& origin, const glm::dvec2& size) : origin(origin), size(size) {}
 
-  AABB AABB::merge(const AABB& other) {
+  // hate this immensely
+  GC_AABB GC_AABB::merge(const GC_AABB& other) {
     glm::dvec2 start = glm::min(origin, other.origin);
     glm::dvec2 end = glm::max(origin + size, other.origin + other.size);
-    return AABB {
+    return GC_AABB {
       start,
       (end - start)
     };

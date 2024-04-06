@@ -8,6 +8,7 @@
 #include "corrugate/box/SmoothingTerrainBox.hpp"
 
 
+#include "sdf/type/sand/SandPitTracer.hpp"
 #include "seed/hole/impl/SDFThresholdSampler.hpp"
 
 #include <corrugate/sampler/splat/SplatManager.hpp>
@@ -64,7 +65,11 @@ namespace mgc {
 
     std::unique_ptr<cg::BaseSmoothingSamplerBox> Convert() const override {
       // eventuall: use holeterrain type to map sdf -> terrain
-      auto height = std::make_shared<_impl::ZeroSampler>();
+      auto height = std::make_shared<sand::SandPitTracer<ST>>(
+        sand,
+        0.15
+      );
+
       auto fill = std::make_shared<_impl::ZeroSampler>();
       auto splat = std::make_shared<cg::SplatManager>();
 
@@ -73,7 +78,7 @@ namespace mgc {
       splat->BindSamplers(
         std::make_shared<SDFThresholdSampler<FT>>(fairway),
         std::make_shared<SDFThresholdSampler<GT>>(green),
-        std::make_shared<SDFThresholdSampler<ST>>(sand),
+        std::make_shared<SDFThresholdSampler<ST>>(sand, (-4.0)),
         std::make_shared<cg::_impl::ConstSampler>(1.0f),
         0
       );

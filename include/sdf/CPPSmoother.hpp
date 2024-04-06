@@ -30,6 +30,15 @@ namespace mgc {
       ) * fac_final;
     }
 
+    double Sample(double x, double y, double z) const {
+      double dist_a = a->Sample(x, y, z) * fac_a;
+      double dist_b = b->Sample(x, y, z) * fac_b;
+
+      return smin_f(
+        dist_a, dist_b, k
+      ) * fac_final;
+    }
+
    private:
     std::shared_ptr<SDF_A> a;
     double fac_a;

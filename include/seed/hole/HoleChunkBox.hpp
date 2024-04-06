@@ -6,7 +6,7 @@
 
 #include "seed/hole/HoleBox.hpp"
 
-#include "util/AABB.hpp"
+#include "util/GC_AABB.hpp"
 
 namespace mgc {
 
@@ -33,9 +33,9 @@ namespace mgc {
     const size_t priority_hash;
    private:
     // priv call - receives pre-calculated origin and size
-    HoleChunkBox(const AABB& bb, const std::vector<HoleBox>& holes, const glm::ivec2& chunk);
+    HoleChunkBox(const GC_AABB& bb, const std::vector<HoleBox>& holes, const glm::ivec2& chunk);
     // contains holes, in global space
-    static AABB GetBoundingBox(const std::vector<HoleBox>& holes);
+    static GC_AABB GetBoundingBox(const std::vector<HoleBox>& holes);
     cg::MultiSampler<HoleBox> holes;
   };
 }

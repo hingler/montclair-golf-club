@@ -51,22 +51,9 @@ namespace mgc {
       return holes.SampleHeight(x, y, underlying);
     }
 
-    // temp - just for splat, for now
-    mutable glm::vec4 splat_cache;
-    mutable glm::dvec2 last_coord;
-    mutable size_t last_index;
-
     glm::vec4 SampleSplat(double x, double y, size_t index) const {
-      if (last_coord.x == x && last_coord.y == y && last_index == index) {
-        return splat_cache;
-      }
-
       sampler_type holes = GetHoleSampler(glm::dvec2(x, y));
-      splat_cache = holes.SampleSplat(x, y, index);
-      last_coord = glm::dvec2(x, y);
-      last_index = index;
-
-      return splat_cache;
+      return holes.SampleSplat(x, y, index);
     }
 
     float SampleTreeFill(double x, double y) const {

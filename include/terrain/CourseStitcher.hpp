@@ -53,6 +53,13 @@ namespace mgc {
       return hole_sampler.SampleTreeFill(x, y);
     }
 
+    float SampleGrassFill(double x, double y) const {
+      // this is what a "single-stream" solution looks like
+      // - not fantastic but should be fine i think : )
+      // - (plus we like dont ever use it)
+      return GetSubSampler(glm::dvec2(x, y))->SampleGrassFill(x, y);
+    }
+
     size_t WriteHeight(
       const glm::dvec2& origin,
       const glm::ivec2& sample_dims,

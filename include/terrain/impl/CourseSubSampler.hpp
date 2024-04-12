@@ -8,6 +8,7 @@ namespace mgc {
     template <typename HeightType>
     class CourseSubSampler {
      public:
+      // tba: generalize this st we can use course sub sampler for everything???
       typedef cg::SmoothingMultiBoxSampler<cg::BaseSmoothingSamplerBox> box_sampler_type;
 
       CourseSubSampler(
@@ -23,6 +24,16 @@ namespace mgc {
 
       double Get(double x, double y) const {
         return Sample(x, y);
+      }
+
+      glm::vec4 SampleSplat(double x, double y, double index) const {
+        // (tba)
+        return box_sampler.SampleSplat(x, y, index);
+      }
+
+      float SampleGrassFill(double x, double y) const {
+        float falloffs = std::max(std::min(box_sampler.GetFalloffWeight(x, y), 1.0f), 0.0f);
+        return (1.0f - falloffs) + falloffs * box_sampler.SampleGrassFill(x, y);
       }
 
      private:

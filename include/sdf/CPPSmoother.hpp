@@ -48,9 +48,17 @@ namespace mgc {
 
     double fac_final;
 
+    static constexpr double K_EPSILON = 0.0001;
+
     double smin_f(double a, double b, double k) const {
-      double h = std::max(k - std::abs(a - b), 0.0) / k;
-      return std::min(a, b) - h * h * k * 0.25;
+      if (k < K_EPSILON) {
+        // no smoothing
+        return std::min(a, b);
+      } else {
+        // k is 0 - div0 error
+        double h = std::max(k - std::abs(a - b), 0.0) / k;
+        return std::min(a, b) - h * h * k * 0.25;
+      }
     }
   };
 

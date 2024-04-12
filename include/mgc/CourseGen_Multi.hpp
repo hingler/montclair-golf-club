@@ -5,6 +5,7 @@
 // (Let someone else manage it for now - we'll wrap later??)
 #include "gen/BasicBuilder.hpp"
 #include "gen/GenBuilders.hpp"
+#include "mgc/impl/GrassFillWrap.hpp"
 #include "mgc/impl/SeedHeightWrap.hpp"
 #include "mgc/impl/SeedSplatWrap.hpp"
 #include "seed/ChunkConfig.hpp"
@@ -15,6 +16,7 @@ namespace mgc {
    public:
     typedef const impl::SeedHeightWrap<HeightType> HeightSampler;
     typedef const impl::SeedSplatWrap<HeightType> SplatSampler;
+    typedef const impl::GrassFillWrap<HeightType> GrassSampler;
 
     // what do we want to pass in???
     // - configure grower? i feel like we should be configuring it here
@@ -47,7 +49,8 @@ namespace mgc {
       )
     ),
     splat(std::make_shared<impl::SeedSplatWrap<HeightType>>(stitcher)),
-    height(std::make_shared<impl::SeedHeightWrap<HeightType>>(stitcher))
+    height(std::make_shared<impl::SeedHeightWrap<HeightType>>(stitcher)),
+    grass_fill(std::make_shared<GrassSampler>(stitcher))
     {}
 
     std::shared_ptr<HeightSampler> GetHeightMap() {
@@ -58,11 +61,16 @@ namespace mgc {
       return splat;
     }
 
+    std::shared_ptr<GrassSampler> GetGrassFillMap() {
+      return grass_fill;
+    }
+
    private:
     std::shared_ptr<CourseStitcher<HeightType>> stitcher;
 
     std::shared_ptr<impl::SeedSplatWrap<HeightType>> splat;
     std::shared_ptr<impl::SeedHeightWrap<HeightType>> height;
+    std::shared_ptr<GrassSampler> grass_fill;
   };
 }
 

@@ -10,6 +10,7 @@
 
 #include "sdf/type/sand/SandPitTracer.hpp"
 #include "seed/hole/impl/SDFThresholdSampler.hpp"
+#include "terrain/grass/GrassFillSampler.hpp"
 
 #include <corrugate/sampler/splat/SplatManager.hpp>
 
@@ -67,7 +68,7 @@ namespace mgc {
       // eventuall: use holeterrain type to map sdf -> terrain
       auto height = std::make_shared<sand::SandPitTracer<ST>>(
         sand,
-        0.15
+        0.06
       );
 
       auto fill = std::make_shared<_impl::ZeroSampler>();
@@ -75,11 +76,13 @@ namespace mgc {
 
       // empty space -> 0-sample (black)
 
+      // tba: top to bottom - hopefully doesn't cause issues!! :)
+
       splat->BindSamplers(
         std::make_shared<SDFThresholdSampler<FT>>(fairway),
         std::make_shared<SDFThresholdSampler<GT>>(green),
         std::make_shared<SDFThresholdSampler<ST>>(sand, (-4.0)),
-        std::make_shared<cg::_impl::ConstSampler>(1.0f),
+        std::make_shared<cg::_impl::ConstSampler>(0.0f),
         0
       );
 
@@ -94,6 +97,12 @@ namespace mgc {
         height,
         splat,
         fill,
+        // real value :o
+        std::make_shared<GrassFillSampler<FT, GT, ST>>(
+          fairway,
+          green,
+          sand
+        ),
         0.0
       );
 

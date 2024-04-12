@@ -31,7 +31,7 @@ namespace mgc {
    public:
     typedef b_green green_type;
     typedef CPPSmoother<b_green, b_sand> sand_type;
-    typedef CPPSmoother<CPPSmoother<b_sand, b_fairway>, b_green> fairway_type;
+    typedef CPPSmoother<b_green, CPPSmoother<CPPSmoother<b_sand, b_fairway>, b_green>> fairway_type;
 
     SDFBuilder(
       const std::shared_ptr<b_fairway>& fairway,

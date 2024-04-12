@@ -61,6 +61,10 @@ namespace mgc {
       return holes.SampleTreeFill(x, y);
     }
 
+    float SampleGrassFill(double x, double y) const {
+      return GetHoleSampler(glm::dvec2(x, y)).SampleTreeFill(x, y);
+    }
+
     size_t WriteHeight(
       const glm::dvec2& origin,
       const glm::ivec2& sample_dims,

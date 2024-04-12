@@ -15,6 +15,7 @@ namespace mgc {
         return ptr->SampleSplat(x, y, index);
       }
 
+      // how to do this hehe
       size_t WriteSplat(
         const glm::dvec2& origin,
         const glm::ivec2& sample_dims,

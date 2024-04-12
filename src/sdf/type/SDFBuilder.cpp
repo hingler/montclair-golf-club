@@ -42,13 +42,21 @@ namespace mgc {
     if (fairway_cache == nullptr) {
       auto sand = GetSand();
       auto fairway_carve = std::make_shared<CPPSmoother<b_sand, b_fairway>>(smooth::SmootherSSub(base_fairway, base_sand, 16.0));
-      auto fairway_with_green = smooth::SmootherSMin(
+      // pad out fairway w green
+      auto fairway_with_green = std::make_shared<CPPSmoother<CPPSmoother<b_sand, b_fairway>, b_green>>(smooth::SmootherSMin(
         fairway_carve,
         GetGreen(),
         12.5
+      ));
+
+      // subtract
+      auto no_green = smooth::SmootherSSub(
+        fairway_with_green,
+        GetGreen(),
+        0.0
       );
 
-      fairway_cache = std::make_shared<fairway_type>(std::move(fairway_with_green));
+      fairway_cache = std::make_shared<fairway_type>(std::move(no_green));
     }
 
     return fairway_cache;

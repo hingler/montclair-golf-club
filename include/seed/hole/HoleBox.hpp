@@ -50,7 +50,7 @@ namespace mgc {
     const double padding;
 
     HoleBox(const _impl::HoleBox_Config& config, const std::vector<glm::dvec2>& path, double padding, size_t seed)
-    : cg::FeatureBox(config.start, (config.end - config.start), 1.0f, 0.01f, 1.0f),
+    : cg::FeatureBox(config.start, (config.end - config.start), 1.0f, 0.00f, 1.0f),
       path(HoleBox::MovePathToLocal(path, config.start)), padding(padding), seed(seed)
     {}
 

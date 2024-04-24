@@ -77,14 +77,12 @@ namespace mgc {
       // work with an init index
       size_t index_cursor = std::max<size_t>(start_index(engine), 0);
 
-      std::uniform_real_distribution<double> join_probability(0.0, 1.0);
-
       std::vector<glm::dvec2> points_working;
       std::vector<double> radii;
 
       for (size_t i = 1; i < bundle.stop_indices.size(); i++) {
-        if (join_probability(engine) < 0.2) {
-          // skip
+        if (std::find(bundle.path_breaks.begin(), bundle.path_breaks.end(), i - 1) != bundle.path_breaks.end()) {
+          // skip - floor ind in path
           index_cursor = bundle.stop_indices.at(i);
           continue;
         }
@@ -92,7 +90,7 @@ namespace mgc {
         points_working.clear();
         radii.clear();
 
-        while (index_cursor < bundle.stop_indices.at(i) && index_cursor < bundle.course_path.size()) {\
+        while (index_cursor < bundle.stop_indices.at(i) && index_cursor < bundle.course_path.size()) {
 
           glm::dvec2 sample_point = bundle.course_path.at(index_cursor) + bundle.origin;
           points_working.push_back(bundle.course_path.at(index_cursor));

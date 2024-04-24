@@ -27,6 +27,8 @@ namespace mgc {
     double Sample(double x, double y) const;
     double Sample(double x, double y, double z) const;
 
+    glm::dvec4 GetBoundingBox() const;
+
     double k = 0.0;
 
    private:

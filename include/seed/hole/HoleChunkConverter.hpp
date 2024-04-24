@@ -50,9 +50,11 @@ namespace mgc {
 
       // generate each individual hole
       for (const auto& hole_box : (*box)) {
+        // are the boxes redundant at *this* point? i wouldn't think so, because they should be avoiding each other
         std::unique_ptr<SDFHoleBox> sdf = gen.GenerateHole(*hole_box);
         // sometimes null, if a hole shouldn't be generated
         if (sdf != nullptr) {
+          // one insert - should be non-dupe
           sdfs->InsertBox(std::move(sdf));
         }
       }
@@ -60,6 +62,7 @@ namespace mgc {
       std::vector<std::unique_ptr<cg::BaseSmoothingSamplerBox>> result;
       for (const auto& sdf : (*sdfs)) {
         // convert finalized sdfs into sampler boxes
+        // possibly: iterator is returning duplicates?? (no - ptrs are stored in a set, no dupes)
         result.push_back(sdf->Convert());
       }
 

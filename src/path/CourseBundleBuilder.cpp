@@ -3,7 +3,8 @@
 #include "path/deps/ControlPointCalculator.hpp"
 #include "path/deps/impl/SimpleControlPointCalculator.hpp"
 
-
+// prob. that two stop points will be disconnected
+#define STOP_BREAK_PROBABILITY 0.2
 
 namespace mgc {
 
@@ -42,10 +43,19 @@ namespace mgc {
       engine
     );
 
+    // uni dist
+    std::uniform_real_distribution<double> join_probability(0.0, 1.0);
+
     for (size_t i = 0; i < bundle.stop_indices.size(); i++) {
       size_t v = bundle.stop_indices.at(i);
       assert(v < bundle.course_path.size() && v >= 0);
       bundle.path_stops.push_back(bundle.course_path.at(v));
+    }
+
+    for (size_t i = 0; i < (bundle.stop_indices.size() - 1); i++) {
+      if (join_probability(engine) < STOP_BREAK_PROBABILITY) {
+        bundle.path_breaks.push_back(i);
+      }
     }
 
     bundle.par = bundle.path_stops.size() + 1;

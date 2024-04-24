@@ -4,15 +4,21 @@
 #include "corrugate/FeatureBox.hpp"
 
 #include "corrugate/box/BaseSmoothingSamplerBox.hpp"
+#include "corrugate/box/LocalSmoothTerrainBox.hpp"
 #include "corrugate/box/SimpleConstBox.hpp"
 #include "corrugate/box/SmoothingTerrainBox.hpp"
 
 
+#include "corrugate/sampler/smooth/LocalizedSmoother.hpp"
 #include "sdf/type/sand/SandPitTracer.hpp"
+#include "seed/hole/HoleBox.hpp"
+#include "seed/hole/impl/SDFGrow.hpp"
 #include "seed/hole/impl/SDFThresholdSampler.hpp"
 #include "terrain/grass/GrassFillSampler.hpp"
+#include "terrain/tree/TreeFillSampler.hpp"
 
 #include <corrugate/sampler/splat/SplatManager.hpp>
+#include <vector>
 
 // goals
 // - speed up splat gen a lil
@@ -53,37 +59,66 @@ namespace mgc {
     };
   }
 
-  template <typename FT, typename GT, typename ST, typename BT>
+  template <typename FT, typename GT, typename ST, typename RT, typename BT, typename SmoothT>
   class SDFHoleBoxImpl : public SDFHoleBox {
+    typedef cg::smooth::LocalizedSmoother<BT, SmoothT> smoother_type;
    public:
     SDFHoleBoxImpl(
-      const cg::FeatureBox& source,
-      std::shared_ptr<FT> fairway,
-      std::shared_ptr<GT> green,
-      std::shared_ptr<ST> sand,
-      std::shared_ptr<BT> base_height
-    ) : SDFHoleBox(source), fairway(fairway), green(green), sand(sand), base(base_height) {}
+      const HoleBox& source,
+      const std::shared_ptr<FT>& fairway,
+      const std::shared_ptr<GT>& green,
+      const std::shared_ptr<ST>& sand,
+      const std::shared_ptr<RT>& rough,
+      const std::shared_ptr<BT>& base_height,
+      const std::shared_ptr<smoother_type>& smoother
+    ) : SDFHoleBox(source),
+        fairway(fairway),
+        green(green),
+        sand(sand),
+        rough(rough),
+        base(base_height),
+        smoother(smoother),
+        course_path(source.begin(), source.end())
+    {}
 
     std::unique_ptr<cg::BaseSmoothingSamplerBox> Convert() const override {
       // eventuall: use holeterrain type to map sdf -> terrain
+      // tba: need to pass a smoother!
       auto height = std::make_shared<sand::SandPitTracer<ST>>(
         sand,
-        0.06
+        0.09
       );
 
-      auto fill = std::make_shared<_impl::ZeroSampler>();
+
+
+      // tba: need to write this
+      auto tree_fill = std::make_shared<TreeFillSampler<FT, GT, ST>>(fairway, green, sand, course_path);
       auto splat = std::make_shared<cg::SplatManager>();
 
       // empty space -> 0-sample (black)
 
-      // tba: top to bottom - hopefully doesn't cause issues!! :)
+      // splat->BindSamplers(
+      //   std::make_shared<SDFThresholdSampler<FT>>(fairway),
+      //   std::make_shared<SDFThresholdSampler<GT>>(green),
+      //   std::make_shared<SDFThresholdSampler<ST>>(sand, (-4.0)),
+      //   std::make_shared<SDFThresholdSampler<RT>>(rough),
+      //   0
+      // );
+      //
 
+      auto rough_ptr = std::make_shared<SDFThresholdSampler<RT>>(rough);
       splat->BindSamplers(
-        std::make_shared<SDFThresholdSampler<FT>>(fairway),
-        std::make_shared<SDFThresholdSampler<GT>>(green),
-        std::make_shared<SDFThresholdSampler<ST>>(sand, (-4.0)),
-        std::make_shared<cg::_impl::ConstSampler>(0.0f),
+        rough_ptr,
+        rough_ptr,
+        rough_ptr,
+        rough_ptr,
         0
+      );
+
+      auto grass_fill = std::make_shared<GrassFillSampler<FT, GT, SDFGrow<ST>>>(
+        fairway,
+        green,
+        std::make_shared<SDFGrow<ST>>(sand, -4.5)
       );
 
       // tba: return box lol hehe haha r
@@ -92,23 +127,28 @@ namespace mgc {
       // what to do?
       // - move splat map to corrugate since we're handling some "terrain logic" there wrt boxes
       // - i'm fine w this - opens up that functionality in a diff ctx
-      auto res = new cg::SmoothingTerrainBox(
+      // auto res = new cg::SmoothingTerrainBox(
+      //   *this,
+      //   height,
+      //   splat,
+      //   tree_fill,
+      //   // thinking: slight tweak to grow - get a lil grass sprouting in sand
+      //   grass_fill,
+      //   0.0
+      // );
+
+      // res->PrepareCache(base);
+
+      auto box = new cg::LocalSmoothTerrainBox<BT, SmoothT>(
         *this,
         height,
         splat,
-        fill,
-        // real value :o
-        std::make_shared<GrassFillSampler<FT, GT, ST>>(
-          fairway,
-          green,
-          sand
-        ),
-        0.0
+        tree_fill,
+        grass_fill,
+        smoother
       );
 
-      res->PrepareCache(base);
-
-      return std::unique_ptr<cg::BaseSmoothingSamplerBox>(res);
+      return std::unique_ptr<cg::BaseSmoothingSamplerBox>(box);
     }
 
     double Dist(const glm::dvec2& point) const override {
@@ -128,7 +168,10 @@ namespace mgc {
     std::shared_ptr<FT> fairway;
     std::shared_ptr<GT> green;
     std::shared_ptr<ST> sand;
+    std::shared_ptr<RT> rough;
     std::shared_ptr<BT> base;
+    std::shared_ptr<smoother_type> smoother;
+    std::vector<glm::dvec2> course_path;
   };
 }
 

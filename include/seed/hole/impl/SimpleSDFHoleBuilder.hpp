@@ -1,12 +1,15 @@
 #ifndef SIMPLE_SDF_HOLE_BUILDER_H_
 #define SIMPLE_SDF_HOLE_BUILDER_H_
 
+#include "corrugate/sampler/smooth/LocalizedSmoother.hpp"
 #include "path/CourseBundleBuilder.hpp"
 
+#include "sdf/CPPBundle.hpp"
 #include "sdf/type/SDFBuilder.hpp"
 #include "sdf/type/fairway/BaseFairwayBuilder.hpp"
 
 #include "sdf/type/green/BaseGreenBuilder.hpp"
+#include "sdf/type/rough/BaseRoughBuilder.hpp"
 #include "sdf/type/sand/BaseSandBuilder.hpp"
 
 #include "seed/hole/SDFHoleBox.hpp"
@@ -39,9 +42,23 @@ namespace mgc {
 
       auto bundle = bundler.Convert(points, engine, box);
 
+      // defining contiguity??
+      // - arr of (arr of points)
+      // - define disjoints only (ie: `0` is a default, `1` implies a disjoint at 1 -> 2)
+
+      // also: does rough need to know what fairway is doing?? (or can we just min the base fairway on top with some padding???)
+      // - thinking this
+      //
+      // ergo:
+      // - rough knows where our discontinuities are (from bundler)
+      // - fairway does too
+      // - ergo: rough knows how to bundle "un-like" regions
+      // for smoothing: use wgt'd average (requires a visible smoothing fac)
+
       auto fairway_builder = fairway::BaseFairwayBuilder();
       auto sand_builder = sand::BaseSandBuilder();
       auto green_builder = green::BaseGreenBuilder();
+      auto rough_builder = rough::BaseRoughBuilder();
 
       auto fairway = fairway_builder.Get(
         bundle,
@@ -58,26 +75,64 @@ namespace mgc {
         engine
       );
 
+      std::shared_ptr<rough::BaseRoughBuilder::sdf_type> rough = rough_builder.Get(
+        bundle,
+        engine
+      );
+
       auto builder = SDFBuilder(
         fairway,
         green,
-        sand
+        sand,
+        rough
       );
 
-      // distinct: separate dist sampler from threshold sampler
+
+      std::shared_ptr<cg::smooth::LocalizedSmoother<HeightType, CPPBundle>> smoother =
+        std::make_shared<cg::smooth::LocalizedSmoother<HeightType, CPPBundle>>(
+          height
+        );
+
+      for (size_t i = 0; i < rough->Bundles(); i++) {
+        std::shared_ptr<CPPBundle> bundle = rough->GetBundle(i);
+
+        if (bundle != nullptr) {
+          glm::dvec4 bb = bundle->GetBoundingBox();
+
+          glm::dvec2 start(bb.x, bb.y);
+          glm::dvec2 end(bb.z, bb.w);
+
+          smoother->AddSubSmoother(
+            bundle,
+            start,
+            end,
+            45.0,
+            0.04
+          );
+        }
+      }
+
+
+      // use rough to define "smoothing cells"
+      // - each one will determine its own "flatten" point
+      // - i think we should make the last one a bit flatter (for the green)
       return std::make_unique<
         SDFHoleBoxImpl<
           SDFBuilder::fairway_type,
           SDFBuilder::green_type,
           SDFBuilder::sand_type,
-          HeightType
+          SDFBuilder::rough_type,
+          HeightType,
+          CPPBundle
         >
       >(
         box,
         builder.GetFairway(),
         builder.GetGreen(),
         builder.GetSand(),
-        height
+        builder.GetRough(),
+        height,
+        smoother
       );
     }
    private:

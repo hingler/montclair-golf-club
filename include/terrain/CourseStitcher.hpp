@@ -1,6 +1,7 @@
 #ifndef COURSE_STITCHER_H_
 #define COURSE_STITCHER_H_
 
+#include "chunker/ChunkIdentifier.hpp"
 #include "corrugate/sampler/DataSampler.hpp"
 #include "corrugate/sampler/SampleWriterGeneric.hpp"
 #include "seed/ChunkConfig.hpp"
@@ -133,6 +134,15 @@ namespace mgc {
     std::shared_ptr<sub_sampler_type> GetSubSampler(const glm::dvec2& origin, const glm::dvec2& size) const {
       auto box = hole_sampler.GetHoleSampler(origin, size);
       return std::make_shared<sub_sampler_type>(std::move(box), height);
+    }
+
+    std::shared_ptr<sub_sampler_type> GetSubSampler(const chunker::ChunkIdentifier& id, double padding) {
+      glm::dvec2 origin(id.x, id.y);
+      origin -= padding;
+      glm::dvec2 size(id.sample_dims.x * id.scale.AsDouble(), id.sample_dims.y * id.scale.AsDouble());
+      size += 2 * padding;
+
+      return GetSubSampler(origin, size);
     }
 
    private:

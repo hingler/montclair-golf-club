@@ -18,6 +18,7 @@
 
 #include "sdf/type/fairway/BaseFairwayBuilder.hpp"
 #include "sdf/type/green/BaseGreenBuilder.hpp"
+#include "sdf/type/rough/BaseRoughBuilder.hpp"
 #include "sdf/type/sand/BaseSandBuilder.hpp"
 
 #include <memory>
@@ -27,30 +28,36 @@ namespace mgc {
     typedef fairway::BaseFairwayBuilder::sdf_type b_fairway;
     typedef green::BaseGreenBuilder::sdf_type b_green;
     typedef sand::BaseSandBuilder::sdf_type b_sand;
+    typedef rough::BaseRoughBuilder::sdf_type b_rough;
 
    public:
     typedef b_green green_type;
     typedef CPPSmoother<b_green, b_sand> sand_type;
     typedef CPPSmoother<b_green, CPPSmoother<CPPSmoother<b_sand, b_fairway>, b_green>> fairway_type;
+    typedef b_rough rough_type;
 
     SDFBuilder(
       const std::shared_ptr<b_fairway>& fairway,
       const std::shared_ptr<b_green>& green,
-      const std::shared_ptr<b_sand>& sand
+      const std::shared_ptr<b_sand>& sand,
+      const std::shared_ptr<b_rough>& rough
     );
 
     std::shared_ptr<green_type> GetGreen();
     std::shared_ptr<sand_type> GetSand();
     std::shared_ptr<fairway_type> GetFairway();
+    std::shared_ptr<rough_type> GetRough();
 
    private:
     std::shared_ptr<b_fairway> base_fairway;
     std::shared_ptr<b_sand> base_sand;
     std::shared_ptr<b_green> base_green;
+    std::shared_ptr<b_rough> base_rough;
 
     std::shared_ptr<green_type> green_cache;
     std::shared_ptr<sand_type> sand_cache;
     std::shared_ptr<fairway_type> fairway_cache;
+    std::shared_ptr<rough_type> rough_cache;
 
   };
 }

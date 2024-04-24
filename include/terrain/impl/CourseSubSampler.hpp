@@ -36,6 +36,11 @@ namespace mgc {
         return (1.0f - falloffs) + falloffs * box_sampler.SampleGrassFill(x, y);
       }
 
+      float SampleTreeFill(double x, double y) const {
+        float falloffs = std::max(std::min(box_sampler.GetFalloffWeight(x, y), 1.0f), 0.0f);
+        return (1.0f - falloffs) + (falloffs * box_sampler.SampleTreeFill(x, y));
+      }
+
      private:
       box_sampler_type box_sampler;
       std::shared_ptr<HeightType> base_height;

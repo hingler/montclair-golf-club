@@ -24,6 +24,8 @@ namespace mgc {
     double Sample(const glm::dvec2& point) const;
 
     double Sample(const glm::dvec3& point) const;
+
+    glm::dvec4 GetBoundingBox() const;
    private:
     inline static double SampleCapsule(
       const glm::dvec2& point,

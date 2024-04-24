@@ -1,5 +1,6 @@
 #include "seed/hole/HoleChunkManager.hpp"
 #include "gog43/Logger.hpp"
+#include "seed/hole/HoleChunkBox.hpp"
 
 // i should probagly write tests for this hehe
 // gonna write all the impl in one pass and then test it all at once
@@ -74,60 +75,76 @@ namespace mgc {
   }
 
   HoleChunkManager::ptr_type HoleChunkManager::GenerateOrFetch(const glm::ivec2& chunk) {
-    typename cache_type::iterator itr;
-
-    {
-      std::unique_lock cache_lock(cache_mutex);
-      itr = hole_cache.find(chunk);
-      if (itr != hole_cache.end()) {
-        // already created - just acquire
-        return itr->second;
-      }
-
-      // try to find the lock in cache
-      auto itr_lock = lock_cache.find(chunk);
-      if (itr_lock != lock_cache.end()) {
-        // box is being created - wait on associated lock
-        lock_ptr chunk_mutex = itr_lock->second;
-
-        // release here - we don't need it anymore
-        // possible issue: holding the cache lock thru this op
-        cache_lock.unlock();
-        std::lock_guard chunk_lock(*chunk_mutex);
-
-        // should be valid - lock is only released once runner is complete
-        itr = hole_cache.find(chunk);
-        assert(itr != hole_cache.end());
-
-        return itr->second;
-      } else {
-        // could not find lock, meaning we're the first person to create this chunk
-        // make new mutex
-        lock_ptr chunk_mutex = std::make_shared<std::recursive_mutex>();
-
-        // acquire, and cache it
-        std::lock_guard chunk_lock(*chunk_mutex);
-        lock_cache.insert(std::make_pair(chunk, chunk_mutex));
-
-        // no more cache ops for now - unlock cache lock
-        cache_lock.unlock();
-
-        gog43::print("generating chunk at ", chunk.x, ", ", chunk.y);
-
-        // create instance
-        std::unique_ptr<HoleChunkBox> res = factory.Create(chunk);
-        ptr_type insert_res = Insert(chunk, std::move(res));
-
-        {
-          // remove mutex from cache - operation is complete (ptr inst remains valid)
-          std::lock_guard lock(cache_lock);
-          lock_cache.erase(lock_cache.find(chunk));
-        }
-
-        return insert_res;
-
-        // all locks are freed here
-      }
+    auto handle = test_cache.Acquire(chunk);
+    if (handle.Available()) {
+      return handle.Get();
     }
+
+    gog43::print("generating chunk at ", chunk.x, ", ", chunk.y);
+    std::unique_ptr<HoleChunkBox> res = factory.Create(chunk);
+    ptr_type insert_res = Insert(chunk, std::move(res));
+    test_cache.Release(handle, insert_res);
+
+    return insert_res;
   }
+
+  // HoleChunkManager::ptr_type HoleChunkManager::GenerateOrFetch(const glm::ivec2& chunk) {
+  //   typename cache_type::iterator itr;
+
+  //   {
+  //     std::unique_lock cache_lock(cache_mutex);
+  //     itr = hole_cache.find(chunk);
+  //     if (itr != hole_cache.end()) {
+  //       // already created - just acquire
+  //       return itr->second;
+  //     }
+
+  //     // try to find the lock in cache
+  //     auto itr_lock = lock_cache.find(chunk);
+  //     if (itr_lock != lock_cache.end()) {
+  //       // box is being created - wait on associated lock
+  //       lock_ptr chunk_mutex = itr_lock->second;
+
+  //       // release here - we don't need it anymore
+  //       // possible issue: holding the cache lock thru this op
+  //       cache_lock.unlock();
+  //       std::lock_guard chunk_lock(*chunk_mutex);
+
+  //       // should be valid - lock is only released once runner is complete
+  //       // re-lock, since we're re-accessing cache
+  //       cache_lock.lock();
+  //       itr = hole_cache.find(chunk);
+  //       assert(itr != hole_cache.end());
+
+  //       return itr->second;
+  //     } else {
+  //       // could not find lock, meaning we're the first person to create this chunk
+  //       // make new mutex
+  //       lock_ptr chunk_mutex = std::make_shared<std::recursive_mutex>();
+
+  //       // acquire, and cache it
+  //       std::lock_guard chunk_lock(*chunk_mutex);
+  //       lock_cache.insert(std::make_pair(chunk, chunk_mutex));
+
+  //       // no more cache ops for now - unlock cache lock
+  //       cache_lock.unlock();
+
+  //       gog43::print("generating chunk at ", chunk.x, ", ", chunk.y);
+
+  //       // create instance
+  //       std::unique_ptr<HoleChunkBox> res = factory.Create(chunk);
+  //       ptr_type insert_res = Insert(chunk, std::move(res));
+
+  //       {
+  //         // remove mutex from cache - operation is complete (ptr inst remains valid)
+  //         std::lock_guard lock(cache_lock);
+  //         lock_cache.erase(lock_cache.find(chunk));
+  //       }
+
+  //       return insert_res;
+
+  //       // all locks are freed here
+  //     }
+  //   }
+  // }
 }

@@ -90,6 +90,24 @@ namespace mgc {
     return min_dist;
   }
 
+  glm::dvec4 CPPBundle::GetBoundingBox() const {
+    glm::dvec2 min(std::numeric_limits<double>::max());
+    glm::dvec2 max(std::numeric_limits<double>::lowest());
+
+    for (const auto& circle : circles) {
+      min = glm::min(min, glm::dvec2(circle.x, circle.y) - glm::dvec2(circle.z));
+      max = glm::max(max, glm::dvec2(circle.x, circle.y) + glm::dvec2(circle.z));
+    }
+
+    for (const auto& capsule : capsules) {
+      glm::dvec4 bb = capsule.GetBoundingBox();
+      min = glm::min(min, glm::dvec2(bb.x, bb.y));
+      max = glm::max(max, glm::dvec2(bb.z, bb.w));
+    }
+
+    return glm::dvec4(min.x - k, min.y - k, max.x + k, max.y + k);
+  }
+
   double CPPBundle::smin_f(
     double a,
     double b

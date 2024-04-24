@@ -11,9 +11,10 @@ namespace mgc {
   SDFBuilder::SDFBuilder(
     const std::shared_ptr<b_fairway>& fairway,
     const std::shared_ptr<b_green>& green,
-    const std::shared_ptr<b_sand>& sand
-  ) : base_fairway(fairway), base_green(green), base_sand(sand),
-      green_cache(nullptr), sand_cache(nullptr), fairway_cache(nullptr) {}
+    const std::shared_ptr<b_sand>& sand,
+    const std::shared_ptr<b_rough>& rough
+  ) : base_fairway(fairway), base_green(green), base_sand(sand), base_rough(rough),
+      green_cache(nullptr), sand_cache(nullptr), fairway_cache(nullptr), rough_cache(nullptr) {}
 
   std::shared_ptr<SDFBuilder::green_type> SDFBuilder::GetGreen() {
     if (green_cache == nullptr) {
@@ -60,5 +61,13 @@ namespace mgc {
     }
 
     return fairway_cache;
+  }
+
+  std::shared_ptr<SDFBuilder::rough_type> SDFBuilder::GetRough() {
+    if (rough_cache == nullptr) {
+      rough_cache = base_rough;
+    }
+
+    return rough_cache;
   }
 }

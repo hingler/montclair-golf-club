@@ -8,6 +8,7 @@
 #include "mgc/impl/GrassFillWrap.hpp"
 #include "mgc/impl/SeedHeightWrap.hpp"
 #include "mgc/impl/SeedSplatWrap.hpp"
+#include "mgc/impl/TreeFillWrap.hpp"
 #include "seed/ChunkConfig.hpp"
 #include "terrain/CourseStitcher.hpp"
 namespace mgc {
@@ -17,6 +18,7 @@ namespace mgc {
     typedef const impl::SeedHeightWrap<HeightType> HeightSampler;
     typedef const impl::SeedSplatWrap<HeightType> SplatSampler;
     typedef const impl::GrassFillWrap<HeightType> GrassSampler;
+    typedef const impl::TreeFillWrap<HeightType> TreeSampler;
 
     // what do we want to pass in???
     // - configure grower? i feel like we should be configuring it here
@@ -50,7 +52,8 @@ namespace mgc {
     ),
     splat(std::make_shared<impl::SeedSplatWrap<HeightType>>(stitcher)),
     height(std::make_shared<impl::SeedHeightWrap<HeightType>>(stitcher)),
-    grass_fill(std::make_shared<GrassSampler>(stitcher))
+    grass_fill(std::make_shared<GrassSampler>(stitcher)),
+    tree_fill(std::make_shared<TreeSampler>(stitcher))
     {}
 
     std::shared_ptr<HeightSampler> GetHeightMap() {
@@ -65,12 +68,17 @@ namespace mgc {
       return grass_fill;
     }
 
+    std::shared_ptr<TreeSampler> GetTreeFillMap() {
+      return tree_fill;
+    }
+
    private:
     std::shared_ptr<CourseStitcher<HeightType>> stitcher;
 
     std::shared_ptr<impl::SeedSplatWrap<HeightType>> splat;
     std::shared_ptr<impl::SeedHeightWrap<HeightType>> height;
     std::shared_ptr<GrassSampler> grass_fill;
+    std::shared_ptr<TreeSampler> tree_fill;
   };
 }
 

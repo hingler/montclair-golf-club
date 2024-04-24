@@ -16,6 +16,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp>
 
+// try this
+#include "chunker/util/MutexCache.hpp"
+
 namespace mgc {
   // wraps hole chunk generation
   class HoleChunkManager {
@@ -69,6 +72,9 @@ namespace mgc {
     typedef std::shared_ptr<std::recursive_mutex> lock_ptr;
     typedef std::unordered_map<glm::ivec2, lock_ptr> lock_cache_type;
     lock_cache_type lock_cache;
+
+    // i think this is fine - the priv accesses hehe
+    chunker::MutexCache<glm::ivec2, ptr_type> test_cache;
 
   };
 }

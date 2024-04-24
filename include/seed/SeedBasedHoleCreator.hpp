@@ -5,9 +5,11 @@
 #include "corrugate/box/BaseSmoothingSamplerBox.hpp"
 #include "corrugate/sampler/DataSampler.hpp"
 #include "corrugate/sampler/SmoothingMultiBoxSampler.hpp"
+#include "glm/fwd.hpp"
 #include "seed/hole/HoleChunkConverter.hpp"
 #include "seed/hole/HoleChunkManager.hpp"
 #include <memory>
+#include <mutex>
 
 // this should be self-sufficient, and create course splats for us
 // - give it some arb data and see what it does
@@ -152,13 +154,16 @@ namespace mgc {
 
     void UpdateChunks(const HoleChunkManager::output_type& chunks) const {
       for (auto& chunk : chunks) {
-        if (gen_cache.find(chunk) == gen_cache.end()) {
+        // some case where this is called concurrently?? (ie: two threads trying to convert the same chunk)
+        // no more warnings from logs - yippee!!!
+        cache_type::LockHandle handle = box_cache.Acquire(chunk);
+        if (!handle.Available()) {
           std::vector<std::unique_ptr<cg::BaseSmoothingSamplerBox>> output = converter.Convert(chunk, height);
           for (std::unique_ptr<cg::BaseSmoothingSamplerBox>& hole : output) {
-
             holes.InsertBox(std::move(hole));
           }
-          gen_cache.insert(chunk);
+
+          box_cache.Release(handle, chunk->chunk);
         }
       }
     }
@@ -173,9 +178,9 @@ namespace mgc {
     std::shared_ptr<HeightMap> height;
     std::shared_ptr<HoleChunkManager> manager;
 
-    // mark as mutable - caches which should not affect external state
-    mutable std::unordered_set<std::shared_ptr<const HoleChunkBox>> gen_cache;
     mutable cg::MultiSampler<cg::BaseSmoothingSamplerBox> holes;
+    typedef chunker::MutexCache<std::shared_ptr<const mgc::HoleChunkBox>, glm::ivec2> cache_type;
+    mutable cache_type box_cache;
 
     HoleChunkConverter converter;
 

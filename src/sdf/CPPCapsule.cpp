@@ -83,6 +83,23 @@ namespace mgc {
     return min_dist;
   }
 
+  glm::dvec4 CPPCapsule::GetBoundingBox() const {
+    glm::dvec2 min(std::numeric_limits<double>::max());
+    glm::dvec2 max(std::numeric_limits<double>::lowest());
+
+    for (size_t i = 0; i < elements.size(); i++) {
+      const glm::dvec2& pb = elements.at(i);
+
+      const double& rb = radii.at(i);
+
+      min = glm::min(min, pb - rb);
+      max = glm::max(max, pb + rb);
+
+    }
+
+    return glm::dvec4(min.x, min.y, max.x, max.y);
+  }
+
   double CPPCapsule::SampleCapsule(
     const glm::dvec2& point,
     const glm::dvec2& point_a,

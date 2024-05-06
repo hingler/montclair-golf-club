@@ -45,7 +45,7 @@ namespace mgc {
 
       // tba: make distance constant
       res.rigidity = 0.98;
-      res.step_size = 5.6;
+      res.step_size = 9.6;
 
       return res;
     }

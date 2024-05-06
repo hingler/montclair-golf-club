@@ -3,6 +3,7 @@
 
 #include "corrugate/box/BaseSmoothingSamplerBox.hpp"
 #include "corrugate/sampler/SmoothingMultiBoxSampler.hpp"
+
 namespace mgc {
   namespace impl {
     template <typename HeightType>
@@ -27,7 +28,7 @@ namespace mgc {
       }
 
       glm::vec4 SampleSplat(double x, double y, double index) const {
-        // (tba)
+        // (tba) (i dont know why i wrote this hehe)
         return box_sampler.SampleSplat(x, y, index);
       }
 

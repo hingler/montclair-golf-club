@@ -86,7 +86,7 @@ namespace mgc {
       // tba: need to pass a smoother!
       auto height = std::make_shared<sand::SandPitTracer<ST>>(
         sand,
-        0.09
+        0.17
       );
 
 
@@ -97,21 +97,12 @@ namespace mgc {
 
       // empty space -> 0-sample (black)
 
-      // splat->BindSamplers(
-      //   std::make_shared<SDFThresholdSampler<FT>>(fairway),
-      //   std::make_shared<SDFThresholdSampler<GT>>(green),
-      //   std::make_shared<SDFThresholdSampler<ST>>(sand, (-4.0)),
-      //   std::make_shared<SDFThresholdSampler<RT>>(rough),
-      //   0
-      // );
-      //
-
-      auto rough_ptr = std::make_shared<SDFThresholdSampler<RT>>(rough);
+      // replace this with something that will handle trouncing prios??
       splat->BindSamplers(
-        rough_ptr,
-        rough_ptr,
-        rough_ptr,
-        rough_ptr,
+        std::make_shared<SDFThresholdSampler<FT>>(fairway),
+        std::make_shared<SDFThresholdSampler<GT>>(green),
+        std::make_shared<SDFThresholdSampler<ST>>(sand, (-4.0)),
+        std::make_shared<SDFThresholdSampler<RT>>(rough),
         0
       );
 
@@ -120,24 +111,6 @@ namespace mgc {
         green,
         std::make_shared<SDFGrow<ST>>(sand, -4.5)
       );
-
-      // tba: return box lol hehe haha r
-
-      // we don't have a splat map hehe
-      // what to do?
-      // - move splat map to corrugate since we're handling some "terrain logic" there wrt boxes
-      // - i'm fine w this - opens up that functionality in a diff ctx
-      // auto res = new cg::SmoothingTerrainBox(
-      //   *this,
-      //   height,
-      //   splat,
-      //   tree_fill,
-      //   // thinking: slight tweak to grow - get a lil grass sprouting in sand
-      //   grass_fill,
-      //   0.0
-      // );
-
-      // res->PrepareCache(base);
 
       auto box = new cg::LocalSmoothTerrainBox<BT, SmoothT>(
         *this,

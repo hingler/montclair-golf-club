@@ -72,6 +72,10 @@ namespace mgc {
       return tree_fill;
     }
 
+    // TBA: put thread queue here, and pick it up in:
+    // - terrain node
+    // - map ui wrap
+
    private:
     std::shared_ptr<CourseStitcher<HeightType>> stitcher;
 

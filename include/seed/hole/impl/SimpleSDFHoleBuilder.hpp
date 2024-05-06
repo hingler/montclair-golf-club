@@ -90,7 +90,7 @@ namespace mgc {
 
       std::shared_ptr<cg::smooth::LocalizedSmoother<HeightType, CPPBundle>> smoother =
         std::make_shared<cg::smooth::LocalizedSmoother<HeightType, CPPBundle>>(
-          height
+          height, box.GetOrigin()
         );
 
       for (size_t i = 0; i < rough->Bundles(); i++) {
@@ -107,10 +107,25 @@ namespace mgc {
             start,
             end,
             45.0,
-            0.04
+            0.042
           );
         }
       }
+
+      glm::dvec4 green_bb = green->GetBoundingBox();
+      glm::dvec2 green_start(green_bb.x, green_bb.y);
+      glm::dvec2 green_end(green_bb.z, green_bb.w);
+
+      // add one more smoother for green
+      smoother->AddSubSmoother(
+        green,
+        green_start,
+        green_end,
+        32.0,
+        0.021
+      );
+
+      // prob want a smooth patch for just the green
 
 
       // use rough to define "smoothing cells"
@@ -134,6 +149,9 @@ namespace mgc {
         height,
         smoother
       );
+
+      // (fix rough overlapping with sand/etc)
+      // (alt: subtract sand and fairway in construction)
     }
    private:
     std::mt19937_64 engine;

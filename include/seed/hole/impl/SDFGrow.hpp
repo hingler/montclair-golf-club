@@ -12,6 +12,10 @@ namespace mgc {
       return sdf->Sample(x, y) - grow;
     }
 
+    double Sample(double x, double y, double z) const {
+      return sdf->Sample(x, y, z) - grow;
+    }
+
    private:
     std::shared_ptr<SDF> sdf;
     const double grow;

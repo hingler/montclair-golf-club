@@ -1,5 +1,6 @@
 #include "sdf/type/SDFBuilder.hpp"
 #include "sdf/CPPSmoother.hpp"
+#include "seed/hole/impl/SDFGrow.hpp"
 
 // next job:
 // - move height sampler over to chunks
@@ -28,7 +29,7 @@ namespace mgc {
     if (sand_cache == nullptr) {
       auto res = smooth::SmootherSSub(
         base_sand,
-        base_green,
+        std::make_shared<SDFGrow<b_green>>(base_green, 15.0),
         15.5
       );
 
@@ -44,9 +45,9 @@ namespace mgc {
       auto sand = GetSand();
       auto fairway_carve = std::make_shared<CPPSmoother<b_sand, b_fairway>>(smooth::SmootherSSub(base_fairway, base_sand, 16.0));
       // pad out fairway w green
-      auto fairway_with_green = std::make_shared<CPPSmoother<CPPSmoother<b_sand, b_fairway>, b_green>>(smooth::SmootherSMin(
+      auto fairway_with_green = std::make_shared<CPPSmoother<CPPSmoother<b_sand, b_fairway>, SDFGrow<b_green>>>(smooth::SmootherSMin(
         fairway_carve,
-        GetGreen(),
+        std::make_shared<SDFGrow<b_green>>(GetGreen(), 8.0),
         12.5
       ));
 

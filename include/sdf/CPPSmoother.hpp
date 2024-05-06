@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <memory>
 
+#include <glm/glm.hpp>
+
 // negating?
 
 namespace mgc {
@@ -19,7 +21,6 @@ namespace mgc {
       double k,
       double fac_final
     ) : a(a), fac_a(fac_a), b(b), fac_b(fac_b), k(k), fac_final(fac_final) {}
-
 
     double Sample(double x, double y) const {
       double dist_a = a->Sample(x, y) * fac_a;

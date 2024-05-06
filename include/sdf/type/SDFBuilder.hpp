@@ -20,6 +20,7 @@
 #include "sdf/type/green/BaseGreenBuilder.hpp"
 #include "sdf/type/rough/BaseRoughBuilder.hpp"
 #include "sdf/type/sand/BaseSandBuilder.hpp"
+#include "seed/hole/impl/SDFGrow.hpp"
 
 #include <memory>
 
@@ -32,8 +33,11 @@ namespace mgc {
 
    public:
     typedef b_green green_type;
-    typedef CPPSmoother<b_green, b_sand> sand_type;
-    typedef CPPSmoother<b_green, CPPSmoother<CPPSmoother<b_sand, b_fairway>, b_green>> fairway_type;
+    typedef CPPSmoother<SDFGrow<b_green>, b_sand> sand_type;
+    typedef CPPSmoother<b_green, CPPSmoother<CPPSmoother<b_sand, b_fairway>, SDFGrow<b_green>>> fairway_type;
+    // hehe
+    // probably a better way to do all this
+    // (modify splatmanager st splats trounce each other in order?? ex. alpha var test)
     typedef b_rough rough_type;
 
     SDFBuilder(

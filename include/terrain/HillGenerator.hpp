@@ -38,10 +38,10 @@ namespace gdterrain {
 
    /**
     * @brief Samples this generator.
-    * 
+    *
     * @param x - x coord of sample
-    * @param y - y coord of sample 
-    * @return double 
+    * @param y - y coord of sample
+    * @return double
     */
     double Sample(double x, double y);
     // need to configure intensity range
@@ -53,7 +53,7 @@ namespace gdterrain {
     // distribution for height
     double intensity_min = 0.5;
     double intensity_max = 1.2;
-    
+
     // size of hill cells before scale
     double cell_size = 1.0;
 
@@ -81,7 +81,6 @@ namespace gdterrain {
     // assist in rng; seeding is super expensive :3
     std::mt19937_64 engine;
     // need to cache generation results somewhere
-    tbb::concurrent_hash_map<glm::ivec2, _impl::HillInfo> hill_cache_concurrent;
     std::unordered_map<glm::ivec2, _impl::HillInfo> hill_cache;
 
     // tba: add seed

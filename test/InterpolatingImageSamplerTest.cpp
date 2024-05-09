@@ -2,8 +2,7 @@
 
 #include "image/GenericImage.hpp"
 #include "course/sampler/InterpolatingImageSampler.hpp"
-
-#include "sdf_jak/sdf_bundle.h"
+#include "sdf/CPPBundle.hpp"
 
 using namespace image;
 using namespace course;
@@ -35,8 +34,7 @@ test_data operator*(test_data lhs, float rhs) {
 
 TEST(InterpolatingImageSamplerTest, TestSimpleSample) {
   // yippee!
-  SDFBundle* b = bundle_get(0.0);
-  bundle_free(b);
+  mgc::CPPBundle b;
   // d
   std::shared_ptr<GenericImage<test_data>> image = std::make_shared<GenericImage<test_data>>(32, 32);
   test_data data;

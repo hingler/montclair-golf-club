@@ -1,6 +1,5 @@
 // prepares necessary STB implementation
 
-#include "terrain/HillGenerator.hpp"
 #include "terrain/CourseSmoother.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION

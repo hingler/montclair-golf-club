@@ -10,8 +10,6 @@ gtest = SConscript("./SConstruct_gtest", exports = 'env')
 
 gog = SConscript("lib/gog43/SConstruct", exports = 'env')
 
-sdf = SConscript("lib/sdf-jak/SConstruct", exports = 'env')
-
 SConscript("lib/extra-corrugated/SConstruct", exports = 'env')
 
 test_dir = "test/"
@@ -42,7 +40,7 @@ sources.extend(Glob("src/*/*/*/*.cpp"))
 # dedupe - anything from sources
 sources = list(set(sources))
 
-env.Append(LIBS=[ gog, sdf ])
+env.Append(LIBS=[ gog ])
 
 library = env.Library("build/montclairgolfclub", source=sources)
 

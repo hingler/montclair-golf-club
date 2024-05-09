@@ -32,7 +32,7 @@ namespace gdterrain {
     std::uniform_real_distribution<double> f_dist(0.0, 1.0);
 
     // random samples are costly!!!
-    double theta     = f_dist(engine) * 2 * M_PI; 
+    double theta     = f_dist(engine) * 2 * M_PI;
     double intensity = f_dist(engine);
     double fill      = f_dist(engine);
     double half_scatter_radius = (scatter_radius / 2.0);
@@ -64,9 +64,6 @@ namespace gdterrain {
     fill_probability = other.fill_probability;
 
     engine = other.engine;
-
-    // cache only - should regen, no need to copy.
-    hill_cache_concurrent = tbb::concurrent_hash_map<glm::ivec2, _impl::HillInfo>();
   }
 
   double HillGenerator::Sample(double x, double y) {
@@ -113,7 +110,6 @@ namespace gdterrain {
   // (just need to synch hill generation and engine access)
   HillInfo HillGenerator::LookupHill(const glm::ivec2& offset) {
     // significant slow down - any way we can speed this up for threads???
-    // tbb::concurrent_hash_map<glm::ivec2, HillInfo>::const_accessor hill;
     HillInfo res;
     auto itr = hill_cache.find(offset);
     // lookups are costly!!!
@@ -124,14 +120,9 @@ namespace gdterrain {
 
       double eff_scatter = scatter * cell_size;
       res = GenerateHillInfo(engine, eff_scatter, intensity_min, intensity_max, fill_probability, hill_sigma);
-      
+
       {
         hill_cache.insert(std::make_pair(offset, res));
-        // if (!hill_cache_concurrent.find(hill, offset)) {
-        //   // confirm that someone else hasn't written this
-        //   hill_cache_concurrent.insert(std::make_pair(offset, res));
-        //   return res;
-        // }
       }
     } else {
       res = itr->second;

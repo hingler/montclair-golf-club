@@ -11,7 +11,7 @@
 #include "course/sampler/ThresholdSampler.hpp"
 #include "course/sampler/ArithmeticSampler.hpp"
 
-#include "terrain/HillGenerator.hpp"
+#include "seed/direct/impl/SimplexHeightFunc.hpp"
 #include "terrain/CourseSmoother.hpp"
 #include "course/sampler/TreeFillSampler.hpp"
 
@@ -29,7 +29,7 @@ namespace mgc {
     typedef course::sampler::ThresholdSampler<course::sampler::GaussianMetaballSampler> CourseTerrainSampler;
     typedef std::shared_ptr<CourseTerrainSampler> CourseTerrainPtr;
     typedef std::shared_ptr<course::sampler::ArithmeticSampler<CourseTerrainSampler, CourseTerrainSampler>> SandSampler;
-    typedef gdterrain::CourseSmoother<gdterrain::HillGenerator, gdterrain::HillGenerator, gdterrain::HillGenerator> HeightMapType;
+    typedef gdterrain::CourseSmoother<_impl::SimplexHeightFunc, _impl::SimplexHeightFunc, _impl::SimplexHeightFunc> HeightMapType;
     typedef course::sampler::TreeFillSampler<course::sampler::GaussianMetaballSampler> FillSamplerType;
 
     /**
@@ -130,7 +130,7 @@ namespace mgc {
     std::shared_ptr<course::sampler::GaussianMetaballSampler> course_sampler;
     course::path::CoursePath path;
     course::path::CompoundCurve curve;
-    std::shared_ptr<gdterrain::CourseSmoother<gdterrain::HillGenerator, gdterrain::HillGenerator, gdterrain::HillGenerator>> base_terrain;
+    std::shared_ptr<gdterrain::CourseSmoother<_impl::SimplexHeightFunc, _impl::SimplexHeightFunc, _impl::SimplexHeightFunc>> base_terrain;
     // samplers
     CourseTerrainPtr fairway_sampler;
     CourseTerrainPtr green_sampler;

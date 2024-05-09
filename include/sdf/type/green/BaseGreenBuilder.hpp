@@ -1,7 +1,6 @@
 #ifndef BASE_GREEN_BUILDER_H_
 #define BASE_GREEN_BUILDER_H_
 
-#include "sdf/Bundle.hpp"
 #include "sdf/CPPBundle.hpp"
 #include "sdf/SDFBuilderType.hpp"
 

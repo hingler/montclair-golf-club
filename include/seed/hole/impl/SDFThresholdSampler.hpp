@@ -1,8 +1,6 @@
 #ifndef SDF_THRESHOLD_SAMPLER_H_
 #define SDF_THRESHOLD_SAMPLER_H_
 
-#include <sdf/Bundle.hpp>
-
 #include <memory>
 
 namespace mgc {

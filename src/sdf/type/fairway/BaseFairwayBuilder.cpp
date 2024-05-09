@@ -1,7 +1,6 @@
 #include "sdf/type/fairway/BaseFairwayBuilder.hpp"
 
 #include "gog43/Logger.hpp"
-#include "sdf/Bundle.hpp"
 #include "sdf/type/fairway/BaseFairwaySDF.hpp"
 #include <algorithm>
 #include <random>

@@ -13,7 +13,6 @@
 // sand -> ssub<sand, green>
 // fairway -> smin<ssub<fairway, sand>, green>
 
-#include "sdf/Bundle.hpp"
 #include "sdf/CPPSmoother.hpp"
 
 #include "sdf/type/fairway/BaseFairwayBuilder.hpp"

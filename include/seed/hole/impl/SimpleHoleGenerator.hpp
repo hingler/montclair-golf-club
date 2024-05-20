@@ -43,6 +43,8 @@ namespace mgc {
 
       double min_dist = glm::length(points[points.size() - 1] - points[0]);
       if (min_dist > MIN_COURSE_LEN) {
+        // bundle is created by our sdf gen
+        // - return struct packet here?
         return delegate_builder.CreateSDF(box, points, min_dist);
       }
 

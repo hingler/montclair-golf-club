@@ -29,9 +29,9 @@ namespace mgc {
       auto fairway_bundle = std::make_shared<CPPBundle>(25.0);
 
       // dist for path stop circle radius
-      std::normal_distribution<double> circle_rad(17.0, 4.5);
+      std::normal_distribution<double> circle_rad(12.0, 4.5);
       // wiggle for circles
-      std::uniform_real_distribution<double> circle_wiggle(-24.0, 24.0);
+      std::uniform_real_distribution<double> circle_wiggle(-18.0, 18.0);
 
       std::uniform_int_distribution<int> circle_count(3, 5);
       // draw capsules connecting points, with segments from bundle
@@ -45,7 +45,7 @@ namespace mgc {
           glm::dvec2 wiggle_pos = stop;
           wiggle_pos.x += circle_wiggle(engine);
           wiggle_pos.y += circle_wiggle(engine);
-          double radius = std::max(circle_rad(engine), 11.0);
+          double radius = std::max(circle_rad(engine), 9.0);
           fairway_bundle->AddCircle(wiggle_pos.x, wiggle_pos.y, radius);
         }
       }
@@ -95,7 +95,7 @@ namespace mgc {
           points_working.push_back(bundle.course_path.at(index_cursor));
 
           double sample = sampler.Sample(sample_point.x, sample_point.y);
-          radii.push_back(sample * 11.5 + 41.0);
+          radii.push_back(sample * 12.8 + 25.6);
 
           index_cursor++;
         }

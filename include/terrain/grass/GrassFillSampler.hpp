@@ -23,7 +23,7 @@ namespace mgc {
       min_dist = glm::max(min_dist, 0.0f);
 
 
-      return glm::smoothstep(0.95f, 16.0f, min_dist);
+      return glm::smoothstep(0.45f, 4.8f, min_dist);
     }
 
    private:

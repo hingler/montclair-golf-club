@@ -29,7 +29,12 @@ namespace mgc {
       // write prepare wrap
 
       glm::vec4 Sample(double x, double y, size_t index) const {
-        return ptr->SampleSplat(x, y, index);
+        glm::vec4 test = ptr->SampleSplat(x, y, index);
+        if (glm::length(test) < 0.01 && index == 0) {
+          return glm::vec4(0.0, 0.0, 0.0, 1.0);
+        }
+
+        return test;
       }
 
       typedef typename CourseStitcher<HeightType>::sub_sampler_type prep_type;
@@ -58,6 +63,8 @@ namespace mgc {
         size_t elems = (res / sizeof(glm::vec4));
         for (size_t i = 0; i < elems; i++) {
           // want a default value
+          // this is the issue hehe - we put a default here to fill in the blank
+          // (real way to do it would be to have a "base splat" which is all rough)
           if (glm::length(output[i]) < 0.01) {
             output[i] = glm::vec4(0, 0, 0, 1);
           }

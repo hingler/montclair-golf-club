@@ -65,7 +65,7 @@ namespace mgc {
 
     bundle.tee_direction = glm::normalize(te - ts);
 
-    bundle.yardage = bundle.path_stops.size() + 1;
+    bundle.yardage = glm::length(bundle.course_path.at(bundle.course_path.size() - 1) - bundle.course_path.at(0));
 
     bundle.origin = box.GetOrigin();
 

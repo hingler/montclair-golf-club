@@ -55,9 +55,6 @@ namespace mgc {
     }
 
     float SampleGrassFill(double x, double y) const {
-      // this is what a "single-stream" solution looks like
-      // - not fantastic but should be fine i think : )
-      // - (plus we like dont ever use it)
       return GetSubSampler(glm::dvec2(x, y))->SampleGrassFill(x, y);
     }
 
@@ -143,6 +140,10 @@ namespace mgc {
       size += 2 * padding;
 
       return GetSubSampler(origin, size);
+    }
+
+    std::vector<HoleInfo> GetHoleInfo(const glm::dvec2& origin, const glm::dvec2& size) const {
+      return hole_sampler.GetHoleInfo(origin, size);
     }
 
    private:

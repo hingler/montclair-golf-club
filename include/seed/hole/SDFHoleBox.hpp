@@ -10,6 +10,7 @@
 
 
 #include "corrugate/sampler/smooth/LocalizedSmoother.hpp"
+#include "path/CourseBundle.hpp"
 #include "sdf/type/sand/SandPitTracer.hpp"
 #include "seed/hole/HoleBox.hpp"
 #include "seed/hole/impl/SDFGrow.hpp"
@@ -48,6 +49,8 @@ namespace mgc {
     /// return distance to nearest feature in box
     virtual double Dist(const glm::dvec2& point) const = 0;
 
+    virtual const CourseBundle& GetBundle() const = 0;
+
     virtual ~SDFHoleBox() {}
   };
 
@@ -70,7 +73,8 @@ namespace mgc {
       const std::shared_ptr<ST>& sand,
       const std::shared_ptr<RT>& rough,
       const std::shared_ptr<BT>& base_height,
-      const std::shared_ptr<smoother_type>& smoother
+      const std::shared_ptr<smoother_type>& smoother,
+      const CourseBundle& bundle
     ) : SDFHoleBox(source),
         fairway(fairway),
         green(green),
@@ -78,7 +82,8 @@ namespace mgc {
         rough(rough),
         base(base_height),
         smoother(smoother),
-        course_path(source.begin(), source.end())
+        course_path(source.begin(), source.end()),
+        bundle(bundle)
     {}
 
     std::unique_ptr<cg::BaseSmoothingSamplerBox> Convert() const override {
@@ -137,6 +142,10 @@ namespace mgc {
       });
     }
 
+    const CourseBundle& GetBundle() const override {
+      return bundle;
+    }
+
    private:
     std::shared_ptr<FT> fairway;
     std::shared_ptr<GT> green;
@@ -145,6 +154,8 @@ namespace mgc {
     std::shared_ptr<BT> base;
     std::shared_ptr<smoother_type> smoother;
     std::vector<glm::dvec2> course_path;
+
+    CourseBundle bundle;
   };
 }
 

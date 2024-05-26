@@ -10,11 +10,13 @@
 #include "mgc/impl/SeedSplatWrap.hpp"
 #include "mgc/impl/TreeFillWrap.hpp"
 #include "seed/ChunkConfig.hpp"
+#include "seed/hole/ConversionResult.hpp"
 #include "terrain/CourseStitcher.hpp"
 namespace mgc {
   template <typename HeightType>
   class CourseGen_Multi {
    public:
+    typedef HeightType                              height_type;
     typedef const impl::SeedHeightWrap<HeightType> HeightSampler;
     typedef const impl::SeedSplatWrap<HeightType> SplatSampler;
     typedef const impl::GrassFillWrap<HeightType> GrassSampler;
@@ -72,9 +74,9 @@ namespace mgc {
       return tree_fill;
     }
 
-    // TBA: put thread queue here, and pick it up in:
-    // - terrain node
-    // - map ui wrap
+    std::vector<HoleInfo> GetHoleInfo(const glm::dvec2& origin, const glm::dvec2& size) const {
+      return stitcher->GetHoleInfo(origin, size);
+    }
 
    private:
     std::shared_ptr<CourseStitcher<HeightType>> stitcher;

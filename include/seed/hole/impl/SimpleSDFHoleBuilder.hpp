@@ -39,7 +39,6 @@ namespace mgc {
       double fairway_start = FAIRWAY_START(engine);
 
       auto bundler = CourseBundleBuilder();
-
       auto bundle = bundler.Convert(points, engine, box);
 
       // defining contiguity??
@@ -147,7 +146,8 @@ namespace mgc {
         builder.GetSand(),
         builder.GetRough(),
         height,
-        smoother
+        smoother,
+        bundle
       );
 
       // (fix rough overlapping with sand/etc)

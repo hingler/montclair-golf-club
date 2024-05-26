@@ -6,6 +6,8 @@
 #include "corrugate/sampler/DataSampler.hpp"
 #include "corrugate/sampler/SmoothingMultiBoxSampler.hpp"
 #include "glm/fwd.hpp"
+#include "path/CourseBundle.hpp"
+#include "seed/hole/ConversionResult.hpp"
 #include "seed/hole/HoleChunkConverter.hpp"
 #include "seed/hole/HoleChunkManager.hpp"
 #include <memory>
@@ -150,6 +152,36 @@ namespace mgc {
       return sampler_type(output);
     }
 
+    std::vector<HoleInfo> GetHoleInfo(
+      const glm::dvec2& origin,
+      const glm::dvec2& size
+    ) const {
+      HoleChunkManager::output_type chunks;
+      manager->FetchBoxes(origin, size, chunks);
+      UpdateChunks(chunks);
+
+      sampler_output output;
+      holes.FetchRange(origin, size, output);
+
+      std::vector<HoleInfo> result;
+
+      {
+        std::lock_guard<std::mutex> lock(bundle_mutex);
+        for (const auto& ptr : output) {
+          HoleInfo info;
+          info.box = ptr;
+          auto itr = course_bundles.find(ptr);
+
+          // should always be true!
+          assert(itr != course_bundles.end());
+          info.data = itr->second;
+          result.push_back(std::move(info));
+        }
+      }
+
+      return result;
+    }
+
    private:
 
     void UpdateChunks(const HoleChunkManager::output_type& chunks) const {
@@ -158,9 +190,15 @@ namespace mgc {
         // no more warnings from logs - yippee!!!
         cache_type::LockHandle handle = box_cache.Acquire(chunk);
         if (!handle.Available()) {
-          std::vector<std::unique_ptr<cg::BaseSmoothingSamplerBox>> output = converter.Convert(chunk, height);
-          for (std::unique_ptr<cg::BaseSmoothingSamplerBox>& hole : output) {
-            holes.InsertBox(std::move(hole));
+          std::vector<ConversionResult> output = converter.Convert(chunk, height);
+
+          {
+            std::lock_guard<std::mutex> lock(bundle_mutex);
+            // should be quick, and run infrequently - no actual work done
+            for (ConversionResult& hole : output) {
+              std::shared_ptr<const cg::BaseSmoothingSamplerBox> ptr = holes.InsertBox(std::move(hole.box));
+              course_bundles.insert(std::make_pair(std::move(ptr), hole.data));
+            }
           }
 
           box_cache.Release(handle, chunk->chunk);
@@ -181,6 +219,10 @@ namespace mgc {
     mutable cg::MultiSampler<cg::BaseSmoothingSamplerBox> holes;
     typedef chunker::MutexCache<std::shared_ptr<const mgc::HoleChunkBox>, glm::ivec2> cache_type;
     mutable cache_type box_cache;
+
+    // need a lock??
+    mutable std::mutex bundle_mutex;
+    mutable std::unordered_map<std::shared_ptr<const cg::BaseSmoothingSamplerBox>, CourseBundle> course_bundles;
 
     HoleChunkConverter converter;
 

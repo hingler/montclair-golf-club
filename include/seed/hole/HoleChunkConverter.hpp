@@ -4,6 +4,7 @@
 #include "corrugate/box/BaseSmoothingSamplerBox.hpp"
 #include "gog43/Logger.hpp"
 #include "seed/ChunkConfig.hpp"
+#include "seed/hole/ConversionResult.hpp"
 #include "seed/hole/HoleChunkBox.hpp"
 #include "seed/hole/HoleChunkManager.hpp"
 #include "seed/hole/SDFHoleBox.hpp"
@@ -24,7 +25,7 @@ namespace mgc {
     );
 
     template <typename HeightType>
-    std::vector<std::unique_ptr<cg::BaseSmoothingSamplerBox>> Convert(
+    std::vector<ConversionResult> Convert(
       const std::shared_ptr<const HoleChunkBox>& box,
       const std::shared_ptr<HeightType>& height
     ) const {
@@ -59,11 +60,14 @@ namespace mgc {
         }
       }
 
-      std::vector<std::unique_ptr<cg::BaseSmoothingSamplerBox>> result;
+      std::vector<ConversionResult> result;
       for (const auto& sdf : (*sdfs)) {
         // convert finalized sdfs into sampler boxes
         // possibly: iterator is returning duplicates?? (no - ptrs are stored in a set, no dupes)
-        result.push_back(sdf->Convert());
+        ConversionResult res;
+        res.box = std::move(sdf->Convert());
+        res.data = sdf->GetBundle();
+        result.push_back(std::move(res));
       }
 
       return result;

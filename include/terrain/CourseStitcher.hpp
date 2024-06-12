@@ -39,10 +39,7 @@ namespace mgc {
     typedef impl::CourseSubSampler<HeightType> sub_sampler_type;
 
     float SampleHeight(double x, double y) const {
-      double base = height->Sample(x, y);
-      double course = hole_sampler.SampleHeight(x, y, base);
-
-      return base + course;
+      return GetSubSampler(glm::dvec2(x, y))->Sample(x, y);
     }
 
     glm::vec4 SampleSplat(double x, double y, size_t index) const {

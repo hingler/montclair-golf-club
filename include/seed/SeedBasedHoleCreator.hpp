@@ -130,13 +130,10 @@ namespace mgc {
     sampler_type GetHoleSampler(
       const glm::dvec2& point
     ) const {
-      HoleChunkManager::output_type chunks;
-      manager->FetchBoxes(point, chunks);
-      UpdateChunks(chunks);
-
-      sampler_output output;
-      holes.FetchPoint(point, output);
-      return sampler_type(output);
+      return GetHoleSampler(
+        point - glm::dvec2(0.5),
+        glm::dvec2(1.0)
+      );
     }
 
     sampler_type GetHoleSampler(

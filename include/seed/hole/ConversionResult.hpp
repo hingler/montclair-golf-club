@@ -20,6 +20,10 @@ namespace mgc {
       return box->GetOrigin() + data.course_path[0];
     }
 
+    glm::dvec2 GetHolePosition() const {
+      return box->GetOrigin() + data.hole;
+    }
+
     bool operator==(const HoleInfo& other) const {
       return box == other.box;
     }

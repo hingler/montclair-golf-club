@@ -4,14 +4,23 @@ namespace mgc {
   namespace rough {
     BaseRoughSDF::BaseRoughSDF(
       const std::vector<std::shared_ptr<CPPBundle>>& bundles
-    ) : bundles(std::move(bundles)) {}
+    ) : bundles(), indices() {
+      for (int i = 0; i < bundles.size(); i++) {
+        if (bundles.at(i) != nullptr) {
+          indices.push_back(i);
+          this->bundles.push_back(bundles.at(i));
+        }
+      }
+    }
 
     std::shared_ptr<CPPBundle> BaseRoughSDF::GetBundle(size_t index) const {
-      if (index >= bundles.size()) {
-        return nullptr;
+      for (int i = 0; i < indices.size(); i++) {
+        if (indices[i] == index) {
+          return bundles[i];
+        }
       }
 
-      return bundles[index];
+      return nullptr;
     }
 
     double BaseRoughSDF::Sample(double x, double y) const {

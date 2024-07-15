@@ -36,6 +36,8 @@ sources.extend(Glob("src/*.cpp"))
 sources.extend(Glob("src/*/*.cpp"))
 sources.extend(Glob("src/*/*/*.cpp"))
 sources.extend(Glob("src/*/*/*/*.cpp"))
+sources.extend(Glob("src/*/*/*/*/*.cpp"))
+# whatever hehehe
 
 # dedupe - anything from sources
 sources = list(set(sources))

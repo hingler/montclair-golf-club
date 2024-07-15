@@ -2,6 +2,7 @@
 #define SIMPLE_SDF_HOLE_BUILDER_H_
 
 #include "corrugate/sampler/smooth/LocalizedSmoother.hpp"
+#include "path/CourseBundle.hpp"
 #include "path/CourseBundleBuilder.hpp"
 
 #include "sdf/CPPBundle.hpp"
@@ -15,6 +16,7 @@
 #include "seed/hole/SDFHoleBox.hpp"
 #include "seed/hole/HoleBox.hpp"
 
+#include <atomic>
 #include <memory>
 #include <random>
 
@@ -24,7 +26,7 @@ namespace mgc {
   template <typename HeightType>
   class SimpleSDFHoleBuilder {
    public:
-    SimpleSDFHoleBuilder(std::shared_ptr<HeightType> height) : height(height) {}
+    SimpleSDFHoleBuilder(std::shared_ptr<HeightType> height) : height(height), bundler() {}
     std::unique_ptr<SDFHoleBox> CreateSDF(
       const HoleBox& box,
       const std::vector<glm::dvec2>& points,
@@ -37,22 +39,8 @@ namespace mgc {
 
       // ignore for now
       double fairway_start = FAIRWAY_START(engine);
+      CourseBundle bundle = bundler.Convert(points, engine, box);
 
-      auto bundler = CourseBundleBuilder();
-      auto bundle = bundler.Convert(points, engine, box);
-
-      // defining contiguity??
-      // - arr of (arr of points)
-      // - define disjoints only (ie: `0` is a default, `1` implies a disjoint at 1 -> 2)
-
-      // also: does rough need to know what fairway is doing?? (or can we just min the base fairway on top with some padding???)
-      // - thinking this
-      //
-      // ergo:
-      // - rough knows where our discontinuities are (from bundler)
-      // - fairway does too
-      // - ergo: rough knows how to bundle "un-like" regions
-      // for smoothing: use wgt'd average (requires a visible smoothing fac)
 
       auto fairway_builder = fairway::BaseFairwayBuilder();
       auto sand_builder = sand::BaseSandBuilder();
@@ -92,7 +80,24 @@ namespace mgc {
           height, box.GetOrigin()
         );
 
-      for (size_t i = 0; i < rough->Bundles(); i++) {
+      // idea: do an initial "smoothing pass" on the course path??
+      auto path_bundle = std::make_shared<CPPBundle>(24.0);
+      path_bundle->AddCapsule(bundle.course_path, 48.0);
+
+      glm::dvec4 bb = path_bundle->GetBoundingBox();
+
+      // think of this as an "initial" pass to ensure the hole remains navigable
+      // (will smooth more on top!)
+      smoother->AddSubSmoother(
+        path_bundle,
+        glm::dvec2(bb.x, bb.y),
+        glm::dvec2(bb.z, bb.w),
+        35.0,
+        0.241
+      );
+
+      // don't smooth final stop
+      for (size_t i = 0; i < bundle.path_stops.size(); i++) {
         std::shared_ptr<CPPBundle> bundle = rough->GetBundle(i);
 
         if (bundle != nullptr) {
@@ -101,12 +106,19 @@ namespace mgc {
           glm::dvec2 start(bb.x, bb.y);
           glm::dvec2 end(bb.z, bb.w);
 
+          // if green is smoothed by a smoother: dial back max slope?
+          // break before green
+
+
+
+          // randomize this a bit more
+          // - tend lower
           smoother->AddSubSmoother(
             bundle,
             start,
             end,
-            45.0,
-            0.042
+            56.0,
+            GetSmoothnessFactorFairway()
           );
         }
       }
@@ -115,16 +127,31 @@ namespace mgc {
       glm::dvec2 green_start(green_bb.x, green_bb.y);
       glm::dvec2 green_end(green_bb.z, green_bb.w);
 
-      // add one more smoother for green
+      // add one more smoother for green (remove for now - i think its bugging)
       smoother->AddSubSmoother(
         green,
         green_start,
         green_end,
-        32.0,
-        0.021
+        54.0,
+        GetSmoothnessFactorGreen()
       );
 
-      // prob want a smooth patch for just the green
+      // smooth tee
+      std::shared_ptr<CPPBundle> tee_smooth = std::make_shared<CPPBundle>();
+      const glm::dvec2& tee_origin = bundle.course_path.at(0);
+      tee_smooth->AddCircle(tee_origin.x, tee_origin.y, 16.5);
+      glm::dvec4 bounds = tee_smooth->GetBoundingBox();
+
+      glm::dvec2 tee_start(bounds.x, bounds.y);
+      glm::dvec2 tee_end(bounds.z, bounds.w);
+
+      smoother->AddSubSmoother(
+        tee_smooth,
+        tee_start,
+        tee_end,
+        24.0,
+        0.015
+      );
 
 
       // use rough to define "smoothing cells"
@@ -154,10 +181,21 @@ namespace mgc {
       // (alt: subtract sand and fairway in construction)
     }
    private:
+    double GetSmoothnessFactorFairway() {
+      static std::uniform_real_distribution<double> SMOOTH_FAC(0.023, 0.065);
+      return SMOOTH_FAC(engine);
+    }
+
+    double GetSmoothnessFactorGreen() {
+      static std::uniform_real_distribution<double> SMOOTH_FAC_GREEN(0.008, 0.019);
+      return SMOOTH_FAC_GREEN(engine);
+    }
+
     std::mt19937_64 engine;
     const std::shared_ptr<HeightType> height;
 
     // arb numbers
+    CourseBundleBuilder bundler;
     static std::uniform_real_distribution<double> FAIRWAY_START;
     static constexpr double PAR3_THRESHOLD = 224.5;
     static constexpr double PAR4_THRESHOLD = 436.1;

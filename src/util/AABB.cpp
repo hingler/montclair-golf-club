@@ -1,5 +1,8 @@
 #include "util/GC_AABB.hpp"
 
+// temp
+#include "course/feature/WorldFeature.hpp"
+
 
 namespace mgc {
   GC_AABB::GC_AABB() {}

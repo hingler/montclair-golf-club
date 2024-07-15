@@ -25,27 +25,30 @@ namespace mgc {
       const glm::dvec2 tee_dimensions = glm::dvec2(8, 5);
       // first stop point circle
 
-      // smooth w/in 16.0 yds i guess
+      // smooth w/in 25.0 yds i guess
       auto fairway_bundle = std::make_shared<CPPBundle>(25.0);
 
       // dist for path stop circle radius
-      std::normal_distribution<double> circle_rad(12.0, 4.5);
+      static std::normal_distribution<double> circle_rad(27.0, 6.0);
       // wiggle for circles
-      std::uniform_real_distribution<double> circle_wiggle(-18.0, 18.0);
+      static std::uniform_real_distribution<double> circle_wiggle(-24.0, 24.0);
 
-      std::uniform_int_distribution<int> circle_count(3, 5);
+      static std::uniform_int_distribution<int> circle_count(4, 7);
+
+      static std::uniform_real_distribution<double> path_wiggle(-4.0, 2.0);
       // draw capsules connecting points, with segments from bundle
       auto& stops = bundle.path_stops;
       for (size_t i = 1; i < stops.size(); i++) {
         // create some circles
         const glm::dvec2& stop = stops.at(i);
+        double stop_index = bundle.stop_indices.at(i);
 
         int count = circle_count(engine);
         for (size_t r = 0; r < count; r++) {
-          glm::dvec2 wiggle_pos = stop;
+          glm::dvec2 wiggle_pos = bundle.SampleAtIndex(stop_index + path_wiggle(engine));
           wiggle_pos.x += circle_wiggle(engine);
           wiggle_pos.y += circle_wiggle(engine);
-          double radius = std::max(circle_rad(engine), 9.0);
+          double radius = std::max(circle_rad(engine), 14.0);
           fairway_bundle->AddCircle(wiggle_pos.x, wiggle_pos.y, radius);
         }
       }
@@ -95,7 +98,7 @@ namespace mgc {
           points_working.push_back(bundle.course_path.at(index_cursor));
 
           double sample = sampler.Sample(sample_point.x, sample_point.y);
-          radii.push_back(sample * 12.8 + 25.6);
+          radii.push_back(sample * 18.8 + 26.6);
 
           index_cursor++;
         }

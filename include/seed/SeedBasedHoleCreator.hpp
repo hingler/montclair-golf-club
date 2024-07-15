@@ -36,14 +36,16 @@ namespace mgc {
       const std::shared_ptr<HeightMap>& height,
       const std::shared_ptr<SeedGrower>& grower,
       const ChunkConfig& config,
-      const GrowConfig& config_grow
+      const GrowConfig& config_grow,
+      const std::shared_ptr<mgc_course::mgc_gen::WorldFeatureManager>& pre_gen
     ) : manager(std::make_shared<HoleChunkManager>(
       grower,
       config,
       config_grow
     )), converter(
       manager,
-      config
+      config,
+      pre_gen
     ), height(height) {
       // build seed grower here? nah
       // should be handled from outside this
@@ -193,6 +195,7 @@ namespace mgc {
             std::lock_guard<std::mutex> lock(bundle_mutex);
             // should be quick, and run infrequently - no actual work done
             for (ConversionResult& hole : output) {
+              // doesnt matter what these IDs are, as long as they're unique!
               std::shared_ptr<const cg::BaseSmoothingSamplerBox> ptr = holes.InsertBox(std::move(hole.box));
               course_bundles.insert(std::make_pair(std::move(ptr), hole.data));
             }

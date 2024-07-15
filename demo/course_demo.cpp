@@ -1,3 +1,4 @@
+#include "course/feature/WorldFeatureBuilder.hpp"
 #include "debug/draw/DebugDraw.hpp"
 #include "debug/draw/GradientDraw.hpp"
 
@@ -8,6 +9,8 @@
 #include "gog43/IOStreamLogger.hpp"
 #include "seed/direct/GradNormalDirector.hpp"
 #include "seed/direct/impl/SimplexHeightFunc.hpp"
+
+#include "course/feature/gen/WorldFeatureManager.hpp"
 
 using namespace gog43;
 using namespace mgc;
@@ -45,7 +48,8 @@ int main(int argc, char** argv) {
     height,
     grower,
     chunk_config,
-    config
+    config,
+    std::make_shared<mgc_course::mgc_gen::WorldFeatureManager>(height)
   );
 
   for (int i = 0; i < 4; i++) {

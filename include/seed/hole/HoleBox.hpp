@@ -34,6 +34,10 @@ namespace mgc {
       return TestPadding_local(point_local);
     }
 
+    double GetPadding() const {
+      return padding;
+    }
+
     iterator begin() const {
       return path.cbegin();
     }

@@ -12,11 +12,11 @@ namespace mgc {
 
   class HoleChunkBox : public cg::FeatureBox {
    public:
-    typedef cg::MultiSampler<HoleBox>::iterator   iterator;
+    typedef std::vector<std::shared_ptr<const HoleBox>>::const_iterator iterator;
     HoleChunkBox(const std::vector<HoleBox>& holes, const glm::ivec2& chunk);
 
-    iterator begin() const { return holes.begin(); }
-    iterator end()   const { return holes.end();   }
+    iterator begin() const { return holes_ordered.begin(); }
+    iterator end()   const { return holes_ordered.end();   }
 
     size_t chunk_count() const { return holes.size(); }
 
@@ -37,6 +37,9 @@ namespace mgc {
     // contains holes, in global space
     static GC_AABB GetBoundingBox(const std::vector<HoleBox>& holes);
     cg::MultiSampler<HoleBox> holes;
+    // ensure holes remain ordered
+    std::vector<std::shared_ptr<const HoleBox>> holes_ordered;
+    // thinking: pair this up with a side-by-side vector??
   };
 }
 

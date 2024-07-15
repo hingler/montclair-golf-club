@@ -26,22 +26,21 @@ namespace mgc {
 
     // marks the stops at which we want to "fragment" our in-bounds area
     std::vector<size_t> path_breaks;
-    // (tba: shouldn't be out of bounds necc - for now it's fine though)
-    // (down the line: how do we want to delineate oob/unsmoothed??)
-    // - handle it based on underlying terrain (semi-ok - lots of IB territory)
-    // - i kinda like that - just do what the ground below us does
-    //   - but: should we ever mark "unmanaged" grass which is outside the course territory??
-    //   - idea1: down the line, create a "course bounds" in another splat
-    //     - let the generator determine what splat it ought to be, down the line...
 
     // yardage of the entire course
     double yardage;
+
+    // padding applied to safe region of this box
+    double padding = 0.0;
 
     // par for this course
     size_t par;
 
     // origin point for this course bundle
     glm::dvec2 origin;
+
+    // runtime-generated ID which uniquely identifies this course
+    size_t runtime_id;
 
     double IndexAtDist(double yards) const;
     glm::dvec2 SampleAtIndex(double index) const;
@@ -52,7 +51,10 @@ namespace mgc {
     double IndexToYardage(size_t index) const;
 
     // fetches the index which is closest to some dist away from init index
-    size_t GetNearestIndex(size_t init, double yardage) const;
+    size_t GetNearestIndex(const glm::dvec2& pos_local) const;
+
+    glm::dvec2 GetBoundingBoxStart() const;
+    glm::dvec2 GetBoundingBoxEnd() const;
   };
 }
 

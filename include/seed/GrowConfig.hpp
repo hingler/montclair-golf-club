@@ -7,6 +7,7 @@ namespace mgc {
   struct GrowConfig {
     // 1.0: on branch, preserve direction.
     // 0.0: no preservation
+    // per yard (ie rigidity 0.95 + 8 yard step -> (0.95 ^ 8))
     double rigidity = 0.99;
 
     // dist to step, per iteration

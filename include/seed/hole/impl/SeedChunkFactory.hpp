@@ -2,6 +2,7 @@
 #define SEED_CHUNK_FACTORY_H_
 
 #include "seed/ChunkConfig.hpp"
+#include "seed/SeedPositioner.hpp"
 #include "seed/hole/HoleChunkBox.hpp"
 #include "seed/GrowConfig.hpp"
 #include "seed/SeedGrower.hpp"
@@ -11,12 +12,17 @@
 namespace mgc {
   class SeedChunkFactory {
    public:
-    SeedChunkFactory(const std::shared_ptr<const SeedGrower>& grower, const ChunkConfig& config, const GrowConfig& config_grow) : grower(grower), config(config), config_grow(config_grow) {}
+    SeedChunkFactory(const std::shared_ptr<const SeedGrower>& grower, const ChunkConfig& config, const GrowConfig& config_grow) : grower(grower), config(config), config_grow(config_grow), positioner(config) {}
 
     // also want to nudge up/down right
     std::unique_ptr<HoleChunkBox> Create(const glm::ivec2& chunk);
    private:
     glm::dvec2 GetSeedPosition(const glm::ivec2& seed) const;
+
+    std::vector<glm::dvec2> GetSeeds(
+      const glm::ivec2& chunk
+    );
+
     std::vector<glm::dvec2> GetSeeds(
       const glm::ivec2& first_seed,
       const glm::ivec2& last_seed,
@@ -26,6 +32,8 @@ namespace mgc {
     std::shared_ptr<const SeedGrower> grower;
     ChunkConfig config;
     GrowConfig config_grow;
+
+    seed::SeedPositioner positioner;
   };
 
   // need code to call this

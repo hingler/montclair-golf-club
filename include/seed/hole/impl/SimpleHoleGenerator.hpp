@@ -17,8 +17,10 @@ namespace mgc {
     static_assert(traits::sampler_type<HeightType>::value);
 
    public:
-    SimpleHoleGenerator(std::shared_ptr<HeightType> height, std::shared_ptr<OverlapTester> tester)
-    : terrain(height), tester(tester), delegate_builder(height) {}
+    SimpleHoleGenerator(
+      std::shared_ptr<HeightType> height,
+      std::shared_ptr<OverlapTester> tester
+    ) : terrain(height), tester(tester), delegate_builder(height) {}
 
     std::unique_ptr<SDFHoleBox> GenerateHole(const HoleBox& box) override {
       HoleBox::iterator itr = box.begin();

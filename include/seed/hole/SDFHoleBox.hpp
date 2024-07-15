@@ -10,6 +10,7 @@
 
 
 #include "corrugate/sampler/smooth/LocalizedSmoother.hpp"
+#include "course/feature/WorldFeature.hpp"
 #include "path/CourseBundle.hpp"
 #include "sdf/type/sand/SandPitTracer.hpp"
 #include "seed/hole/HoleBox.hpp"
@@ -45,6 +46,7 @@ namespace mgc {
   class SDFHoleBox : public cg::FeatureBox {
    public:
     SDFHoleBox(const cg::FeatureBox& source) : cg::FeatureBox(source) {}
+    SDFHoleBox(const glm::dvec2& origin, const glm::dvec2& size) : cg::FeatureBox(origin, size) {}
     virtual std::unique_ptr<cg::BaseSmoothingSamplerBox> Convert() const = 0;
     /// return distance to nearest feature in box
     virtual double Dist(const glm::dvec2& point) const = 0;
@@ -82,7 +84,7 @@ namespace mgc {
         rough(rough),
         base(base_height),
         smoother(smoother),
-        course_path(source.begin(), source.end()),
+        course_path(bundle.course_path),
         bundle(bundle)
     {}
 
@@ -91,7 +93,7 @@ namespace mgc {
       // tba: need to pass a smoother!
       auto height = std::make_shared<sand::SandPitTracer<ST>>(
         sand,
-        0.17
+        0.28
       );
 
 
@@ -138,7 +140,8 @@ namespace mgc {
       return std::min({
         fairway->Sample(eff_point.x, eff_point.y),
         green->Sample(eff_point.x, eff_point.y),
-        sand->Sample(eff_point.x, eff_point.y)
+        sand->Sample(eff_point.x, eff_point.y),
+        rough->Sample(eff_point.x, eff_point.y)
       });
     }
 

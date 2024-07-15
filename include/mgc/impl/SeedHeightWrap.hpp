@@ -36,6 +36,8 @@ namespace mgc {
           static_cast<double>(id.y) - neighbor_max * 2
         );
 
+        origin += static_cast<glm::dvec2>(id.sample_offset);
+
         // double-fwd, to more-than-cover ground
         glm::dvec2 size(
           id.sample_dims.x * id.scale.AsDouble() + neighbor_max * 4,

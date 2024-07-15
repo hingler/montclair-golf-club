@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include <cmath>
 #include <glm/gtx/rotate_vector.hpp>
 #include <random>
 
@@ -62,7 +63,8 @@ namespace mgc {
 
   glm::dvec2 SeedGrower::SampleDirection_WithRigidity(const DirectorInfo& info, const GrowConfig& config) const {
     glm::dvec2 director_sum = SampleDirection(info);
-    return glm::normalize(info.direction * config.rigidity + director_sum * (1.0 - config.rigidity));
+    double eff_rigidity = std::pow(config.rigidity, config.step_size);
+    return glm::normalize(info.direction * eff_rigidity + director_sum * (1.0 - eff_rigidity));
   }
 
   #define MIN_ENERGY 180.0

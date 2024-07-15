@@ -26,7 +26,7 @@ namespace mgc {
 
     std::vector<SeedGrower::path_ptr> paths;
 
-    auto seeds = GetSeeds(first_seed_idx, last_seed_idx, chunk_origin, chunk_ceil);
+    auto seeds = GetSeeds(chunk);
     for (auto& seed_point : seeds) {
       std::seed_seq sseq{ static_cast<int>(seed_point.x), static_cast<int>(seed_point.y), 32763 };
       auto paths_recurse = grower->GeneratePaths(seed_point, config_grow, sseq);
@@ -54,6 +54,10 @@ namespace mgc {
     // lastly: create boxes
   }
 
+  std::vector<glm::dvec2> SeedChunkFactory::GetSeeds(const glm::ivec2& chunk) {
+    return positioner.GetSeeds(chunk);
+  }
+
   std::vector<glm::dvec2> SeedChunkFactory::GetSeeds(
     const glm::ivec2& first_seed,
     const glm::ivec2& last_seed,
@@ -61,6 +65,8 @@ namespace mgc {
     const glm::dvec2& chunk_ceil
   ) const {
     std::vector<glm::dvec2> result;
+
+    // thinking: set this up as its own class
 
     // upper bound seed count
     size_t seed_count = std::abs(last_seed.y - first_seed.y) * std::abs(last_seed.x - first_seed.x);

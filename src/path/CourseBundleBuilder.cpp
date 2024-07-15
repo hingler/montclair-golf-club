@@ -2,9 +2,10 @@
 #include "corrugate/FeatureBox.hpp"
 #include "path/deps/ControlPointCalculator.hpp"
 #include "path/deps/impl/SimpleControlPointCalculator.hpp"
+#include "seed/hole/HoleBox.hpp"
 
 // prob. that two stop points will be disconnected
-#define STOP_BREAK_PROBABILITY 0.2
+#define STOP_BREAK_PROBABILITY 0.45
 
 namespace mgc {
 
@@ -15,14 +16,15 @@ namespace mgc {
 
   CourseBundleBuilder::CourseBundleBuilder(
     std::unique_ptr<deps::ControlPointCalculator>&& calc
-  ) : control_calc(std::move(calc)) {}
+  ) : control_calc(std::move(calc)), bundle_id(0) {}
 
   CourseBundle CourseBundleBuilder::Convert(
     const std::vector<glm::dvec2>& point_list,
     std::mt19937_64& engine,
-    const cg::FeatureBox& box
+    const HoleBox& box
   ) const {
     CourseBundle bundle;
+    bundle.runtime_id = bundle_id.fetch_add(1);
 
     if (point_list.size() < 2) {
       // no changes.
@@ -31,6 +33,7 @@ namespace mgc {
 
     bundle.course_path = point_list;
 
+    // remove duplicate points
     for (auto itr = ++bundle.course_path.begin(); itr < bundle.course_path.end();) {
       if (glm::length(*itr - *(itr - 1)) < 0.0001) {
         itr = bundle.course_path.erase(itr);
@@ -38,6 +41,8 @@ namespace mgc {
         ++itr;
       }
     }
+
+    // create control points (stop indices)
     bundle.stop_indices = control_calc->GetControlPoints(
       bundle.course_path,
       engine
@@ -68,6 +73,8 @@ namespace mgc {
     bundle.yardage = glm::length(bundle.course_path.at(bundle.course_path.size() - 1) - bundle.course_path.at(0));
 
     bundle.origin = box.GetOrigin();
+
+    bundle.padding = box.GetPadding();
 
     std::uniform_real_distribution<double> hole_dist(-15.0, 15.0);
 

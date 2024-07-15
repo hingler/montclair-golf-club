@@ -2,6 +2,7 @@
 #define HOLE_CHUNK_CONVERTER_H_
 
 #include "corrugate/box/BaseSmoothingSamplerBox.hpp"
+#include "course/feature/WorldFeatureBuilder.hpp"
 #include "gog43/Logger.hpp"
 #include "seed/ChunkConfig.hpp"
 #include "seed/hole/ConversionResult.hpp"
@@ -9,6 +10,8 @@
 #include "seed/hole/HoleChunkManager.hpp"
 #include "seed/hole/SDFHoleBox.hpp"
 
+#include "seed/hole/overlap/MultiOverlapTester.hpp"
+#include "seed/hole/overlap/PreGenOverlapTester.hpp"
 #include "seed/hole/overlap/SDFGenOverlapTester.hpp"
 #include "seed/hole/impl/SimpleHoleGenerator.hpp"
 
@@ -17,11 +20,13 @@ namespace mgc {
   class HoleChunkConverter {
     // manages the conversion of hole chunks (from manager) to sample boxes
     // should we go point/range -> samplers? i'm thinking so
+    // (tba: need to pass in pre-gen data for occlusion testing)
    public:
     typedef std::vector<std::unique_ptr<cg::BaseSmoothingSamplerBox>> output_type;
     HoleChunkConverter(
       const std::shared_ptr<HoleChunkManager>& manager,
-      const ChunkConfig& config
+      const ChunkConfig& config,
+      const std::shared_ptr<mgc_course::mgc_gen::WorldFeatureManager>& pre_gen
     );
 
     template <typename HeightType>
@@ -40,13 +45,26 @@ namespace mgc {
 
       // create sdf multisampler
       auto sdfs = std::make_shared<cg::MultiSampler<SDFHoleBox>>();
-      auto tester = std::make_shared<SDFGenOverlapTester>(sdfs, box, config);
+      // need to swap out this tester
+      // with something that'll avoid pregen occlusion samples
+      auto tester_sdf = std::make_shared<SDFGenOverlapTester>(sdfs, box, config);
+      auto tester_pre = std::make_shared<PreGenOverlapTester>(
+        pre_gen,
+        64.0
+      );
 
       // add neighbors as hole chunks
       for (const auto& hole : output) {
-        tester->AddHoleChunk(hole);
+        tester_sdf->AddHoleChunk(hole);
       }
 
+      std::vector<std::shared_ptr<OverlapTester>> testers;
+      testers.push_back(tester_sdf);
+      testers.push_back(tester_pre);
+
+      auto tester = std::make_shared<MultiOverlapTester>(testers);
+
+      // need to include pregen
       SimpleHoleGenerator<HeightType> gen(height, tester);
 
       // generate each individual hole
@@ -76,6 +94,7 @@ namespace mgc {
 
     std::shared_ptr<HoleChunkManager> manager;
     const ChunkConfig config;
+    std::shared_ptr<mgc_course::mgc_gen::WorldFeatureManager> pre_gen;
   };
 }
 

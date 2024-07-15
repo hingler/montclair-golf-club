@@ -37,7 +37,7 @@ namespace mgc {
 
             double radius_sample = sampler.Sample(sample_point.x, sample_point.y);
             // infeasibly large - should cover all cases (add to padding???)
-            radii.push_back(radius_sample * 14.5 + 84.0);
+            radii.push_back(radius_sample * 32.5 + 71.0);
           }
 
           sdf_bundle->AddCapsule(points_working, radii);
@@ -48,10 +48,8 @@ namespace mgc {
         }
       }
 
-      if (sdf_bundle != nullptr) {
-        // on loop complete: see if we can flush this bundle
-        bundles.push_back(sdf_bundle);
-      }
+      // on loop complete: see if we can flush this bundle
+      bundles.push_back(sdf_bundle);
 
       // created capsules deposited in "bundles"
       // (use these bundles for smoothing hehe, as they should wrap)

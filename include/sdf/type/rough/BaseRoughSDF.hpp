@@ -7,6 +7,7 @@
 #include "sdf/CPPBundle.hpp"
 
 #include <memory>
+#include <unordered_set>
 namespace mgc {
   namespace rough {
     class BaseRoughSDF {
@@ -24,6 +25,7 @@ namespace mgc {
 
      private:
       std::vector<std::shared_ptr<CPPBundle>> bundles;
+      std::vector<int> indices;
     };
   }
 }

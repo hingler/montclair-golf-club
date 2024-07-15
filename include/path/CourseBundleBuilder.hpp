@@ -4,7 +4,9 @@
 #include "corrugate/FeatureBox.hpp"
 #include "path/CourseBundle.hpp"
 #include "path/deps/ControlPointCalculator.hpp"
+#include "seed/hole/HoleBox.hpp"
 
+#include <atomic>
 #include <memory>
 #include <random>
 #include <vector>
@@ -27,11 +29,12 @@ namespace mgc {
     CourseBundle Convert(
       const std::vector<glm::dvec2>& point_list,
       std::mt19937_64& engine,
-      const cg::FeatureBox& box
+      const HoleBox& box
     ) const;
 
    private:
     std::unique_ptr<deps::ControlPointCalculator> control_calc;
+    mutable std::atomic_size_t bundle_id;
   };
 }
 

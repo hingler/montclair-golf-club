@@ -59,6 +59,20 @@ namespace mgc {
     return acc;
   }
 
+  size_t CourseBundle::GetNearestIndex(const glm::dvec2& pos_local) const {
+    double min_dist = std::numeric_limits<double>::max();
+    size_t min_index = 0;
+    for (size_t i = 0; i < course_path.size(); i++) {
+      double cur_dist = glm::length(course_path.at(i) - pos_local);
+      if (cur_dist < min_dist) {
+        min_dist = cur_dist;
+        min_index = i;
+      }
+    }
+
+    return min_index;
+  }
+
   glm::dvec2 CourseBundle::GetTangent(double index) const {
     if (index <= 0) {
       return glm::normalize(course_path.at(1) - course_path.at(0));
@@ -75,4 +89,24 @@ namespace mgc {
     glm::dvec2 tan = GetTangent(index);
     return glm::rotate(tan, M_PI / 2);
   }
+
+  glm::dvec2 CourseBundle::GetBoundingBoxStart() const {
+    glm::dvec2 min_point = course_path.at(0);
+    for (const auto& point : course_path) {
+      min_point = glm::min(min_point, point);
+    }
+
+    return origin + min_point - glm::dvec2(padding);
+  }
+
+  glm::dvec2 CourseBundle::GetBoundingBoxEnd() const {
+    glm::dvec2 max_point = course_path.at(0);
+    for (const auto& point : course_path) {
+      max_point = glm::max(max_point, point);
+    }
+
+    return origin + max_point + glm::dvec2(padding);
+  }
+
+
 }

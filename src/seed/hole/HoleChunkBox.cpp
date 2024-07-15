@@ -13,7 +13,8 @@ namespace mgc {
     for (auto& hole : holes) {
       // cctor lole
       // whatever?
-      this->holes.InsertBox(std::make_unique<HoleBox>(hole));
+      auto const_ptr = this->holes.InsertBox(std::make_unique<HoleBox>(hole));
+      holes_ordered.push_back(const_ptr);
     }
   }
 
